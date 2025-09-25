@@ -1,0 +1,43 @@
+package com.example.Ev.System.service;
+
+import com.example.Ev.System.dto.LoginRequest;
+import com.example.Ev.System.dto.LoginResponse;
+import com.example.Ev.System.entity.User;
+import com.example.Ev.System.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class AuthService {
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final JwtService jwtService;
+
+    public AuthService(UserRepository userRepository, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
+
+    public LoginResponse login(LoginRequest request){
+        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+        if(userOpt.isEmpty()){
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOpt.get();
+        if(!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())){
+            throw new RuntimeException("Invalid password");
+        }
+
+        String token = jwtService.generateToken(user.getEmail(), user.getRole());
+
+        LoginResponse response = new LoginResponse();
+        response.setToken(token);
+        response.setRole(user.getRole());
+        response.setFullName(user.getFullName());
+
+        return response;
+    }
+}
