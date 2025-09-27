@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: ev-system-api          # tên service trên Render, bạn có thể đổi
+    env: java                    # môi trường Java
+    plan: free                   # Free plan
+    buildCommand: ./mvnw clean install -DskipTests
+    startCommand: java -jar target/*.jar
