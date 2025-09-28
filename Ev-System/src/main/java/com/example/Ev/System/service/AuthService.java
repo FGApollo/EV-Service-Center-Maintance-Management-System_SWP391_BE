@@ -2,6 +2,7 @@ package com.example.Ev.System.service;
 
 import com.example.Ev.System.dto.LoginRequest;
 import com.example.Ev.System.dto.LoginResponse;
+import com.example.Ev.System.dto.UpdateUserRequest;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,5 +40,26 @@ public class AuthService {
         response.setFullName(user.getFullName());
 
         return response;
+    }
+
+    //Update User
+    public User updateUser(UpdateUserRequest request) {
+        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOpt.get();
+        if (request.getFullName() != null && !request.getFullName().isEmpty()) {
+            user.setFullName(request.getFullName());
+        }
+        if (request.getPhone() != null && !request.getPhone().isEmpty()) {
+            user.setPhone(request.getPhone());
+        }
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+
+        return userRepository.save(user);
     }
 }
