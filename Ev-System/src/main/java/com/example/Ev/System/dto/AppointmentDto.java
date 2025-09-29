@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,5 +18,5 @@ public class AppointmentDto {
     private Integer vehicleId;
     private Integer serviceCenterId;
     private Instant appointmentDate;
-    private List<Integer> serviceTypeIds;
+    private Set<Integer> serviceTypeIds;
 }
