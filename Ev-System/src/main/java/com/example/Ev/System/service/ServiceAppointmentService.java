@@ -59,7 +59,7 @@ public class ServiceAppointmentService {
         // 2. Create and save a new customer
         User customer = new User();
         customer.setFullName("New Customer");   // Replace with real info if needed
-        customer.setEmail("newcustomer11111111111@example.com");
+        customer.setEmail("newcustomer111111111111111@example.com");
         customer.setPhone("0123456789");
         customer.setPasswordHash("default_password_hash"); // hash properly in real case
         customer.setRole("CUSTOMER");
@@ -96,20 +96,14 @@ public class ServiceAppointmentService {
 
             AppointmentServiceId asId = new AppointmentServiceId(appointment.getId(), st.getId());
 
-            // ✅ Check if already exists
-            boolean alreadyExists = appointment.getAppointmentServices().stream()
-                    .anyMatch(as -> as.getId().equals(asId));
-
+            boolean alreadyExists = appointmentServiceRepository.existsById(asId);
             if (!alreadyExists) {
                 AppointmentService as = new AppointmentService(asId, appointment, st);
-
-                // maintain both sides of the relationship
-                appointment.getAppointmentServices().add(as);
-                st.getAppointmentServices().add(as);
+                appointmentServiceRepository.save(as);   // 🔑 save child directly
             }
         }
-
     }
+
 
 
 }

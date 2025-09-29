@@ -16,6 +16,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor   // JPA needs this
 @AllArgsConstructor  // you need this for new AppointmentService(...)
+@Embeddable
 public class AppointmentServiceId implements Serializable {
     private static final long serialVersionUID = -7673425440924701302L;
     @Column(name = "appointment_id", nullable = false)

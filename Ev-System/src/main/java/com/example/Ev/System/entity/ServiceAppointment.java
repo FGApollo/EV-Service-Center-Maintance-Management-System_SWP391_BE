@@ -44,7 +44,9 @@ public class ServiceAppointment {
     private Instant createdAt;
 
     // 🔗 Link to AppointmentService join table
-    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "appointment",
+            cascade = CascadeType.ALL,   // <-- important
+            orphanRemoval = true)
     private Set<AppointmentService> appointmentServices = new HashSet<>();
 
     public Set<AppointmentService> getAppointmentServices() {
