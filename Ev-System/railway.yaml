@@ -1,0 +1,14 @@
+name: ev-service-center
+region: asia-southeast1
+
+build:
+  # Dùng Maven Wrapper để build
+  command: ./mvnw clean package -DskipTests
+
+start:
+  # Chạy file jar sau khi build
+  command: java -jar target/*.jar
+
+env:
+  JAVA_HOME: /usr/lib/jvm/java-17-openjdk
+  JDK_VERSION: 17
