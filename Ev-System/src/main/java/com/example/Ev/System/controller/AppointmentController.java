@@ -1,9 +1,8 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.AppointmentDto;
-import com.example.Ev.System.service.AppointmentService;
+import com.example.Ev.System.service.ServiceAppointmentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/appointments")
 public class AppointmentController {
-    private final AppointmentService appointmentService;
-    public AppointmentController(AppointmentService appointmentService) {
+    private final ServiceAppointmentService appointmentService;
+    public AppointmentController(ServiceAppointmentService appointmentService) {
         this.appointmentService = appointmentService;
     }
 //    @PostMapping

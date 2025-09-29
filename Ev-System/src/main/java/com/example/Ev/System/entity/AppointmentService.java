@@ -2,8 +2,14 @@ package com.example.Ev.System.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor   // JPA needs this
+@AllArgsConstructor  // you need this for new AppointmentService(...)
 @Entity
 public class AppointmentService {
     @EmbeddedId
@@ -19,6 +25,4 @@ public class AppointmentService {
     @JoinColumn(name = "service_type_id", nullable = false)
     private ServiceType serviceType;
 
-    public AppointmentService() {
-    }
 }

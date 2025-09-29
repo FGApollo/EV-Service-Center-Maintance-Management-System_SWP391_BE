@@ -4,28 +4,33 @@ import com.example.Ev.System.dto.AppointmentDto;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.mappers.AppointmentMapper;
 import com.example.Ev.System.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Service
-public class AppointmentService {
+public class ServiceAppointmentService {
     private final AppointmentMapper appointmentMapper;
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final ServiceCenterRepository serviceCenterRepository;
     private final VehicleRepository vehicleRepository;
     private final ServiceTypeRepository serviceTypeRepository;
+    private final AppointmentServiceRepository appointmentServiceRepository;
 
-    public AppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
         this.serviceCenterRepository = serviceCenterRepository;
         this.vehicleRepository = vehicleRepository;
         this.serviceTypeRepository = serviceTypeRepository;
+        this.appointmentServiceRepository = appointmentServiceRepository;
     }
+
 
 //    public AppointmentDto createAppointment(AppointmentDto appointmentDto,
 //                                            Authentication authentication)
@@ -54,7 +59,7 @@ public class AppointmentService {
         // 2. Create and save a new customer
         User customer = new User();
         customer.setFullName("New Customer");   // Replace with real info if needed
-        customer.setEmail("newcustomer1111@example.com");
+        customer.setEmail("newcustomer11111111111@example.com");
         customer.setPhone("0123456789");
         customer.setPasswordHash("default_password_hash"); // hash properly in real case
         customer.setRole("CUSTOMER");
@@ -72,29 +77,39 @@ public class AppointmentService {
         appointment = appointmentRepository.save(appointment);
 
         // 5. Retrieve all service types
-        List<ServiceType> serviceTypes = serviceTypeRepository.findAllById(appointmentDto.getServiceTypeIds());
+        addServiceTypesToAppointment(appointment.getId(),appointmentDto.getServiceTypeIds());
 
-        // 6. Create AppointmentService entries
-        for (ServiceType st : serviceTypes) {
-            AppointmentServiceId apsId = new AppointmentServiceId();
-            apsId.setAppointmentId(appointment.getId());
-            apsId.setServiceTypeId(st.getId());
-
-//            AppointmentService aps = new AppointmentService();
-//            aps.setId(apsId);
-//            aps.setAppointment(appointment);
-//            aps.setServiceType(st);
-//
-//            appointment.getAppointmentServices().add(aps);
-            //Lam cach nao do de add Appointment service vao ServiceAppointment
-        }
-
-        // 7. Save appointment again with services
-        appointmentRepository.save(appointment);
 
         System.out.println("Appointment saved with multiple services.");
 
         return appointmentDto;
     }
+
+    @Transactional
+    public void addServiceTypesToAppointment(Integer appointmentId, Set<Integer> serviceTypeIds) {
+        ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        for (Integer stId : serviceTypeIds) {
+            ServiceType st = serviceTypeRepository.findById(stId)
+                    .orElseThrow(() -> new RuntimeException("ServiceType not found"));
+
+            AppointmentServiceId asId = new AppointmentServiceId(appointment.getId(), st.getId());
+
+            // ✅ Check if already exists
+            boolean alreadyExists = appointment.getAppointmentServices().stream()
+                    .anyMatch(as -> as.getId().equals(asId));
+
+            if (!alreadyExists) {
+                AppointmentService as = new AppointmentService(asId, appointment, st);
+
+                // maintain both sides of the relationship
+                appointment.getAppointmentServices().add(as);
+                st.getAppointmentServices().add(as);
+            }
+        }
+
+    }
+
 
 }
