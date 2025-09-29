@@ -1,25 +1,30 @@
-# Sử dụng JDK 17
-FROM eclipse-temurin:17-jdk-alpine as builder
+# ==========================================
+# Stage 1: Build
+# ==========================================
+FROM eclipse-temurin:17-jdk-alpine AS builder
 
-# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Copy toàn bộ source code
+# Copy toàn bộ source code vào container
 COPY . .
+
+# Fix quyền cho mvnw
+RUN chmod +x mvnw
 
 # Build ứng dụng bằng Maven Wrapper
 RUN ./mvnw clean package -DskipTests
 
 # ==========================================
-# Giai đoạn chạy app
-FROM eclipse-temurin:17-jdk-alpine
+# Stage 2: Run
+# ==========================================
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Copy file jar từ giai đoạn build
+# Copy file jar từ stage build
 COPY --from=builder /app/target/*.jar app.jar
 
-# Expose port
+# Expose cổng (mặc định Spring Boot chạy 8080)
 EXPOSE 8080
 
 # Lệnh chạy app
