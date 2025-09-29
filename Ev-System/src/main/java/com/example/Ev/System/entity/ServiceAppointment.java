@@ -7,6 +7,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -41,4 +43,11 @@ public class ServiceAppointment {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @ManyToMany
+    @JoinTable(
+            name = "AppointmentService",
+            joinColumns = @JoinColumn(name = "appointment_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_type_id")
+    )
+    private Set<ServiceType> serviceTypes = new HashSet<>();
 }
