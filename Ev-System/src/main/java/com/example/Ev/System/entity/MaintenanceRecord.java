@@ -20,10 +20,6 @@ public class MaintenanceRecord {
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "technician_id", nullable = false)
-    private User technician;
-
     @Nationalized
     @Lob
     @Column(name = "vehicle_condition")

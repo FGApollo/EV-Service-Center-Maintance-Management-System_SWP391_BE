@@ -1,9 +1,8 @@
 package com.example.Ev.System.repository;
 
-import com.example.Ev.System.entity.ServiceCenter;
+import com.example.Ev.System.entity.ServiceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.example.Ev.System.entity.ServiceType;
 
 import java.util.Optional;
 

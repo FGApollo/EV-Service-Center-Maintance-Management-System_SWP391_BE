@@ -43,11 +43,17 @@ public class ServiceAppointment {
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @ManyToMany
-    @JoinTable(
-            name = "AppointmentService",
-            joinColumns = @JoinColumn(name = "appointment_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_type_id")
-    )
-    private Set<ServiceType> serviceTypes = new HashSet<>();
+    // 🔗 Link to AppointmentService join table
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AppointmentService> appointmentServices = new HashSet<>();
+
+    public Set<AppointmentService> getAppointmentServices() {
+        return appointmentServices;
+    }
+
+    public void setAppointmentServices(Set<AppointmentService> appointmentServices) {
+        this.appointmentServices = appointmentServices;
+    }
+
+
 }

@@ -12,23 +12,25 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-public class WorkLog {
+public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "log_id", nullable = false)
+    @Column(name = "invoice_id", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    @Column(name = "hours_spent", precision = 5, scale = 2)
-    private BigDecimal hoursSpent;
+    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalAmount;
 
     @Nationalized
-    @Lob
-    @Column(name = "tasks_done")
-    private String tasksDone;
+    @Column(name = "status", length = 20)
+    private String status;
+
+    @Column(name = "payment_date")
+    private Instant paymentDate;
 
     @ColumnDefault("sysdatetime()")
     @Column(name = "created_at")

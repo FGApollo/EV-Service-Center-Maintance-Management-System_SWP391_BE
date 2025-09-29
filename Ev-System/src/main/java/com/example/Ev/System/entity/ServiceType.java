@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@Table(name = "ServiceType")
 public class ServiceType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +34,7 @@ public class ServiceType {
     @Column(name = "duration_est")
     private Integer durationEst;
 
-    @ManyToMany(mappedBy = "serviceTypes")
-    private Set<ServiceAppointment> appointments = new HashSet<>();
-
+    // 🔗 Link to AppointmentService join table
+    @OneToMany(mappedBy = "serviceType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AppointmentService> appointmentServices = new HashSet<>();
 }
