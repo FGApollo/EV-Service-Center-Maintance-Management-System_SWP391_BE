@@ -21,9 +21,9 @@ public class StaffAssignmentController {
     @PostMapping("/{appointmentId}/staff")
     public ResponseEntity<List<StaffAssignment>> assignTechnicians(
             @PathVariable Integer appointmentId,
-            @RequestBody List<Long> staffIds,
+            @RequestBody List<Integer> staffIds,
             @RequestParam(defaultValue = "technician") String role,
-            @RequestParam(required = false) String notes) {
+            @RequestBody(required = false) String notes) {
         List<StaffAssignment> assignments = staffAppointmentService
                 .assignTechnicians(appointmentId, staffIds, role, notes);
         return ResponseEntity.ok(assignments);
