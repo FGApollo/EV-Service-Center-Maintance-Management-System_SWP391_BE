@@ -31,6 +31,13 @@ public class ServiceAppointmentService {
         this.appointmentServiceRepository = appointmentServiceRepository;
     }
 
+    public ServiceAppointment updateAppointment(Integer appointmentId) {
+        ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
+        appointment.setStatus("progress");
+        appointment.setCreatedAt(Instant.now());
+        return null;
+    }
+
 
 //    public AppointmentDto createAppointment(AppointmentDto appointmentDto,
 //                                            Authentication authentication)
