@@ -79,7 +79,6 @@ public class ServiceAppointmentService {
         // 5. Retrieve all service types
         addServiceTypesToAppointment(appointment.getId(),appointmentDto.getServiceTypeIds());
 
-
         System.out.println("Appointment saved with multiple services.");
 
         return appointmentDto;
@@ -93,9 +92,7 @@ public class ServiceAppointmentService {
         for (Integer stId : serviceTypeIds) {
             ServiceType st = serviceTypeRepository.findById(stId)
                     .orElseThrow(() -> new RuntimeException("ServiceType not found"));
-
-            AppointmentServiceId asId = new AppointmentServiceId(appointment.getId(), st.getId());
-
+            AppointmentServiceId asId = new AppointmentServiceId(appointment.getId(), st.getId()); //asId la 2 foreign key cho bang AppointmentService
             boolean alreadyExists = appointmentServiceRepository.existsById(asId);
             if (!alreadyExists) {
                 AppointmentService as = new AppointmentService(asId, appointment, st);

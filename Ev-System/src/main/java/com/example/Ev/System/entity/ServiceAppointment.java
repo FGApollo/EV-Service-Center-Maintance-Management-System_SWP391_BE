@@ -49,6 +49,11 @@ public class ServiceAppointment {
             orphanRemoval = true)
     private Set<AppointmentService> appointmentServices = new HashSet<>();
 
+    @OneToMany(mappedBy = "appointment",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Set<StaffAssignment> staffAssignments = new HashSet<>();
+
     public Set<AppointmentService> getAppointmentServices() {
         return appointmentServices;
     }
