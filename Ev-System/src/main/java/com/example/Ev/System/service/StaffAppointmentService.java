@@ -26,31 +26,37 @@ public class StaffAppointmentService {
         this.userRepository = userRepository;
     }
 
-    public StaffAssignment assignTechnician(Integer appointmentId , List<Long> staffIds , String role , String note){
-        if(staffIds.isEmpty()){
-            return null;
+    public List<StaffAssignment> assignTechnicians(Integer appointmentId, List<Long> staffIds, String role, String note) {
+        if (staffIds == null || staffIds.isEmpty()) {
+            return List.of();
         }
-        StaffAssignment staffAssignment = new StaffAssignment();
-        ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
-        if(appointment != null){
-            staffAssignment.setAppointment(appointment);
-        }
-        for(Long staffId : staffIds){
-            User staff = userRepository.findById(staffId).orElse(null);
-            if(staff.getRole().equals(role)){
-                staffAssignment.setStaff(staff);
+        ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+        List<StaffAssignment> assignments = new ArrayList<>();
+        for (Long staffId : staffIds) {
+            User staff = userRepository.findById(staffId)
+                    .orElseThrow(() -> new RuntimeException("Staff not found: " + staffId));
+            if (!staff.getRole().equals(role)) {
+                throw new RuntimeException("User " + staff.getFullName() + " is not a " + role);
             }
+            StaffAssignment staffAssignment = new StaffAssignment();
+            staffAssignment.setAppointment(appointment);
+            staffAssignment.setStaff(staff);
+            staffAssignment.setRole(role);
+            staffAssignment.setStartTime(Instant.now());
+            staffAssignment.setNotes(note);
+            assignments.add(staffAssignmentRepository.save(staffAssignment));
         }
-        staffAssignment.setStartTime(Instant.now());
-        staffAssignment.setNotes(note);
-        return staffAssignmentRepository.save(staffAssignment);
+
+        return assignments;
     }
+
 
     public void  autoAssignTechnician(Integer appointmentId  , String role , String note){
         List<User> freeTech = getFreeTechnician();
         List<Long> chosenTech = new ArrayList<>();
         chosenTech.add(freeTech.get(0).getId());
-        assignTechnician(appointmentId, chosenTech, role, note);
+        assignTechnicians(appointmentId, chosenTech, role, note);
     }
 
     public List<User> getFreeTechnician(){

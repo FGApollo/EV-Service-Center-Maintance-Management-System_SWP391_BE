@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/appointments/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/assignments/**").permitAll() // ✅ public nho xoa
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")

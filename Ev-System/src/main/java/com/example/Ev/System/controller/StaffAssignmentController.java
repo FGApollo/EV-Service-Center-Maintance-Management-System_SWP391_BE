@@ -11,19 +11,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/assignments")
-@RequiredArgsConstructor
 public class StaffAssignmentController {
     private final StaffAppointmentService staffAppointmentService;
 
-    @PostMapping("/{appointmentId}/staff/{staffId}")
-    public ResponseEntity<StaffAssignment> assignTechnician(
+    public StaffAssignmentController(StaffAppointmentService staffAppointmentService) {
+        this.staffAppointmentService = staffAppointmentService;
+    }
+
+    @PostMapping("/{appointmentId}/staff")
+    public ResponseEntity<List<StaffAssignment>> assignTechnicians(
             @PathVariable Integer appointmentId,
-            @PathVariable List<Long> staffId,
+            @RequestBody List<Long> staffIds,
             @RequestParam(defaultValue = "technician") String role,
             @RequestParam(required = false) String notes) {
-        StaffAssignment assignment = staffAppointmentService
-                .assignTechnician(appointmentId, staffId, role, notes);
-
-        return ResponseEntity.ok(assignment);
+        List<StaffAssignment> assignments = staffAppointmentService
+                .assignTechnicians(appointmentId, staffIds, role, notes);
+        return ResponseEntity.ok(assignments);
     }
+
 }
