@@ -3,14 +3,16 @@ package com.example.Ev.System.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Nationalized;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-public class MaintenanceRecord {
+@Table(name = "maintenancerecord")
+public class Maintenancerecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "record_id", nullable = false)
@@ -20,14 +22,14 @@ public class MaintenanceRecord {
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    @Nationalized
-    @Lob
-    @Column(name = "vehicle_condition")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "technician_id", nullable = false)
+    private User technician;
+
+    @Column(name = "vehicle_condition", length = Integer.MAX_VALUE)
     private String vehicleCondition;
 
-    @Nationalized
-    @Lob
-    @Column(name = "checklist")
+    @Column(name = "checklist", length = Integer.MAX_VALUE)
     private String checklist;
 
     @Column(name = "start_time")
@@ -36,9 +38,10 @@ public class MaintenanceRecord {
     @Column(name = "end_time")
     private Instant endTime;
 
-    @Nationalized
-    @Lob
-    @Column(name = "remarks")
+    @Column(name = "remarks", length = Integer.MAX_VALUE)
     private String remarks;
+
+    @OneToMany(mappedBy = "record")
+    private Set<Partyusage> partyusages = new LinkedHashSet<>();
 
 }

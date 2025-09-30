@@ -4,29 +4,27 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
+@Entity
+@Table(name = "partyusage")
 @Getter
 @Setter
-@Entity
-public class PartUsage {
+public class Partyusage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usage_id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "record_id", nullable = false)
-    private MaintenanceRecord record;
+    private Maintenancerecord record;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "part_id", nullable = false)
-    private Part part;
+    private Part part;   // 🔹 link to the Part
 
     @Column(name = "quantity_used", nullable = false)
     private Integer quantityUsed;
 
-    @Column(name = "unit_cost", precision = 10, scale = 2)
-    private BigDecimal unitCost;
-
+    @Column(name = "unit_cost")
+    private Double unitCost;
 }
