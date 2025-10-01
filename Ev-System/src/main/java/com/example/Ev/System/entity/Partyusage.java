@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "partyusage")
+//@Table(name = "partyusage")
+@Table(name = "[PartUsage]")
 @Getter
 @Setter
 public class Partyusage {

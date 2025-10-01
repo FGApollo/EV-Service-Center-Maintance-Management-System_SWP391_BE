@@ -35,7 +35,7 @@ public class ServiceAppointmentService {
 
     public ServiceAppointment acceptAppointment(Integer appointmentId) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
-        appointment.setStatus("progress");
+        appointment.setStatus("in_progress");
         appointment.setCreatedAt(Instant.now());
         staffAppointmentService.autoAssignTechnician(appointmentId , "technician" , "Auto assign technician");
         appointmentRepository.save(appointment);

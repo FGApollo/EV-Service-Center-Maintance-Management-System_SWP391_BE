@@ -22,5 +22,7 @@ public class MaintainanceRecordController {
             @RequestBody MaintainanceRecordDto maintainanceRecordDto) {
         maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto);
         return ResponseEntity.ok(maintainanceRecordDto);
+        //Da xong
+        //TODO : Xem lai ==>GPT lam
     }
 }

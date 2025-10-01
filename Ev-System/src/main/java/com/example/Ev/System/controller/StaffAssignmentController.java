@@ -22,11 +22,13 @@ public class StaffAssignmentController {
     public ResponseEntity<List<StaffAssignment>> assignTechnicians(
             @PathVariable Integer appointmentId,
             @RequestBody List<Integer> staffIds,
-            @RequestParam(defaultValue = "technician") String role,
-            @RequestBody(required = false) String notes) {
+            @RequestParam(defaultValue = "technician") String role
+            ) {
         List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(appointmentId, staffIds, role, notes);
+                .assignTechnicians(appointmentId, staffIds, role, "notes");
         return ResponseEntity.ok(assignments);
+        //Da xong
+        //ToDO : Nen tra ve DTO
     }
 
 }

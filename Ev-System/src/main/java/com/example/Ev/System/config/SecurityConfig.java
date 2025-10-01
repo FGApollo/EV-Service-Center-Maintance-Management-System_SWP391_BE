@@ -31,6 +31,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/appointments/**").permitAll() // ✅ public nho xoa
                         .requestMatchers("/assignments/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/MaintainanceRecord/**").permitAll() // ✅ public nho xoa
+                                .requestMatchers("/worklogs/**").permitAll() // ✅ public nho xoa
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")
@@ -38,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/technician/**").hasAuthority("technician")
                         .requestMatchers("/api/customer/**").hasAuthority("customer")
                         .anyRequest().authenticated()
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
                // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); nho them

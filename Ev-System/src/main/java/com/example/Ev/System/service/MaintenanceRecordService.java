@@ -24,7 +24,8 @@ public class MaintenanceRecordService {
     public MaintenanceRecordService(AppointmentRepository appointmentRepository,
                                     PartRepository partRepository,
                                     PartyUsageRepository partyUsageRepository,
-                                    MaintenanceRecordRepository maintenanceRecordRepository, MaintainanceRecordMapper maintainanceRecordMapper) {
+                                    MaintenanceRecordRepository maintenanceRecordRepository,
+                                    MaintainanceRecordMapper maintainanceRecordMapper) {
         this.appointmentRepository = appointmentRepository;
         this.partRepository = partRepository;
         this.partyUsageRepository = partyUsageRepository;
@@ -40,7 +41,7 @@ public class MaintenanceRecordService {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        // Create maintenance record
+        // Create record
         Maintenancerecord record = maintainanceRecordMapper.toEntity(maintainanceRecordDto);
         record.setAppointment(appointment);
         record.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
@@ -49,14 +50,23 @@ public class MaintenanceRecordService {
         record.setStartTime(appointment.getAppointmentDate());
         record.setEndTime(Instant.now());
 
-        // Snapshot technicians from StaffAssignment
+        // Collect technicians -> store their IDs in a string
         Set<User> technicians = appointment.getStaffAssignments()
                 .stream()
                 .map(StaffAssignment::getStaff)
                 .collect(Collectors.toSet());
+
+        // Convert IDs to comma-separated string
+        String technicianIds = technicians.stream()
+                .map(u -> u.getId().toString())
+                .collect(Collectors.joining(","));
+
+        record.setTechnicianIds(technicianIds);
+
+        // Optionally still set transient field for convenience
         record.setTechnicians(technicians);
 
-        // Save the maintenance record first
+        // Save record
         maintenanceRecordRepository.save(record);
 
         // Save part usage

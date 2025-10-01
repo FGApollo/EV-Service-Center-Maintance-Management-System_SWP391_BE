@@ -14,6 +14,7 @@ import java.util.Set;
 @Entity
 @Table(name = "maintenancerecord")
 public class Maintenancerecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "record_id", nullable = false)
@@ -22,10 +23,6 @@ public class Maintenancerecord {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "technician_id", nullable = false)
-    private User technician;
 
     @Column(name = "vehicle_condition", length = Integer.MAX_VALUE)
     private String vehicleCondition;
@@ -45,12 +42,9 @@ public class Maintenancerecord {
     @OneToMany(mappedBy = "record")
     private Set<Partyusage> partyusages = new LinkedHashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "maintenance_record_technicians",   // join table
-            joinColumns = @JoinColumn(name = "record_id"),
-            inverseJoinColumns = @JoinColumn(name = "technician_id")
-    )
-    private Set<User> technicians = new HashSet<>();
+    @Column(name = "technician_ids", length = Integer.MAX_VALUE)
+    private String technicianIds;
 
+    @Transient
+    private Set<User> technicians = new HashSet<>();
 }

@@ -9,6 +9,8 @@ import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.repository.WorkLogRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
 public class WorkLogService {
     private final WorkLogRepository workLogRepository;
@@ -31,10 +33,11 @@ public class WorkLogService {
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
         WorkLog workLog = new WorkLog();
-//        workLog.set(staff);
-//        workLog.setAppointment(appointment);
-//        workLog.setHoursSpent(dto.getHoursSpent());
-//        workLog.setTasksDone(dto.getTasksDone());
+        workLog.setStaff(staff);
+        workLog.setAppointment(appointment);
+        workLog.setHoursSpent(dto.getHoursSpent());
+        workLog.setTasksDone(dto.getTasksDone());
+        workLog.setCreatedAt(Instant.now());
 
         return workLogRepository.save(workLog);
     }
