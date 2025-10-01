@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -43,5 +44,13 @@ public class Maintenancerecord {
 
     @OneToMany(mappedBy = "record")
     private Set<Partyusage> partyusages = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "maintenance_record_technicians",   // join table
+            joinColumns = @JoinColumn(name = "record_id"),
+            inverseJoinColumns = @JoinColumn(name = "technician_id")
+    )
+    private Set<User> technicians = new HashSet<>();
 
 }

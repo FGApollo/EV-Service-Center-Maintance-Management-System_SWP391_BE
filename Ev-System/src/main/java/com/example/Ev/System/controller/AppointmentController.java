@@ -15,7 +15,7 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/accept")
     public ResponseEntity<ServiceAppointment> acceptAppointment(
             @PathVariable Integer id) {
         ServiceAppointment updatedAppointment = appointmentService.acceptAppointment(id);
