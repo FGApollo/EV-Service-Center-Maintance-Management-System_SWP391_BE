@@ -23,6 +23,8 @@ public class PartUsageService {
     private PartRepository partRepository;
     @Autowired
     private PartUsageRepository partUsageRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Transactional
     public void usePart(Integer partId, Integer quantityUsed) {
@@ -52,7 +54,13 @@ public class PartUsageService {
 
     public void sendStockNotification(PartEntity partEntity, InventoryEntity inventoryEntity) {
         // Implement notification logic (e.g., email, SMS)
-        System.out.println("Notification: Stock for part " + partEntity.getName() +
-                " | Remaining: " + inventoryEntity.getQuantity());
+//        System.out.println("Notification: Stock for part " + partEntity.getName() +
+//                " | Remaining: " + inventoryEntity.getQuantity());
+        String subject = "Low Stock Alert";
+        String text = "Part " + partEntity.getName()
+                + " has reached minimum stock level. Current: "
+                + inventoryEntity.getQuantity();
+
+        emailService.sendMail("manager@example.com", subject, text);
     }
 }
