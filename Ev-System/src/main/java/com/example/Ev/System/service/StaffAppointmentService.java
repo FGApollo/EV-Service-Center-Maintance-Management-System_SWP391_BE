@@ -26,7 +26,7 @@ public class StaffAppointmentService {
         this.userRepository = userRepository;
     }
 
-    public List<StaffAssignment> assignTechnicians(Integer appointmentId, List<Integer> staffIds, String role, String note) {
+    public List<StaffAssignment> assignTechnicians(Integer appointmentId, List<Integer> staffIds,String note) {
         if (staffIds == null || staffIds.isEmpty()) {
             return List.of();
         }
@@ -36,13 +36,11 @@ public class StaffAppointmentService {
         for (Integer staffId : staffIds) {
             User staff = userRepository.findById(staffId)
                     .orElseThrow(() -> new RuntimeException("Staff not found: " + staffId));
-            if (!staff.getRole().equals(role)) {
-                throw new RuntimeException("User " + staff.getFullName() + " is not a " + role);
-            }
+
             StaffAssignment staffAssignment = new StaffAssignment();
             staffAssignment.setAppointment(appointment);
             staffAssignment.setStaff(staff);
-            staffAssignment.setRole(role);
+            staffAssignment.setRole("technician");
             staffAssignment.setStartTime(Instant.now());
             staffAssignment.setNotes(note);
             assignments.add(staffAssignmentRepository.save(staffAssignment));
@@ -52,11 +50,11 @@ public class StaffAppointmentService {
     }
 
 
-    public void  autoAssignTechnician(Integer appointmentId  , String role , String note){
+    public void  autoAssignTechnician(Integer appointmentId , String note){
         List<User> freeTech = getFreeTechnician();
         List<Integer> chosenTech = new ArrayList<>();
         chosenTech.add(freeTech.get(0).getId());
-        assignTechnicians(appointmentId, chosenTech, role, note);
+        assignTechnicians(appointmentId, chosenTech , note);
     }
 
     public List<User> getFreeTechnician(){

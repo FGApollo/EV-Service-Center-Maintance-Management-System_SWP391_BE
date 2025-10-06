@@ -12,7 +12,6 @@ public interface MaintainanceRecordMapper {
 
     @Mapping(target = "partyusages", ignore = true) // handled manually
     @Mapping(target = "appointment", ignore = true) // handled elsewhere
-    @Mapping(target = "technicians", ignore = true)
     @Mapping(target = "technicianIds", ignore = true)
     @Mapping(target = "startTime", ignore = true)
     @Mapping(target = "endTime", ignore = true)

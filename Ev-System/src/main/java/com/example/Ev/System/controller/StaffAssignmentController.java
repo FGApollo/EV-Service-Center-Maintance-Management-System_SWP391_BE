@@ -21,11 +21,10 @@ public class StaffAssignmentController {
     @PostMapping("/{appointmentId}/staff")
     public ResponseEntity<List<StaffAssignment>> assignTechnicians(
             @PathVariable Integer appointmentId,
-            @RequestBody List<Integer> staffIds,
-            @RequestParam(defaultValue = "technician") String role
+            @RequestBody List<Integer> staffIds
             ) {
         List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(appointmentId, staffIds, role, "notes");
+                .assignTechnicians(appointmentId, staffIds, "notes");
         return ResponseEntity.ok(assignments);
         //Da xong
         //ToDO : Nen tra ve DTO

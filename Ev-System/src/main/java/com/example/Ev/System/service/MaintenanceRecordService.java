@@ -4,6 +4,7 @@ import com.example.Ev.System.dto.MaintainanceRecordDto;
 import com.example.Ev.System.dto.PartUsageDto;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.mapper.MaintainanceRecordMapper;
+import com.example.Ev.System.mapper.PartUsageMapper;
 import com.example.Ev.System.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -24,18 +25,20 @@ public class MaintenanceRecordService {
     private final MaintenanceRecordRepository maintenanceRecordRepository;
     private final MaintainanceRecordMapper maintainanceRecordMapper;
     private final UserRepository userRepository;
+    private final PartUsageMapper partUsageMapper;
 
     public MaintenanceRecordService(AppointmentRepository appointmentRepository,
                                     PartRepository partRepository,
                                     PartyUsageRepository partyUsageRepository,
                                     MaintenanceRecordRepository maintenanceRecordRepository,
-                                    MaintainanceRecordMapper maintainanceRecordMapper, UserRepository userRepository) {
+                                    MaintainanceRecordMapper maintainanceRecordMapper, UserRepository userRepository, PartUsageMapper partUsageMapper) {
         this.appointmentRepository = appointmentRepository;
         this.partRepository = partRepository;
         this.partyUsageRepository = partyUsageRepository;
         this.maintenanceRecordRepository = maintenanceRecordRepository;
         this.maintainanceRecordMapper = maintainanceRecordMapper;
         this.userRepository = userRepository;
+        this.partUsageMapper = partUsageMapper;
     }
 
     @Transactional
@@ -77,12 +80,11 @@ public class MaintenanceRecordService {
             for (PartUsageDto partDto : partUsageDtos) {
                 Part part = partRepository.findById(partDto.getPartId())
                         .orElseThrow(() -> new RuntimeException("Part not found: " + partDto.getPartId()));
-                Partyusage usage = new Partyusage();
-                usage.setRecord(record);
-                usage.setPart(part);
-                usage.setQuantityUsed(partDto.getQuantityUsed());
-                usage.setUnitCost(partDto.getUnitCost());
-                partUsages.add(usage);
+                Partyusage partUsage = partUsageMapper.toEntity(partDto);
+                // Set relationships manually
+                partUsage.setRecord(record);
+                partUsage.setPart(partRepository.findById(partDto.getPartId())
+                        .orElseThrow(() -> new RuntimeException("Part not found")));
             }
         }
 
