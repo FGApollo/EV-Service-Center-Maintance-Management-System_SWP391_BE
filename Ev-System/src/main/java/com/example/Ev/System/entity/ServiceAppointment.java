@@ -43,7 +43,13 @@ public class ServiceAppointment {
     private Instant createdAt;
 
     @ManyToMany
+    @JoinTable(
+            name = "appointmentservice", // tên bảng trung gian
+            joinColumns = @JoinColumn(name = "appointment_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_type_id")
+    )
     private Set<ServiceType> serviceTypes = new LinkedHashSet<>();
+
 
     @OneToMany(mappedBy = "appointment")
     private Set<Invoice> invoices = new LinkedHashSet<>();
