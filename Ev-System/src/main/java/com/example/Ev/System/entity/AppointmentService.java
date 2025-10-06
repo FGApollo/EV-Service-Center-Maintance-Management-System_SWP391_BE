@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"appointmentService\"")
+@Table(name = "appointmentservice")
 public class AppointmentService {
     @EmbeddedId
     private AppointmentServiceId id;
