@@ -3,6 +3,7 @@ package com.example.Ev.System.service;
 import com.example.Ev.System.dto.LoginRequest;
 import com.example.Ev.System.dto.LoginResponse;
 import com.example.Ev.System.dto.UpdateUserRequest;
+import com.example.Ev.System.dto.UserProfileResponse;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -61,5 +62,21 @@ public class AuthService {
         }
 
         return userRepository.save(user);
+    }
+
+    public UserProfileResponse getProfile(String email){
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if(user.isEmpty()){
+            throw new RuntimeException("User not found");
+        }
+
+        UserProfileResponse profile = new UserProfileResponse();
+        profile.setFullName(user.get().getFullName());
+        profile.setEmail(user.get().getEmail());
+        profile.setPhone(user.get().getPhone());
+        profile.setRole(user.get().getRole());
+
+        return profile;
     }
 }
