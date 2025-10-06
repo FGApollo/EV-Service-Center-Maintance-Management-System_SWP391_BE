@@ -25,14 +25,22 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceAppointment> updateAppointment(
-            @PathVariable Integer id,
-            @RequestBody String status) //bo text vao body , chu k phai json , json la 1 class
+    public ResponseEntity<ServiceAppointment> cancelAppointment(
+            @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
     {
-        ServiceAppointment updatedAppointment = appointmentService.updateAppointment(id,status);
+        ServiceAppointment updatedAppointment = appointmentService.updateAppointment(id,"cancelled");
         return ResponseEntity.ok(updatedAppointment);
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ServiceAppointment> doneAppointment(
+            @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
+    {
+        ServiceAppointment updatedAppointment = appointmentService.updateAppointment(id,"done");
+        //
+        return ResponseEntity.ok(updatedAppointment);
     }
 
 

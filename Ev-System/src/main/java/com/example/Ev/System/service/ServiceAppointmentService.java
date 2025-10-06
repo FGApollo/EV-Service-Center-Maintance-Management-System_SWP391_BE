@@ -21,8 +21,9 @@ public class ServiceAppointmentService {
     private final ServiceTypeRepository serviceTypeRepository;
     private final AppointmentServiceRepository appointmentServiceRepository;
     private final StaffAppointmentService staffAppointmentService  ;
+    private final MaintenanceRecordService maintenanceRecordService;
 
-    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -31,6 +32,7 @@ public class ServiceAppointmentService {
         this.serviceTypeRepository = serviceTypeRepository;
         this.appointmentServiceRepository = appointmentServiceRepository;
         this.staffAppointmentService = staffAppointmentService;
+        this.maintenanceRecordService = maintenanceRecordService;
     }
 
     public ServiceAppointment acceptAppointment(Integer appointmentId) {
@@ -46,6 +48,12 @@ public class ServiceAppointmentService {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
+        return appointment;
+    }
+
+    public ServiceAppointment doneAppointment(Integer appointmentId) {
+        ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
+
         return appointment;
     }
 
