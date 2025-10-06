@@ -5,14 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "maintenancerecord")
+@Table(name = "MaintenanceRecord")
 public class Maintenancerecord {
 
     @Id
@@ -20,14 +19,18 @@ public class Maintenancerecord {
     @Column(name = "record_id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    @Column(name = "vehicle_condition", length = Integer.MAX_VALUE)
+    // 🔹 Replace @ManyToOne User technician with a String
+    @Column(name = "technician_ids", columnDefinition = "NVARCHAR(MAX)")
+    private String technicianIds; // e.g. "2,5"
+
+    @Column(name = "vehicle_condition")
     private String vehicleCondition;
 
-    @Column(name = "checklist", length = Integer.MAX_VALUE)
+    @Column(name = "checklist")
     private String checklist;
 
     @Column(name = "start_time")
@@ -36,15 +39,10 @@ public class Maintenancerecord {
     @Column(name = "end_time")
     private Instant endTime;
 
-    @Column(name = "remarks", length = Integer.MAX_VALUE)
+    @Column(name = "remarks")
     private String remarks;
 
-    @OneToMany(mappedBy = "record")
+    // 🔹 Keep relationship to PartUsage
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Partyusage> partyusages = new LinkedHashSet<>();
-
-    @Column(name = "technician_ids", length = Integer.MAX_VALUE)
-    private String technicianIds;
-
-    @Transient
-    private Set<User> technicians = new HashSet<>();
 }

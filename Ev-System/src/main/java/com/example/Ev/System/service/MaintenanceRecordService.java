@@ -1,6 +1,7 @@
 package com.example.Ev.System.service;
 
 import com.example.Ev.System.dto.MaintainanceRecordDto;
+import com.example.Ev.System.dto.PartUsageDto;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.mapper.MaintainanceRecordMapper;
 import com.example.Ev.System.repository.*;
@@ -8,6 +9,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,28 +23,41 @@ public class MaintenanceRecordService {
     private final PartyUsageRepository partyUsageRepository;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
     private final MaintainanceRecordMapper maintainanceRecordMapper;
+    private final UserRepository userRepository;
 
     public MaintenanceRecordService(AppointmentRepository appointmentRepository,
                                     PartRepository partRepository,
                                     PartyUsageRepository partyUsageRepository,
                                     MaintenanceRecordRepository maintenanceRecordRepository,
-                                    MaintainanceRecordMapper maintainanceRecordMapper) {
+                                    MaintainanceRecordMapper maintainanceRecordMapper, UserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
         this.partRepository = partRepository;
         this.partyUsageRepository = partyUsageRepository;
         this.maintenanceRecordRepository = maintenanceRecordRepository;
         this.maintainanceRecordMapper = maintainanceRecordMapper;
+        this.userRepository = userRepository;
     }
 
     @Transactional
-    public void recordMaintenance(Integer appointmentId,
-                                  MaintainanceRecordDto maintainanceRecordDto) {
+    public void recordMaintenance(Integer appointmentId, MaintainanceRecordDto maintainanceRecordDto) {
 
-        // Find appointment
+        // 🔹 Find appointment
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        // Create record
+        // 🔹 Collect technician IDs
+        List<Integer> staffIds = maintainanceRecordDto.getStaffIds();
+        if (staffIds == null || staffIds.isEmpty()) {
+            throw new RuntimeException("No technicians assigned");
+        }
+
+        // Validate staff exist
+        for (Integer staffId : staffIds) {
+            userRepository.findById(staffId)
+                    .orElseThrow(() -> new RuntimeException("Staff not found: " + staffId));
+        }
+
+        // 🔹 Create ONE maintenance record for all technicians
         Maintenancerecord record = maintainanceRecordMapper.toEntity(maintainanceRecordDto);
         record.setAppointment(appointment);
         record.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
@@ -50,36 +66,32 @@ public class MaintenanceRecordService {
         record.setStartTime(appointment.getAppointmentDate());
         record.setEndTime(Instant.now());
 
-        // Collect technicians -> store their IDs in a string
-        Set<User> technicians = appointment.getStaffAssignments()
-                .stream()
-                .map(StaffAssignment::getStaff)
-                .collect(Collectors.toSet());
-
-        // Convert IDs to comma-separated string
-        String technicianIds = technicians.stream()
-                .map(u -> u.getId().toString())
+        // Convert technician IDs to comma-separated string
+        String technicianIds = staffIds.stream()
+                .map(String::valueOf)
                 .collect(Collectors.joining(","));
-
         record.setTechnicianIds(technicianIds);
 
-        // Optionally still set transient field for convenience
-        record.setTechnicians(technicians);
+        // 🔹 Handle part usages
+        List<PartUsageDto> partUsageDtos = maintainanceRecordDto.getPartsUsed();
+        Set<Partyusage> partUsages = new HashSet<>();
 
-        // Save record
-        maintenanceRecordRepository.save(record);
+        if (partUsageDtos != null && !partUsageDtos.isEmpty()) {
+            for (PartUsageDto partDto : partUsageDtos) {
+                Part part = partRepository.findById(partDto.getPartId())
+                        .orElseThrow(() -> new RuntimeException("Part not found: " + partDto.getPartId()));
 
-        // Save part usage
-        for (Map.Entry<Integer, Integer> entry : maintainanceRecordDto.getPartsUsed().entrySet()) {
-            Part part = partRepository.findById(entry.getKey())
-                    .orElseThrow(() -> new RuntimeException("Part not found"));
-
-            Partyusage usage = new Partyusage();
-            usage.setRecord(record);
-            usage.setPart(part);
-            usage.setQuantityUsed(entry.getValue());
-
-            partyUsageRepository.save(usage);
+                Partyusage usage = new Partyusage();
+                usage.setRecord(record);
+                usage.setPart(part);
+                usage.setQuantityUsed(partDto.getQuantityUsed());
+                usage.setUnitCost(partDto.getUnitCost());
+                partUsages.add(usage);
+            }
         }
+
+        record.setPartyusages(partUsages);
+        maintenanceRecordRepository.save(record); // Cascade saves all part usages
     }
+
 }

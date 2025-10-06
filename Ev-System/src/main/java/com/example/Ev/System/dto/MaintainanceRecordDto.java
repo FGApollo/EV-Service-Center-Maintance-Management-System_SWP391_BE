@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -12,8 +13,9 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaintainanceRecordDto {
-    String vehicleCondition;
-    String checklist;
-    String remarks;
-    Map<Integer, Integer> partsUsed;
+    private String vehicleCondition;
+    private String checklist;
+    private String remarks;
+    private List<PartUsageDto> partsUsed;
+    private List<Integer> staffIds;
 }
