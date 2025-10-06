@@ -66,13 +66,10 @@ public class MaintenanceRecordService {
         record.setStartTime(appointment.getAppointmentDate());
         record.setEndTime(Instant.now());
 
-        // Convert technician IDs to comma-separated string
-        String technicianIds = staffIds.stream()
-                .map(String::valueOf)
+        String technicianIds = staffIds.stream().map(String::valueOf)
                 .collect(Collectors.joining(","));
         record.setTechnicianIds(technicianIds);
 
-        // 🔹 Handle part usages
         List<PartUsageDto> partUsageDtos = maintainanceRecordDto.getPartsUsed();
         Set<Partyusage> partUsages = new HashSet<>();
 
@@ -80,7 +77,6 @@ public class MaintenanceRecordService {
             for (PartUsageDto partDto : partUsageDtos) {
                 Part part = partRepository.findById(partDto.getPartId())
                         .orElseThrow(() -> new RuntimeException("Part not found: " + partDto.getPartId()));
-
                 Partyusage usage = new Partyusage();
                 usage.setRecord(record);
                 usage.setPart(part);
