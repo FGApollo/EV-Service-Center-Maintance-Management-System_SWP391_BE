@@ -61,7 +61,7 @@ public class MaintenanceRecordService {
         }
 
         // 🔹 Create ONE maintenance record for all technicians
-        Maintenancerecord record = maintainanceRecordMapper.toEntity(maintainanceRecordDto);
+        MaintenanceRecord record = maintainanceRecordMapper.toEntity(maintainanceRecordDto);
         record.setAppointment(appointment);
         record.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
         record.setChecklist(maintainanceRecordDto.getChecklist());

@@ -13,6 +13,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.0.Beta1/mapstruct-1.6.0.Beta1.jar" />
         </processorPath>
         <module name="Ev-System" />
+        <module name="EV_Service_Center_Maintenance_System" />
       </profile>
     </annotationProcessing>
   </component>

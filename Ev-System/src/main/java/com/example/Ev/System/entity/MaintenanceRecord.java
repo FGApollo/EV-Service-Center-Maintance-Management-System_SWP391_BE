@@ -41,6 +41,10 @@ public class MaintenanceRecord {
     @Column(name = "remarks", length = Integer.MAX_VALUE)
     private String remarks;
 
+    // 🔹 Replace @ManyToOne User technician with a String
+    @Column(name = "technician_ids", columnDefinition = "NVARCHAR(MAX)")
+    private String technicianIds; // e.g. "2,5"
+
     @OneToMany(mappedBy = "record")
     private Set<Partyusage> partyusages = new LinkedHashSet<>();
 

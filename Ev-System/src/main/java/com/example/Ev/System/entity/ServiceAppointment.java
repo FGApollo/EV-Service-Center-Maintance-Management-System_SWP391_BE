@@ -61,6 +61,6 @@ public class ServiceAppointment {
     private Set<StaffAssignment> staffAssignments = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "appointment")
-    private Set<Worklog> worklogs = new LinkedHashSet<>();
+    private Set<WorkLog> worklogs = new LinkedHashSet<>();
 
 }
