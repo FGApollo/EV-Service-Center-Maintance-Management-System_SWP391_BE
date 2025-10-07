@@ -40,6 +40,6 @@ public class Part {
     private Set<Inventory> inventories = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "part")
-    private Set<Partyusage> partyusages = new LinkedHashSet<>();
+    private Set<PartUsage> partUsages = new LinkedHashSet<>();
 
 }
