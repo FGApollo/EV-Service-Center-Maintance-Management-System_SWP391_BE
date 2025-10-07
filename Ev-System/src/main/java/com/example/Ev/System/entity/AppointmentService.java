@@ -1,13 +1,13 @@
 package com.example.Ev.System.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 @Entity
-@Table(name = "appointmentService")
+@Table(name = "appointmentservice")
 public class AppointmentService {
     @EmbeddedId
     private AppointmentServiceId id;

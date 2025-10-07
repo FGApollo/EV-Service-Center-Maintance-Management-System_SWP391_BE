@@ -30,7 +30,8 @@ public class ServiceType {
     @Column(name = "duration_est")
     private Integer durationEst;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "serviceTypes")
     private Set<ServiceAppointment> serviceAppointments = new LinkedHashSet<>();
+
 
 }

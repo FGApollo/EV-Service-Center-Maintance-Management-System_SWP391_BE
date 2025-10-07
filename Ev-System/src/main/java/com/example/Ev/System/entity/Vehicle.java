@@ -40,6 +40,10 @@ public class Vehicle {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @Column(name = "deleted", nullable = false)
+    @ColumnDefault("false")
+    private boolean deleted = false;
+
     @OneToMany(mappedBy = "vehicle")
     private Set<ServiceAppointment> serviceAppointments = new LinkedHashSet<>();
 
