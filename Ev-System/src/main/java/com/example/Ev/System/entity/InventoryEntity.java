@@ -19,8 +19,9 @@ public class InventoryEntity {
     @Column(name = "inventory_id")
     private Long inventoryId;
 
-    @Column(name = "center_id")
-    private Long centerId;
+    @ManyToOne
+    @JoinColumn(name = "center_id")
+    private ServiceCenter center;
 
     private Integer quantity;
 

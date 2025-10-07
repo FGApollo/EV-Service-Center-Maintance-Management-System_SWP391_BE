@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -41,7 +42,8 @@ public class MaintenanceRecord {
     @Column(name = "remarks", length = Integer.MAX_VALUE)
     private String remarks;
 
-    @OneToMany(mappedBy = "record")
-    private Set<Partyusage> partyusages = new LinkedHashSet<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "record_id")
+    private List<PartUsageEntity> partUsage;
 
 }
