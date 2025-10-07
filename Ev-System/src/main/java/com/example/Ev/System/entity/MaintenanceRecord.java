@@ -11,26 +11,25 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "MaintenanceRecord")
-public class Maintenancerecord {
-
+@Table(name = "maintenancerecord")
+public class MaintenanceRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "record_id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    // 🔹 Replace @ManyToOne User technician with a String
-    @Column(name = "technician_ids", columnDefinition = "NVARCHAR(MAX)")
-    private String technicianIds; // e.g. "2,5"
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "technician_id", nullable = false)
+    private User technician;
 
-    @Column(name = "vehicle_condition")
+    @Column(name = "vehicle_condition", length = Integer.MAX_VALUE)
     private String vehicleCondition;
 
-    @Column(name = "checklist")
+    @Column(name = "checklist", length = Integer.MAX_VALUE)
     private String checklist;
 
     @Column(name = "start_time")
@@ -39,10 +38,10 @@ public class Maintenancerecord {
     @Column(name = "end_time")
     private Instant endTime;
 
-    @Column(name = "remarks")
+    @Column(name = "remarks", length = Integer.MAX_VALUE)
     private String remarks;
 
-    // 🔹 Keep relationship to PartUsage
-    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "record")
     private Set<Partyusage> partyusages = new LinkedHashSet<>();
+
 }

@@ -1,16 +1,13 @@
 package com.example.Ev.System.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor   // JPA needs this
-@AllArgsConstructor  // you need this for new AppointmentService(...)
 @Entity
+@Table(name = "appointmentservice")
 public class AppointmentService {
     @EmbeddedId
     private AppointmentServiceId id;

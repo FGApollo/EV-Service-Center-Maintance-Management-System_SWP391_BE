@@ -4,40 +4,38 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "invoice")
-public class Invoice {
+public class WorkLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "invoice_id", nullable = false)
+    @Column(name = "log_id", nullable = false)
     private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "staff_id", nullable = false)
+    private User staff;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalAmount;
+    @Column(name = "hours_spent", precision = 5, scale = 2)
+    private BigDecimal hoursSpent;
 
-    @Column(name = "status", length = 20)
-    private String status;
+    @Nationalized
+    @Lob
+    @Column(name = "tasks_done")
+    private String tasksDone;
 
-    @Column(name = "payment_date")
-    private Instant paymentDate;
-
-    @ColumnDefault("now()")
+    @ColumnDefault("sysdatetime()")
     @Column(name = "created_at")
     private Instant createdAt;
-
-    @OneToMany(mappedBy = "invoice")
-    private Set<Payment> payments = new LinkedHashSet<>();
 
 }

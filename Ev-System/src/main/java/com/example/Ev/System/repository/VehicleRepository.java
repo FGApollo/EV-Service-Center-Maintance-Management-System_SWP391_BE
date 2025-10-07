@@ -1,12 +1,15 @@
 package com.example.Ev.System.repository;
 
+import com.example.Ev.System.entity.User;
 import com.example.Ev.System.entity.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
-@Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
-    Optional<Vehicle> findById(Integer id);
+
+
+    Vehicle findVehicleById(Integer id);
+
+    List<Vehicle> findVehicleByCustomerAndDeleted(User customer, boolean deleted);
 }
