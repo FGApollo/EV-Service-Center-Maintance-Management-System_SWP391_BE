@@ -16,13 +16,14 @@ public class PartUsageEntity {
     @Column(name = "usage_id")
     private Long usageId;
 
-    @Column(name = "record_id")
-    private Long recordId;
+    @ManyToOne
+    @JoinColumn(name = "record_id", nullable = false)
+    private MaintenanceRecord record;
 
-    @Column(name = "quantity_used")
+    @Column(name = "quantity_used", nullable = false)
     private Integer quantityUsed;
 
-    @Column(name = "unit_cost")
+    @Column(name = "unit_cost", nullable = false)
     private Double unitCost;
 
     // Relationships
@@ -30,3 +31,4 @@ public class PartUsageEntity {
     @JoinColumn(name = "part_id", nullable = false)
     private PartEntity part;
 }
+
