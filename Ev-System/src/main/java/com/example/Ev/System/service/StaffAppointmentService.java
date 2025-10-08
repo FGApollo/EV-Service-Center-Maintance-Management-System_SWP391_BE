@@ -6,13 +6,12 @@ import com.example.Ev.System.entity.User;
 import com.example.Ev.System.repository.AppointmentRepository;
 import com.example.Ev.System.repository.StaffAssignmentRepository;
 import com.example.Ev.System.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StaffAppointmentService {
@@ -26,17 +25,20 @@ public class StaffAppointmentService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public List<StaffAssignment> assignTechnicians(Integer appointmentId, List<Integer> staffIds,String note) {
         if (staffIds == null || staffIds.isEmpty()) {
             return List.of();
         }
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
+        if(appointment != null) {
+            staffAssignmentRepository.deleteByAppointment_Id(appointmentId);
+        }
         List<StaffAssignment> assignments = new ArrayList<>();
         for (Integer staffId : staffIds) {
             User staff = userRepository.findById(staffId)
                     .orElseThrow(() -> new RuntimeException("Staff not found: " + staffId));
-
             StaffAssignment staffAssignment = new StaffAssignment();
             staffAssignment.setAppointment(appointment);
             staffAssignment.setStaff(staff);

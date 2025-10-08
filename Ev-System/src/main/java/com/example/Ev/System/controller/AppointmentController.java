@@ -27,7 +27,6 @@ public class AppointmentController {
     public ResponseEntity<ServiceAppointment> acceptAppointment(
             @PathVariable Integer id ) {
         ServiceAppointment updatedAppointment = appointmentService.acceptAppointment(id);
-        staffAppointmentService.autoAssignTechnician(id,"note");
         return ResponseEntity.ok(updatedAppointment);
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
