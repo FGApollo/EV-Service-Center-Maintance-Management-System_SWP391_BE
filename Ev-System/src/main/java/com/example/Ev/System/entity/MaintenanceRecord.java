@@ -46,6 +46,6 @@ public class MaintenanceRecord {
     private String technicianIds; // e.g. "2,5"
 
     @OneToMany(mappedBy = "record")
-    private Set<Partyusage> partyusages = new LinkedHashSet<>();
+    private Set<PartUsage> partyusages = new LinkedHashSet<>();
 
 }

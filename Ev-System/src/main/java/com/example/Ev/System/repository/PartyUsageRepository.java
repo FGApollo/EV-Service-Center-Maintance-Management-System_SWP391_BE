@@ -1,7 +1,7 @@
 package com.example.Ev.System.repository;
 
-import com.example.Ev.System.entity.Partyusage;
+import com.example.Ev.System.entity.PartUsage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PartyUsageRepository extends JpaRepository<Partyusage,Integer> {
+public interface PartyUsageRepository extends JpaRepository<PartUsage,Integer> {
 }
