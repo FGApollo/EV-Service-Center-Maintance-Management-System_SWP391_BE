@@ -3,13 +3,13 @@ package com.example.Ev.System.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Nationalized;
 
 import java.time.Instant;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "staffassignment")
 public class StaffAssignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,6 @@ public class StaffAssignment {
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    @Nationalized
     @Column(name = "role", length = 50)
     private String role;
 
@@ -34,9 +33,7 @@ public class StaffAssignment {
     @Column(name = "end_time")
     private Instant endTime;
 
-    @Nationalized
-    @Lob
-    @Column(name = "notes")
+    @Column(name = "notes", length = Integer.MAX_VALUE)
     private String notes;
 
 }

@@ -61,7 +61,7 @@ public class MaintenanceRecordService {
         }
 
         // 🔹 Create ONE maintenance record for all technicians
-        Maintenancerecord record = maintainanceRecordMapper.toEntity(maintainanceRecordDto);
+        MaintenanceRecord record = maintainanceRecordMapper.toEntity(maintainanceRecordDto);
         record.setAppointment(appointment);
         record.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
         record.setChecklist(maintainanceRecordDto.getChecklist());
@@ -74,13 +74,13 @@ public class MaintenanceRecordService {
         record.setTechnicianIds(technicianIds);
 
         List<PartUsageDto> partUsageDtos = maintainanceRecordDto.getPartsUsed();
-        Set<Partyusage> partUsages = new HashSet<>();
+        Set<PartUsage> partUsages = new HashSet<>();
 
         if (partUsageDtos != null && !partUsageDtos.isEmpty()) {
             for (PartUsageDto partDto : partUsageDtos) {
                 Part part = partRepository.findById(partDto.getPartId())
                         .orElseThrow(() -> new RuntimeException("Part not found: " + partDto.getPartId()));
-                Partyusage partUsage = partUsageMapper.toEntity(partDto);
+                PartUsage partUsage = partUsageMapper.toEntity(partDto);
                 // Set relationships manually
                 partUsage.setRecord(record);
                 partUsage.setPart(partRepository.findById(partDto.getPartId())

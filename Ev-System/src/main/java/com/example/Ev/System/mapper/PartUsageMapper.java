@@ -1,7 +1,8 @@
 package com.example.Ev.System.mapper;
 
 import com.example.Ev.System.dto.PartUsageDto;
-import com.example.Ev.System.entity.Partyusage;
+import com.example.Ev.System.entity.PartUsage;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -15,11 +16,11 @@ public interface PartUsageMapper {
             @Mapping(target = "record", ignore = true), // set manually later
             @Mapping(target = "part", ignore = true)    // set manually using repository
     })
-    Partyusage toEntity(PartUsageDto dto);
+    PartUsage toEntity(PartUsageDto dto);
 
     // ✅ Map from Entity → DTO
     @Mappings({
             @Mapping(source = "part.id", target = "partId")
     })
-    PartUsageDto toDto(Partyusage entity);
+    PartUsageDto toDto(PartUsage entity);
 }

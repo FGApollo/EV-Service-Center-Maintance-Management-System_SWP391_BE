@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/appointments")
 public class AppointmentController {
@@ -27,7 +29,6 @@ public class AppointmentController {
     public ResponseEntity<ServiceAppointment> acceptAppointment(
             @PathVariable Integer id ) {
         ServiceAppointment updatedAppointment = appointmentService.acceptAppointment(id);
-        staffAppointmentService.autoAssignTechnician(id,"note");
         return ResponseEntity.ok(updatedAppointment);
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
@@ -53,8 +54,12 @@ public class AppointmentController {
         return ResponseEntity.ok(updatedAppointment);
     }
 
+    public ResponseEntity<List<ServiceAppointment>> findAllByStatus(@RequestParam String status) {
+        return ResponseEntity.ok(appointmentService.getStatusAppointments(status));
+    }
 
-
-
+    public ResponseEntity<List<ServiceAppointment>> findAllByStaffId(@RequestParam Integer id) {
+        return ResponseEntity.ok(appointmentService.getAppointmentsByStaffId(id));
+    }
 
 }

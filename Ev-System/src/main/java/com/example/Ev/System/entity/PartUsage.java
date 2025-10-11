@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
-//@Table(name = "partyusage")
-@Table(name = "[PartUsage]")
 @Getter
 @Setter
-public class Partyusage {
+@Entity
+@Table(name = "partyusage")
+public class PartUsage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usage_id", nullable = false)
@@ -17,15 +16,16 @@ public class Partyusage {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "record_id", nullable = false)
-    private Maintenancerecord record;
+    private MaintenanceRecord record;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "part_id", nullable = false)
-    private Part part;   // 🔹 link to the Part
+    private Part part;
 
     @Column(name = "quantity_used", nullable = false)
     private Integer quantityUsed;
 
     @Column(name = "unit_cost")
     private Double unitCost;
+
 }

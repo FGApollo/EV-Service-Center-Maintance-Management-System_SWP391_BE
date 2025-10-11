@@ -12,6 +12,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
+@Table(name = "worklog")
 public class WorkLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

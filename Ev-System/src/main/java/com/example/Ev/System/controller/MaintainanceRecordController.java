@@ -1,7 +1,7 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.MaintainanceRecordDto;
-import com.example.Ev.System.entity.Maintenancerecord;
+import com.example.Ev.System.entity.MaintenanceRecord;
 import com.example.Ev.System.mapper.MaintainanceRecordMapper;
 import com.example.Ev.System.service.MaintenanceRecordService;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.example.Ev.System.mappers;
+package com.example.Ev.System.mapper;
 
 import com.example.Ev.System.dto.AppointmentDto;
 import com.example.Ev.System.entity.ServiceAppointment;

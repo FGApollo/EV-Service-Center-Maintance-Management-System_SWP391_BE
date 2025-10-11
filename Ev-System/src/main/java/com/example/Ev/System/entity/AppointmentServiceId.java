@@ -3,9 +3,7 @@ package com.example.Ev.System.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
@@ -14,8 +12,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@NoArgsConstructor   // JPA needs this
-@AllArgsConstructor  // you need this for new AppointmentService(...)
 @Embeddable
 public class AppointmentServiceId implements Serializable {
     private static final long serialVersionUID = -7673425440924701302L;

@@ -18,7 +18,7 @@ public class StaffAssignmentController {
         this.staffAppointmentService = staffAppointmentService;
     }
 
-    @PostMapping("/{appointmentId}/staff")
+    @PutMapping("/{appointmentId}/staff")
     public ResponseEntity<List<StaffAssignment>> assignTechnicians(
             @PathVariable Integer appointmentId,
             @RequestBody List<Integer> staffIds
