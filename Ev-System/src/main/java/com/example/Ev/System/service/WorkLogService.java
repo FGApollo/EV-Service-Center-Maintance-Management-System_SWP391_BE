@@ -7,6 +7,7 @@ import com.example.Ev.System.entity.WorkLog;
 import com.example.Ev.System.repository.AppointmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.repository.WorkLogRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,6 +28,7 @@ public class WorkLogService {
         this.appointmentRepository = appointmentRepository;
     }
 
+    @Transactional
     public List<WorkLog> createWorkLog(WorkLogDto dto) {
         List<WorkLog> workLogs = new ArrayList<>();
         ServiceAppointment appointment = appointmentRepository.findById(dto.getAppointmentId())

@@ -32,4 +32,19 @@ public class UserController {
     public ResponseEntity<List<UserDto>> getUsersByRole(@RequestParam String role) {
         return ResponseEntity.ok(userService.getAllByRole(role));
     }
+
+    @PostMapping("/employees")
+    public ResponseEntity<UserDto> createEmployee(
+            @RequestBody UserDto userDto,
+            @RequestParam String role) {
+        return ResponseEntity.ok(userService.createEmployee(userDto, role));
+    }
+
+    @PutMapping("/{id}/delete")
+    public ResponseEntity<UserDto> deleteEmployee(@PathVariable("id") Integer id) {
+        UserDto userDto = userService.deleteAccount(id);
+        return ResponseEntity.ok(userDto);
+    }
+
+
 }
