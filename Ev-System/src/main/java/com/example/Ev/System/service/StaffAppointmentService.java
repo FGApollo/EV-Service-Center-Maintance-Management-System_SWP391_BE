@@ -9,6 +9,7 @@ import com.example.Ev.System.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.beans.Customizer;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,5 +71,7 @@ public class StaffAppointmentService {
                 .filter(tech -> !busyTech.contains(tech))
                 .toList();
     }
+
+
 
 }

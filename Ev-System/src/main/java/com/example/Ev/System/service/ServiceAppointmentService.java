@@ -1,15 +1,11 @@
 package com.example.Ev.System.service;
 
-import com.example.Ev.System.dto.AppointmentDto;
 import com.example.Ev.System.entity.*;
-import com.example.Ev.System.mappers.AppointmentMapper;
+import com.example.Ev.System.mapper.AppointmentMapper;
 import com.example.Ev.System.repository.*;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class ServiceAppointmentService {
