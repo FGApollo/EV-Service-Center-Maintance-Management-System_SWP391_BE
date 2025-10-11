@@ -6,6 +6,7 @@ import com.example.Ev.System.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class ServiceAppointmentService {
@@ -31,6 +32,11 @@ public class ServiceAppointmentService {
         this.maintenanceRecordService = maintenanceRecordService;
     }
 
+    public List<ServiceAppointment> getStatusAppointments(String status) {
+        List<ServiceAppointment> appointments = appointmentRepository.findAllByStatus(status);
+        return appointments;
+    }
+
     public ServiceAppointment acceptAppointment(Integer appointmentId) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
         appointment.setStatus("in_progress");
@@ -51,6 +57,11 @@ public class ServiceAppointmentService {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
 
         return appointment;
+    }
+
+    public List<ServiceAppointment> getAppointmentsByStaffId(Integer staffId) {
+        List<ServiceAppointment> appointments = appointmentRepository.findAllByStaff_Id(staffId);
+        return appointments;
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.Ev.System.repository;
 
+import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
