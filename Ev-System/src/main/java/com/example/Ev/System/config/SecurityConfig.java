@@ -32,7 +32,8 @@ public class SecurityConfig {
                         .requestMatchers("/appointments/**").permitAll() // ✅ public nho xoa
                         .requestMatchers("/assignments/**").permitAll() // ✅ public nho xoa
                         .requestMatchers("/MaintainanceRecord/**").permitAll() // ✅ public nho xoa
-                                .requestMatchers("/worklogs/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/worklogs/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/Users/**").permitAll() // ✅ public nho xoa
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")
