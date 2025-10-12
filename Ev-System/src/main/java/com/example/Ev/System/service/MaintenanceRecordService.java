@@ -2,6 +2,7 @@ package com.example.Ev.System.service;
 
 import com.example.Ev.System.dto.MaintainanceRecordDto;
 import com.example.Ev.System.dto.PartUsageDto;
+import com.example.Ev.System.dto.UserDto;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.mapper.MaintainanceRecordMapper;
 import com.example.Ev.System.mapper.PartUsageMapper;
@@ -90,6 +91,17 @@ public class MaintenanceRecordService {
 
         record.setPartyusages(partUsages);
         maintenanceRecordRepository.save(record); // Cascade saves all part usages
+    }
+
+    public MaintainanceRecordDto getMaintainanceRecordByStaff_id(Integer staffId) {
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.getMaintenanceRecordByTechnician_Id(staffId).orElse(null);
+        if (maintenanceRecord != null) {
+            MaintainanceRecordDto maintainanceRecordDto = maintainanceRecordMapper.toDTO(maintenanceRecord);
+            return maintainanceRecordDto;
+        }
+        else{
+            return null;
+        }
     }
 
 }

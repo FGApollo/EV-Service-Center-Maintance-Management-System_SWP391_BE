@@ -23,6 +23,19 @@ public class MaintainanceRecordController {
         maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto);
         return ResponseEntity.ok(maintainanceRecordDto);
         //Da xong
-        //TODO : Xem lai ==>GPT lam
     }
+
+    @GetMapping("/staff/{staffId}")
+    public ResponseEntity<MaintainanceRecordDto> getMaintainanceRecordByStaffId(
+            @PathVariable("staffId") Integer staffId) {
+        MaintainanceRecordDto recordDto = maintenanceRecordService.getMaintainanceRecordByStaff_id(staffId);
+
+        if (recordDto != null) {
+            return ResponseEntity.ok(recordDto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 }

@@ -11,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequestMapping("/Users")
 public class UserController {
     private final UserService userService;
@@ -20,22 +20,20 @@ public class UserController {
 
     }
     @PostMapping("")
-    public ResponseEntity<UserDto> register(@RequestBody RegisterUserDto registerUserDto,
-                                            UriComponentsBuilder uriComponentsBuilder)
+    public ResponseEntity<UserDto> register(@RequestBody RegisterUserDto registerUserDto)
     {
-        UserDto userDTO = userService.createUser(registerUserDto,uriComponentsBuilder);
-        var uri = uriComponentsBuilder.path("/Users/{id}").buildAndExpand(userDTO.getId()).toUri();
-        return ResponseEntity.created(uri).body(userDTO);
+        UserDto userDTO = userService.createUser(registerUserDto);
+        return ResponseEntity.ok(userDTO);
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<UserDto>> getUsersByRole(@RequestParam String role) {
         return ResponseEntity.ok(userService.getAllByRole(role));
     }
 
     @PostMapping("/employees")
     public ResponseEntity<UserDto> createEmployee(
-            @RequestBody UserDto userDto,
+            @RequestBody RegisterUserDto userDto,
             @RequestParam String role) {
         return ResponseEntity.ok(userService.createEmployee(userDto, role));
     }
