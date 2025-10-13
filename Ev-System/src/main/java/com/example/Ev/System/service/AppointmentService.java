@@ -72,7 +72,7 @@ public class AppointmentService {
         appointment.setVehicle(vehicle);
         appointment.setServiceCenter(serviceCenter.get());
         appointment.setAppointmentDate(request.getAppointmentDate());
-        appointment.setStatus("Pending");
+        appointment.setStatus("pending");
         appointment.setCreatedAt(Instant.now());
         appointmentRepo.save(appointment);
 
