@@ -5,6 +5,7 @@ import com.example.Ev.System.mapper.UserMapper;
 import com.example.Ev.System.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -19,6 +20,7 @@ public class UserService {
     }
 
 
+    @Transactional
     public UserDto createUser(RegisterUserDto registerUserDto,
                               UriComponentsBuilder uriComponentsBuilder)
     {
