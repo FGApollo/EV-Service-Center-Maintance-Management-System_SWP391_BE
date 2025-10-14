@@ -7,6 +7,8 @@ import com.example.Ev.System.service.MaintenanceRecordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/MaintainanceRecord")
 public class MaintainanceRecordController {
@@ -26,12 +28,12 @@ public class MaintainanceRecordController {
     }
 
     @GetMapping("/staff/{staffId}")
-    public ResponseEntity<MaintainanceRecordDto> getMaintainanceRecordByStaffId(
-            @PathVariable("staffId") Integer staffId) {
-        MaintainanceRecordDto recordDto = maintenanceRecordService.getMaintainanceRecordByStaff_id(staffId);
+    public ResponseEntity<List<MaintainanceRecordDto>> getMaintainanceRecordByStaffId(
+            @PathVariable("staffId") String staffId) {
+        List<MaintainanceRecordDto> recordDtos = maintenanceRecordService.getMaintainanceRecordByStaff_id(staffId);
 
-        if (recordDto != null) {
-            return ResponseEntity.ok(recordDto);
+        if (recordDtos != null) {
+            return ResponseEntity.ok(recordDtos);
         } else {
             return ResponseEntity.notFound().build();
         }
