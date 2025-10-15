@@ -11,10 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,6 +83,7 @@ public class MaintenanceRecordService {
                 partUsage.setRecord(record);
                 partUsage.setPart(partRepository.findById(partDto.getPartId())
                         .orElseThrow(() -> new RuntimeException("Part not found")));
+                partUsages.add(partUsage);
             }
         }
 
@@ -93,15 +91,16 @@ public class MaintenanceRecordService {
         maintenanceRecordRepository.save(record); // Cascade saves all part usages
     }
 
-    public MaintainanceRecordDto getMaintainanceRecordByStaff_id(Integer staffId) {
-        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.getMaintenanceRecordByTechnician_Id(staffId).orElse(null);
+    public List<MaintainanceRecordDto> getMaintainanceRecordByStaff_id(String staffId) {
+        List<MaintenanceRecord> maintenanceRecord = maintenanceRecordRepository.findByTechnicianId(staffId).orElse(null);
+        List<MaintainanceRecordDto> maintainanceRecordDtos = new ArrayList<>();
         if (maintenanceRecord != null) {
-            MaintainanceRecordDto maintainanceRecordDto = maintainanceRecordMapper.toDTO(maintenanceRecord);
-            return maintainanceRecordDto;
+            for(MaintenanceRecord temp : maintenanceRecord) {
+                MaintainanceRecordDto maintainanceRecordDto = maintainanceRecordMapper.toDTO(temp);
+                maintainanceRecordDtos.add(maintainanceRecordDto);
+            }
         }
-        else{
-            return null;
-        }
+        return maintainanceRecordDtos;
     }
 
 }

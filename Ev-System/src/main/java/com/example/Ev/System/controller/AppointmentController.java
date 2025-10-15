@@ -7,6 +7,7 @@ import com.example.Ev.System.repository.AppointmentRepository;
 import com.example.Ev.System.service.MaintenanceRecordService;
 import com.example.Ev.System.service.ServiceAppointmentService;
 import com.example.Ev.System.service.StaffAppointmentService;
+import com.example.Ev.System.service.WorkLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +20,13 @@ public class AppointmentController {
     private final ServiceAppointmentService appointmentService;
     private final MaintenanceRecordService maintenanceRecordService;
     private final StaffAppointmentService staffAppointmentService;
-    public AppointmentController(ServiceAppointmentService appointmentService, MaintenanceRecordService maintenanceRecordService, StaffAppointmentService staffAppointmentService) {
+    private final WorkLogService workLogService;
+
+    public AppointmentController(ServiceAppointmentService appointmentService, MaintenanceRecordService maintenanceRecordService, StaffAppointmentService staffAppointmentService, WorkLogService workLogService) {
         this.appointmentService = appointmentService;
         this.maintenanceRecordService = maintenanceRecordService;
         this.staffAppointmentService = staffAppointmentService;
+        this.workLogService = workLogService;
     }
 
     @PutMapping("/{id}/accept")
@@ -49,8 +53,9 @@ public class AppointmentController {
     public ResponseEntity<ServiceAppointment> doneAppointment(
             @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto ) //bo text vao body , chu k phai json , json la 1 class
     {
-        ServiceAppointment updatedAppointment = appointmentService.updateAppointment(id,"in_progress");//nho chuyen thanh done
+        ServiceAppointment updatedAppointment = appointmentService.updateAppointment(id,"completed");//nho chuyen thanh done
         maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto); // Phai them record moi dc done
+        workLogService.autoCreateWorkLog(id);
         return ResponseEntity.ok(updatedAppointment);
     }
 
@@ -58,6 +63,7 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getStatusAppointments(status));
     }
 
+    @GetMapping("/staff")
     public ResponseEntity<List<ServiceAppointment>> findAllByStaffId(@RequestParam Integer id) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByStaffId(id));
     }

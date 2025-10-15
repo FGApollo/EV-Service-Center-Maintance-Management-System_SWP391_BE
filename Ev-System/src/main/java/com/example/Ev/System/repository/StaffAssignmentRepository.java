@@ -19,8 +19,6 @@ public interface StaffAssignmentRepository extends JpaRepository<StaffAssignment
 
     List<StaffAssignment> findStaffAssignmentsByAppointment_Id(Integer appointmentId);
 
-    Optional<StaffAssignment> findByAppointment_IdAndStaff_Id(Integer appointmentId, Integer staffId);
-
     void deleteByAppointment_Id(Integer appointmentId);
 
 }

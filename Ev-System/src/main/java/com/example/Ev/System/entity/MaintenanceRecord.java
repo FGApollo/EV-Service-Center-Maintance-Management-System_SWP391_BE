@@ -22,9 +22,9 @@ public class MaintenanceRecord {
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "technician_id", nullable = false)
-    private User technician;  //Doi thg thinh sua ms xoa dc
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "technician_id", nullable = false)
+//    private User technician;  //Doi thg thinh sua ms xoa dc
 
     @Column(name = "vehicle_condition", length = Integer.MAX_VALUE)
     private String vehicleCondition;
@@ -45,7 +45,8 @@ public class MaintenanceRecord {
     @Column(name = "technician_ids", columnDefinition = "NVARCHAR(MAX)")
     private String technicianIds; // e.g. "2,5"
 
-    @OneToMany(mappedBy = "record")
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PartUsage> partyusages = new LinkedHashSet<>();
+
 
 }
