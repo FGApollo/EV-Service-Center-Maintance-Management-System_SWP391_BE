@@ -13,4 +13,6 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     // Find maintenance records where the technicianIds string contains the given ID
     @Query("SELECT m FROM MaintenanceRecord m WHERE m.technicianIds LIKE %:technicianId%")
     Optional<List<MaintenanceRecord>> findByTechnicianId(@Param("technicianId") String technicianId);
+
+    Optional<MaintenanceRecord> findFirstByAppointment_Id(Integer appointmentId);
 }

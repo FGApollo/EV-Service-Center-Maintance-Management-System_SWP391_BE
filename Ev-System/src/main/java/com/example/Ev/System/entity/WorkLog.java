@@ -13,6 +13,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "worklog")
+//@Table(name = "[WorkLog]")
 public class WorkLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,7 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.entity.StaffAssignment;
+import com.example.Ev.System.entity.User;
 import com.example.Ev.System.repository.StaffAssignmentRepository;
 import com.example.Ev.System.service.StaffAppointmentService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,11 @@ public class StaffAssignmentController {
         return ResponseEntity.ok(assignments);
         //Da xong
         //ToDO : Nen tra ve DTO
+    }
+
+    @GetMapping("/free")
+    public List<User> findFreeStaff() {
+        return staffAppointmentService.getFreeTechnician();
     }
 
 }
