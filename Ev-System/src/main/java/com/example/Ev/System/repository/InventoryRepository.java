@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
-public interface InventoryRepository extends JpaRepository<InventoryEntity,Integer> {
-    Optional<InventoryEntity> findByPart(PartEntity part);
 
+@Repository
+public interface InventoryRepository extends JpaRepository<InventoryEntity, Long> {
+    Optional<InventoryEntity> findByCenterIdAndPart(Integer centerId, PartEntity partEntity);
 }
