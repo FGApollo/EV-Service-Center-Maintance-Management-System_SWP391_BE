@@ -7,6 +7,7 @@ import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.repository.VehicleRepository;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class VehicleService {
         return vehicleDto;
     }
 
+    @Transactional
     public VehicleDto addVehicle(String email, VehicleDto dto){
         Optional<User> user = userRepository.findByEmail(email);
         if(user.isEmpty()){

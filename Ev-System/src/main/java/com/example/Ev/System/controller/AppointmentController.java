@@ -1,5 +1,10 @@
 package com.example.Ev.System.controller;
 
+
+import com.example.Ev.System.dto.AppointmentRequest;
+import com.example.Ev.System.dto.AppointmentResponse;
+import com.example.Ev.System.service.AppointmentService;
+import jakarta.validation.Valid;
 import com.example.Ev.System.dto.AppointmentDto;
 import com.example.Ev.System.dto.MaintainanceRecordDto;
 import com.example.Ev.System.entity.ServiceAppointment;
@@ -15,13 +20,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/appointments")
+@RequestMapping("/api/appointments")
 public class AppointmentController {
     private final ServiceAppointmentService appointmentService;
     private final MaintenanceRecordService maintenanceRecordService;
     private final StaffAppointmentService staffAppointmentService;
     private final WorkLogService workLogService;
 
+    private final AppointmentService appointmentService;
+
+    public AppointmentController(AppointmentService appointmentService) {
     public AppointmentController(ServiceAppointmentService appointmentService, MaintenanceRecordService maintenanceRecordService, StaffAppointmentService staffAppointmentService, WorkLogService workLogService) {
         this.appointmentService = appointmentService;
         this.maintenanceRecordService = maintenanceRecordService;
@@ -59,14 +67,21 @@ public class AppointmentController {
         workLogService.autoCreateWorkLog(id);
         return ResponseEntity.ok(updatedAppointment);
     }
+    @PostMapping
+    public ResponseEntity<AppointmentResponse> createAppointment(
+            @Valid @RequestBody AppointmentRequest request) {
 
     public ResponseEntity<List<ServiceAppointment>> findAllByStatus(@RequestParam String status) {
         return ResponseEntity.ok(appointmentService.getStatusAppointments(status));
     }
+        // Lấy email từ JWT (được lưu trong SecurityContext)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
     @GetMapping("/staff")
     public ResponseEntity<List<ServiceAppointment>> findAllByStaffId(@RequestParam Integer id) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByStaffId(id));
+        AppointmentResponse response = appointmentService.createAppointment(request, email);
+        return ResponseEntity.ok(response);
     }
 
 }

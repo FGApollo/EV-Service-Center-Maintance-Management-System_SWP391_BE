@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "appointmentservice")
 public class AppointmentService {
     @EmbeddedId
-    private AppointmentServiceId id;
+    private AppointmentServiceId id = new AppointmentServiceId();
 
     @MapsId("appointmentId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
