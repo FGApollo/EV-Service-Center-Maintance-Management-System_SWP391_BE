@@ -32,6 +32,7 @@ public class AppointmentController {
     @PutMapping("/{id}/accept")
     public ResponseEntity<ServiceAppointment> acceptAppointment(
             @PathVariable Integer id ) {
+        System.out.println("Da chay o day");
         ServiceAppointment updatedAppointment = appointmentService.acceptAppointment(id);
         return ResponseEntity.ok(updatedAppointment);
         //Da xong
