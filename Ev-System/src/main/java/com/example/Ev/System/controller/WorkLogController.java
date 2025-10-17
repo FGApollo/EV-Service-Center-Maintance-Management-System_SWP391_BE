@@ -28,7 +28,7 @@ public class WorkLogController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<List<WorkLogDto> >createAutpWorkLog( @PathVariable Integer id) {
+    public ResponseEntity<List<WorkLogDto> >createAutoWorkLog( @PathVariable Integer id) {
         List<WorkLogDto> saved = workLogService.autoCreateWorkLog(id);
         return ResponseEntity.ok(saved);
         //Da xong
