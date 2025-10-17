@@ -38,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok(userService.createEmployee(userDto, role));
     }
 
-    @PutMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     public ResponseEntity<UserDto> deleteEmployee(@PathVariable("id") Integer id) {
         UserDto userDto = userService.deleteAccount(id);
         return ResponseEntity.ok(userDto);

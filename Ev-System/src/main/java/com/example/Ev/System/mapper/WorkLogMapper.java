@@ -11,7 +11,7 @@ import java.util.List;
 public interface WorkLogMapper {
 
     // ✅ Entity → DTO
-    @Mapping(target = "staffId", expression = "java(List.of(workLog.getStaff().getId()))")
+    @Mapping(target = "staffId", expression = "java(java.util.List.of(workLog.getStaff().getId()))")
     @Mapping(target = "appointmentId", source = "appointment.id")
     WorkLogDto toDto(WorkLog workLog);
 
