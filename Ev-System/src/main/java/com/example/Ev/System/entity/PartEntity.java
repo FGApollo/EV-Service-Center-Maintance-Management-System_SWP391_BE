@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -32,8 +33,8 @@ public class PartEntity {
 
     // Relationships
     @OneToMany(mappedBy = "part")
-    private List<InventoryEntity> inventories;
+    private List<InventoryEntity> inventories = new ArrayList<>();
 
     @OneToMany(mappedBy = "part")
-    private List<PartUsageEntity> partUsages;
+    private List<PartUsageEntity> partUsages = new ArrayList<>();
 }
