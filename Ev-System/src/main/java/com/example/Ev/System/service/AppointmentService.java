@@ -36,6 +36,43 @@ public class AppointmentService {
         this.userRepo = userRepo;
     }
 
+    /*@Service
+public class ServiceAppointmentService {
+
+    @Autowired
+    private ServiceAppointmentRepository appointmentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public List<ServiceAppointmentDto> getUserAppointments(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        List<ServiceAppointment> appointments = appointmentRepository.findByCustomerOrderByAppointmentDateDesc(user.get());
+
+        List<ServiceAppointmentDto> appointmentDtos = new ArrayList<>();
+        for (ServiceAppointment sa : appointments) {
+            appointmentDtos.add(toDto(sa));
+        }
+
+        return appointmentDtos;
+    }
+
+    private ServiceAppointmentDto toDto(ServiceAppointment sa) {
+        ServiceAppointmentDto dto = new ServiceAppointmentDto();
+        dto.setAppointmentId(sa.getAppointmentId());
+        dto.setAppointmentDate(sa.getAppointmentDate());
+        dto.setStatus(sa.getStatus());
+        dto.setServiceCenterName(sa.getServiceCenter().getCenterName());
+        dto.setVehicleModel(sa.getVehicle().getModel());
+        return dto;
+    }
+}
+*/
+
     @Transactional
     public AppointmentResponse createAppointment(AppointmentRequest request, String email) throws BadRequestException {
         Optional<User> user = userRepo.findByEmail(email);
