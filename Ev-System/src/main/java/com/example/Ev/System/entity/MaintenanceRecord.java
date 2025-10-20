@@ -24,7 +24,7 @@ public class MaintenanceRecord {
 
 //    @ManyToOne(fetch = FetchType.LAZY, optional = false)
 //    @JoinColumn(name = "technician_id", nullable = false)
-//    private User technician;
+//    private User technician;  //Doi thg thinh sua ms xoa dc
 
     @Column(name = "vehicle_condition", length = Integer.MAX_VALUE)
     private String vehicleCondition;
@@ -38,7 +38,7 @@ public class MaintenanceRecord {
     @Column(name = "end_time")
     private Instant endTime;
 
-    @Column(name = "remarks", columnDefinition = "text")
+    @Column(name = "remarks", length = Integer.MAX_VALUE)
     private String remarks;
 
     // 🔹 Replace @ManyToOne User technician with a String
