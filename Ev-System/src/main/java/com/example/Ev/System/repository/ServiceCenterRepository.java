@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ServiceCenterRepository extends JpaRepository<ServiceCenter, Integer> {
+public interface ServiceCenterRepository extends JpaRepository<ServiceCenter, Long> {
     Optional<ServiceCenter> findById(Integer id);
 }
