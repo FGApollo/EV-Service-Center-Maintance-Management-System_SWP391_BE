@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "partyusage")
-//@Table(name = "\"PartUsage\"")
 public class PartUsage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
