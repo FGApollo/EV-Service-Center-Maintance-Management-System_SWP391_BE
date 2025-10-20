@@ -15,4 +15,8 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     Optional<List<MaintenanceRecord>> findByTechnicianId(@Param("technicianId") String technicianId);
 
     Optional<MaintenanceRecord> findFirstByAppointment_Id(Integer appointmentId);
+
+    List<MaintenanceRecord> findByAppointment_Id(Integer appointmentId);
+
+    void deleteByAppointment_Id(Integer appointmentId);
 }

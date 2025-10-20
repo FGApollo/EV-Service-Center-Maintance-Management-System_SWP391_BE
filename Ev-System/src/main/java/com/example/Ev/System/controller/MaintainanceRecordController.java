@@ -22,7 +22,12 @@ public class MaintainanceRecordController {
     public ResponseEntity<MaintainanceRecordDto> createMaintenanceRecord(
             @PathVariable("appointmentId") Integer appointmentId,
             @RequestBody MaintainanceRecordDto maintainanceRecordDto) {
-        maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto);
+        if(maintenanceRecordService.findMaintainanceRecordByAppointmentId(appointmentId)){
+            maintenanceRecordService.updateMaintainanceRecord(appointmentId, maintainanceRecordDto);
+        }
+        else {
+            maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto);
+        }
         return ResponseEntity.ok(maintainanceRecordDto);
         //Da xong
     }

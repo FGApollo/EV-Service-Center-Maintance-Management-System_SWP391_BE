@@ -44,7 +44,7 @@ public class StaffAppointmentService {
             staffAssignment.setAppointment(appointment);
             staffAssignment.setStaff(staff);
             staffAssignment.setRole("technician");
-            staffAssignment.setStartTime(Instant.now());
+            staffAssignment.setStartTime(appointment.getAppointmentDate());
             staffAssignment.setNotes(note);
             assignments.add(staffAssignmentRepository.save(staffAssignment));
         }
