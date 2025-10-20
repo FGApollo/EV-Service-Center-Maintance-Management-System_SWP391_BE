@@ -91,7 +91,9 @@ public class MaintenanceRecordService {
         maintenanceRecordRepository.save(record); // Cascade saves all part usages
     }
 
+    @Transactional
     public void updateMaintainanceRecord(Integer appointmentID, MaintainanceRecordDto maintainanceRecordDto) {
+        System.out.println("da chay toi day");
         MaintenanceRecord existMaintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentID)
                 .orElseThrow(() -> new RuntimeException("Maintenance record not found for appointment ID: " + appointmentID));
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord();
@@ -99,33 +101,39 @@ public class MaintenanceRecordService {
         maintenanceRecord.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
         maintenanceRecord.setChecklist(existMaintenanceRecord + maintainanceRecordDto.getChecklist());
         maintenanceRecord.setStartTime(existMaintenanceRecord.getStartTime());
-        maintenanceRecord.setRemarks(existMaintenanceRecord.getEndTime() + maintenanceRecord.getRemarks());
+        maintenanceRecord.setRemarks(existMaintenanceRecord.getRemarks() + maintenanceRecord.getRemarks());
+
+        List<Integer> staffIds = maintainanceRecordDto.getStaffIds();
+        String technicianIds = staffIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+        maintenanceRecord.setTechnicianIds(technicianIds);
+
         Set<PartUsage> oldPartUsages = existMaintenanceRecord.getPartyusages();
         List<PartUsageDto> updatedUsageDtos = maintainanceRecordDto.getPartsUsed();
-        if(updatedUsageDtos != null && !updatedUsageDtos.isEmpty()) {
-            for(PartUsageDto partUsageDto : updatedUsageDtos) {
-                PartUsage partUsage = oldPartUsages.stream().filter
-                        (pu -> pu.getPart().getId().equals(partUsageDto.getPartId())).findFirst().orElse(null);
-                if(partUsage != null) {
-                    partUsage.setQuantityUsed(partUsage.getQuantityUsed() + partUsageDto.getQuantityUsed());
+        System.out.println(updatedUsageDtos.size());
+        Set<PartUsage> oldPartUsage = existMaintenanceRecord.getPartyusages();
+        Set<PartUsage> newPartUsages = new LinkedHashSet<>();
+        if (maintainanceRecordDto.getPartsUsed() != null) {
+            for (PartUsageDto partUsageDto : maintainanceRecordDto.getPartsUsed()) {
+                Part part = partRepository.findById(partUsageDto.getPartId())
+                        .orElseThrow(() -> new RuntimeException("Part not found: " + partUsageDto.getPartId()));
+                PartUsage newUsage = new PartUsage();
+                newUsage.setPart(part);
+                PartUsage temp = oldPartUsage.stream().
+                        filter(pu -> pu.getPart().getId().equals(partUsageDto.getPartId())).findFirst().orElse(null);
+                if(temp != null){
+                    newUsage.setQuantityUsed(partUsageDto.getQuantityUsed() + temp.getQuantityUsed());
                 }
                 else {
-                    Part part = partRepository.findById(partUsageDto.getPartId())
-                            .orElseThrow(() -> new RuntimeException("Part not found: " + partUsageDto.getPartId()));
-
-                    PartUsage newUsage = partUsageMapper.toEntity(partUsageDto);
-                    newUsage.setPart(part);
-                    newUsage.setRecord(existMaintenanceRecord);
-                    oldPartUsages.add(newUsage);
+                    newUsage.setQuantityUsed(partUsageDto.getQuantityUsed());
                 }
+                newUsage.setUnitCost(partUsageDto.getUnitCost());
+                newUsage.setRecord(maintenanceRecord);
+                newPartUsages.add(newUsage);
             }
-            MaintenanceRecord saved = maintenanceRecordRepository.save(existMaintenanceRecord);
-            MaintainanceRecordDto dto = maintainanceRecordMapper.toDTO(saved);
         }
-        else{
-            maintenanceRecord.setPartyusages(oldPartUsages);
-            MaintenanceRecord saved = maintenanceRecordRepository.save(maintenanceRecord);
-        }
+        maintenanceRecord.setPartyusages(newPartUsages);
+        MaintenanceRecord saved = maintenanceRecordRepository.save(maintenanceRecord);
+
     }
 
     public List<MaintainanceRecordDto> getMaintainanceRecordByStaff_id(String staffId) {
