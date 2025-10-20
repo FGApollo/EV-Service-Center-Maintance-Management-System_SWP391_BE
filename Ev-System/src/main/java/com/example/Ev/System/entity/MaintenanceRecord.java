@@ -22,13 +22,14 @@ public class MaintenanceRecord {
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
-    @Column(name = "technician_ids", length = 255)
-    private String technicianIds;
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "technician_id", nullable = false)
+//    private User technician;
 
-    @Column(name = "vehicle_condition", columnDefinition = "text")
+    @Column(name = "vehicle_condition", length = Integer.MAX_VALUE)
     private String vehicleCondition;
 
-    @Column(name = "checklist", columnDefinition = "text")
+    @Column(name = "checklist", length = Integer.MAX_VALUE)
     private String checklist;
 
     @Column(name = "start_time")
@@ -40,6 +41,12 @@ public class MaintenanceRecord {
     @Column(name = "remarks", columnDefinition = "text")
     private String remarks;
 
-    @OneToMany(mappedBy = "record")
-    private Set<PartUsage> partUsages = new LinkedHashSet<>();
+    // 🔹 Replace @ManyToOne User technician with a String
+    @Column(name = "technician_ids", columnDefinition = "NVARCHAR(MAX)")
+    private String technicianIds; // e.g. "2,5"
+
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PartUsage> partyusages = new LinkedHashSet<>();
+
+
 }

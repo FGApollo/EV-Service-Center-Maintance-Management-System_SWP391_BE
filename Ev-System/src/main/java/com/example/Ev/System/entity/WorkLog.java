@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,7 +13,8 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "worklog")
-public class Worklog {
+//@Table(name = "[WorkLog]")
+public class WorkLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "log_id", nullable = false)
@@ -29,10 +31,12 @@ public class Worklog {
     @Column(name = "hours_spent", precision = 5, scale = 2)
     private BigDecimal hoursSpent;
 
-    @Column(name = "tasks_done", length = Integer.MAX_VALUE)
+    @Nationalized
+    @Lob
+    @Column(name = "tasks_done")
     private String tasksDone;
 
-    @ColumnDefault("now()")
+    @ColumnDefault("sysdatetime()")
     @Column(name = "created_at")
     private Instant createdAt;
 

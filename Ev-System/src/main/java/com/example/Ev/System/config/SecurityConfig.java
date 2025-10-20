@@ -29,15 +29,22 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/appointments/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/assignments/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/MaintainanceRecord/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/worklogs/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/Users/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
                         .requestMatchers("/api/technician/**").hasAuthority("technician")
                         .requestMatchers("/api/customer/**").hasAuthority("customer")
                         .anyRequest().authenticated()
+
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+               // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); nho them
 
         return http.build();
     }
