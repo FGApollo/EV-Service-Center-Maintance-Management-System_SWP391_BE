@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ServiceTypeRepository extends JpaRepository<ServiceType, Long> {
+public interface ServiceTypeRepository extends JpaRepository<ServiceType, Integer> {
     Optional<ServiceType> findById(Integer id);
 }
