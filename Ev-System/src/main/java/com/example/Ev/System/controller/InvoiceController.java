@@ -14,7 +14,7 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    @PostMapping("/create/{appointmentId")
+    @PostMapping("/create/{appointmentId}")
     public ResponseEntity<Invoice> createInvoice(@PathVariable Integer appointmentId) {
         Invoice invoice = invoiceService.createInvoice(appointmentId);
         return ResponseEntity.ok(invoice);

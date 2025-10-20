@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "partyusage")
-@AllArgsConstructor
-@NoArgsConstructor
-public class PartUsageEntity {
+
+
+public class PartUsage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usage_id")
@@ -29,6 +29,6 @@ public class PartUsageEntity {
     // Relationships
     @ManyToOne
     @JoinColumn(name = "part_id", nullable = false)
-    private PartEntity part;
+    private Part part;
 }
 

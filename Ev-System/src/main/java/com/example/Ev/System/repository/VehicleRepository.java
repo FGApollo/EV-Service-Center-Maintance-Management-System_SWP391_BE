@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 
-
     Vehicle findVehicleById(Integer id);
 
     List<Vehicle> findVehicleByCustomerAndDeleted(User customer, boolean deleted);

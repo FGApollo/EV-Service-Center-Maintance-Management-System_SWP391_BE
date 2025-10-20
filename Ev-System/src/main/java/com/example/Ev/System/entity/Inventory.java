@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "inventory")
 @AllArgsConstructor
 @NoArgsConstructor
-public class InventoryEntity {
+public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "inventory_id")
@@ -31,5 +31,5 @@ public class InventoryEntity {
     // Relationships
     @ManyToOne
     @JoinColumn(name = "part_id", nullable = false)
-    private PartEntity part;
+    private Part part;
 }

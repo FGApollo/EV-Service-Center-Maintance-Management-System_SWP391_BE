@@ -31,7 +31,7 @@ public class ServiceCenter {
     private String email;
 
     @OneToMany(mappedBy = "center", cascade = CascadeType.ALL)
-    private List<InventoryEntity> inventories;
+    private List<Inventory> inventories;
 
     @OneToMany(mappedBy = "serviceCenter")
     private Set<ServiceAppointment> serviceAppointments = new LinkedHashSet<>();

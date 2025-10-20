@@ -5,9 +5,11 @@ import com.example.Ev.System.dto.LoginResponse;
 import com.example.Ev.System.dto.UpdateUserRequest;
 import com.example.Ev.System.dto.UserProfileResponse;
 import com.example.Ev.System.entity.User;
+import com.example.Ev.System.entity.Vehicle;
 import com.example.Ev.System.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -43,6 +45,7 @@ public class AuthService {
         return response;
     }
 
+
     //Update User
     public User updateUser(Integer id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
@@ -57,6 +60,8 @@ public class AuthService {
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         }
+
+
 
         return userRepository.save(user);
     }
