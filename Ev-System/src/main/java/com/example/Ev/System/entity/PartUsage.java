@@ -1,31 +1,34 @@
 package com.example.Ev.System.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "partyusage")
+
+
 public class PartUsage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "usage_id", nullable = false)
-    private Long id;
+    @Column(name = "usage_id")
+    private Long usageId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne
     @JoinColumn(name = "record_id", nullable = false)
     private MaintenanceRecord record;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "part_id", nullable = false)
-    private Part part;
 
     @Column(name = "quantity_used", nullable = false)
     private Integer quantityUsed;
 
-    @Column(name = "unit_cost")
+    @Column(name = "unit_cost", nullable = false)
     private Double unitCost;
 
+    // Relationships
+    @ManyToOne
+    @JoinColumn(name = "part_id", nullable = false)
+    private Part part;
 }
+

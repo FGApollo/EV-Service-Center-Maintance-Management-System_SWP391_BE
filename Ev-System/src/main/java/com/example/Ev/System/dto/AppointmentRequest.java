@@ -21,5 +21,5 @@ public class AppointmentRequest {
     private Instant appointmentDate;
 
     @NotNull(message = "Phải chọn ít nhất một dịch vụ.")
-    private List<Long> serviceTypeIds;
+    private List<Integer> serviceTypeIds;
 }

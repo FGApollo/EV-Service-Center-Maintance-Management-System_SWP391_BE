@@ -49,14 +49,10 @@ public class AuthService {
 
 
     //Update User
-    @Transactional
-    public User updateUser(UpdateUserRequest request) {
-        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
-        if (userOpt.isEmpty()) {
-            throw new NotFoundException("User not found");
-        }
+    public User updateUser(Integer id, UpdateUserRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userOpt.get();
         if (request.getFullName() != null && !request.getFullName().isEmpty()) {
             user.setFullName(request.getFullName());
         }
