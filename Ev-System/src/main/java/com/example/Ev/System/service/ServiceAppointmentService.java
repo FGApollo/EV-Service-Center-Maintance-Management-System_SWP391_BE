@@ -41,7 +41,7 @@ public class ServiceAppointmentService {
     @Transactional
     public ServiceAppointment acceptAppointment(Integer appointmentId) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
-        appointment.setStatus("in_progress");
+        appointment.setStatus("accept");
         appointment.setCreatedAt(Instant.now());
         staffAppointmentService.autoAssignTechnician(appointmentId ,"Auto assign technician");
         appointmentRepository.save(appointment);

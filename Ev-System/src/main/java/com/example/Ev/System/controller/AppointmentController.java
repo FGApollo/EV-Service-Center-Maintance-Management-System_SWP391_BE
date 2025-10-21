@@ -49,6 +49,16 @@ public class AppointmentController {
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
     }
 
+    @PutMapping("/{id}/inProgress")
+    public ResponseEntity<ServiceAppointment> inProgressAppointment(
+            @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
+    {
+        ServiceAppointment updatedAppointment = appointmentService.updateAppointment(id,"in_progress");
+        return ResponseEntity.ok(updatedAppointment);
+        //Da xong
+        //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
+    }
+
     @PutMapping("/{id}/done")
     public ResponseEntity<ServiceAppointment> doneAppointment(
             @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto ) //bo text vao body , chu k phai json , json la 1 class
