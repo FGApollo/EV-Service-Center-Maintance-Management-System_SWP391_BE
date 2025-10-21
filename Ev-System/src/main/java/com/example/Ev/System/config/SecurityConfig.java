@@ -51,7 +51,8 @@ public class SecurityConfig {
         // ⚙️ Ghi rõ domain frontend (ở Vercel và local)
         configuration.setAllowedOrigins(Arrays.asList(
                 "https://ev-teal.vercel.app",  //
-                "http://localhost:5173"            // cho phép chạy dev ở local
+                "http://localhost:5173",
+                "https://ev-service-center-maintance-management-um2j.onrender.com" // cho phép chạy dev ở local
         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
