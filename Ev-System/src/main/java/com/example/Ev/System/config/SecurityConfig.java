@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/", "/api/auth/**").permitAll()  //  Cho phép truy cập root path
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
