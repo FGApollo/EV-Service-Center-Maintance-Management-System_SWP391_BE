@@ -20,11 +20,13 @@
     <description>EV Service Center Maintenance System</description>
 
     <properties>
-        <java.version>21</java.version>
+        <!-- Use Java 17 -->
+        <java.version>17</java.version>
         <mapstruct.version>1.6.0.Beta1</mapstruct.version>
         <lombok.version>1.18.34</lombok.version>
         <jjwt.version>0.11.5</jjwt.version>
-        <mssql.version>12.10.0.jre11</mssql.version>
+        <!-- Use driver version compatible with JDK 17 -->
+        <mssql.version>12.8.1.jre11</mssql.version>
     </properties>
 
     <dependencies>
@@ -142,8 +144,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
-
 
             <!-- Compiler plugin -->
             <plugin>
