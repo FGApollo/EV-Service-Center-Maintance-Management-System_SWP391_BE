@@ -4,7 +4,7 @@ import com.example.Ev.System.dto.WorkLogDto;
 import com.example.Ev.System.entity.MaintenanceRecord;
 import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.User;
-import com.example.Ev.System.entity.WorkLog;
+import com.example.Ev.System.entity.Worklog;
 import com.example.Ev.System.mapper.WorkLogMapper;
 import com.example.Ev.System.repository.*;
 import jakarta.transaction.Transactional;
@@ -39,14 +39,14 @@ public class WorkLogService {
     }
 
     @Transactional
-    public List<WorkLog> createWorkLog(WorkLogDto dto) {
-        List<WorkLog> workLogs = new ArrayList<>();
+    public List<Worklog> createWorkLog(WorkLogDto dto) {
+        List<Worklog> workLogs = new ArrayList<>();
         ServiceAppointment appointment = appointmentRepository.findById(dto.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
         for(Integer staffId : dto.getStaffId()) {
             User staff = userRepository.findById(staffId)
                     .orElseThrow(() -> new RuntimeException("Staff not found"));
-            WorkLog workLog = new WorkLog();
+            Worklog workLog = new Worklog();
             workLog.setStaff(staff);
             workLog.setAppointment(appointment);
             workLog.setHoursSpent(dto.getHoursSpent());
@@ -67,7 +67,7 @@ public class WorkLogService {
         System.out.println(techs.size());
         MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentId).orElseThrow(() -> new RuntimeException("Maintenance record not found"));
         for(User tech : techs) {
-            WorkLog workLog = new WorkLog();
+            Worklog workLog = new Worklog();
             workLog.setStaff(tech);
             workLog.setAppointment(appointment);
             if (maintenanceRecord.getStartTime() == null || maintenanceRecord.getEndTime() == null) {

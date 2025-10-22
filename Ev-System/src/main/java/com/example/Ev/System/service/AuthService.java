@@ -5,6 +5,8 @@ import com.example.Ev.System.dto.LoginResponse;
 import com.example.Ev.System.dto.UpdateUserRequest;
 import com.example.Ev.System.dto.UserProfileResponse;
 import com.example.Ev.System.entity.User;
+import com.example.Ev.System.exception.BadRequestException;
+import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,12 +27,12 @@ public class AuthService {
     public LoginResponse login(LoginRequest request){
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
         if(userOpt.isEmpty()){
-            throw new RuntimeException("User not found");
+            throw new NotFoundException("User not found");
         }
 
         User user = userOpt.get();
         if(!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())){
-            throw new RuntimeException("Invalid password");
+            throw new BadRequestException("Invalid password");
         }
 
         String token = jwtService.generateToken(user.getEmail(), user.getRole());
@@ -42,6 +44,7 @@ public class AuthService {
 
         return response;
     }
+
 
     //Update User
     public User updateUser(UpdateUserRequest request) {
@@ -79,4 +82,6 @@ public class AuthService {
 
         return profile;
     }
+
+
 }

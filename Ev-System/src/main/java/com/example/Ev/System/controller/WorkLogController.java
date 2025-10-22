@@ -1,7 +1,7 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.WorkLogDto;
-import com.example.Ev.System.entity.WorkLog;
+import com.example.Ev.System.entity.Worklog;
 import com.example.Ev.System.service.WorkLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +19,8 @@ public class WorkLogController {
     }
 
     @PostMapping
-    public ResponseEntity<List<WorkLog> >createWorkLog(@RequestBody WorkLogDto dto) {
-        List<WorkLog> saved = workLogService.createWorkLog(dto);
+    public ResponseEntity<List<Worklog> >createWorkLog(@RequestBody WorkLogDto dto) {
+        List<Worklog> saved = workLogService.createWorkLog(dto);
         return ResponseEntity.ok(saved);
         //Da xong
         //TODO : WorkLog se dc auto luu khi xong 1 appointment , hoi may thg kia hd nhu the nao
