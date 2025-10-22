@@ -7,8 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-//@Table(name = "partyusage")
-@Table(name = "\"PartUsage\"")
+@Table(name = "partyusage")
+//@Table(name = "\"PartUsage\"")
 public class PartUsage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
