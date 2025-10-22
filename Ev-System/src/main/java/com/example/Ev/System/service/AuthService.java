@@ -8,6 +8,8 @@ import com.example.Ev.System.entity.User;
 import com.example.Ev.System.entity.Vehicle;
 import com.example.Ev.System.exception.BadRequestException;
 import com.example.Ev.System.exception.NotFoundException;
+import com.example.Ev.System.exception.BadRequestException;
+import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -83,4 +85,6 @@ public class AuthService {
 
         return profile;
     }
+
+
 }
