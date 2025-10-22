@@ -11,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 
 @Controller
-@RequestMapping("/Users")
+@RequestMapping("/api/auth/register")
 public class UserController {
     private final UserService userService;
     public UserController(UserService userService) {

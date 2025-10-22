@@ -49,6 +49,7 @@ public class AuthService {
 
 
     //Update User
+    @Transactional
     public User updateUser(Integer id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
