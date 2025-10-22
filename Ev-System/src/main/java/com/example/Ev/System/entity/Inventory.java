@@ -1,36 +1,35 @@
 package com.example.Ev.System.entity;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "inventory")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_id", nullable = false)
-    private Long id;
+    @Column(name = "inventory_id")
+    private Long inventoryId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "center_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "center_id")
     private ServiceCenter center;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "part_id", nullable = false)
-    private Part part;
-
-    @ColumnDefault("0")
-    @Column(name = "quantity")
     private Integer quantity;
 
-    @ColumnDefault("now()")
     @Column(name = "last_updated")
-    private Instant lastUpdated;
+    private LocalDateTime lastUpdated;
 
+    // Relationships
+    @ManyToOne
+    @JoinColumn(name = "part_id", nullable = false)
+    private Part part;
 }
