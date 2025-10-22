@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PartUsageDto {
-    private Integer partId;
+    private Long partId;
     private Integer quantityUsed;
     private Double unitCost;
 }
