@@ -119,7 +119,7 @@ public class MaintenanceRecordService {
                 PartUsage newUsage = new PartUsage();
                 newUsage.setPart(part);
                 PartUsage temp = oldPartUsage.stream().
-                        filter(pu -> pu.getPart().getId().equals(partUsageDto.getPartId())).findFirst().orElse(null);
+                        filter(pu -> pu.getPart().getId().equals(partUsageDto.getPartId().longValue())).findFirst().orElse(null);
                 if(temp != null){
                     newUsage.setQuantityUsed(partUsageDto.getQuantityUsed() + temp.getQuantityUsed());
                 }

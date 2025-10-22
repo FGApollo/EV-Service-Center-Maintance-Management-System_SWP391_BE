@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRecord, Long> {
+public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRecord, Integer> {
 
     // Find maintenance records where the technicianIds string contains the given ID
     @Query("SELECT m FROM MaintenanceRecord m WHERE m.technicianIds LIKE %:technicianId%")

@@ -24,6 +24,7 @@ public class MaintainanceRecordController {
             @RequestBody MaintainanceRecordDto maintainanceRecordDto) {
         if(maintenanceRecordService.findMaintainanceRecordByAppointmentId(appointmentId)){
             maintenanceRecordService.updateMaintainanceRecord(appointmentId, maintainanceRecordDto);
+            System.out.println("Da chay update");
         }
         else {
             maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto);
