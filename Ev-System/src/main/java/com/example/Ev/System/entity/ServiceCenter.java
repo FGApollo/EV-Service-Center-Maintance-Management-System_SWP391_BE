@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -30,8 +29,8 @@ public class ServiceCenter {
     @Column(name = "email", length = 100)
     private String email;
 
-    @OneToMany(mappedBy = "center", cascade = CascadeType.ALL)
-    private List<Inventory> inventories;
+    @OneToMany(mappedBy = "center")
+    private Set<Inventory> inventories = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "serviceCenter")
     private Set<ServiceAppointment> serviceAppointments = new LinkedHashSet<>();

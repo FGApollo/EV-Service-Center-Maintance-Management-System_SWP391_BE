@@ -27,44 +27,39 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/api/auth/**").permitAll()  //  Cho phép truy cập root path
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/appointments/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/assignments/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/MaintainanceRecord/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/worklogs/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/Users/**").permitAll() // ✅ public nho xoa
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
                         .requestMatchers("/api/technician/**").hasAuthority("technician")
                         .requestMatchers("/api/customer/**").hasAuthority("customer")
                         .anyRequest().authenticated()
+
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+               // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); nho them
 
         return http.build();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // ⚙️ Ghi rõ domain frontend (ở Vercel và local)
-        configuration.setAllowedOrigins(Arrays.asList(
-                "https://ev-teal.vercel.app",  //
-                "http://localhost:5173",
-                "https://ev-service-center-maintance-management-um2j.onrender.com" // cho phép chạy dev ở local
-        ));
-
+        configuration.setAllowedOrigins(Arrays.asList("*")); // Cho phép tất cả origins
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Auth-Token"));
-        configuration.setExposedHeaders(Arrays.asList("X-Auth-Token"));
-        configuration.setAllowCredentials(true); // ✅ Cho phép gửi cookie/token qua request
-
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
