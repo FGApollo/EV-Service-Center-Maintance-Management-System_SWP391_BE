@@ -12,18 +12,18 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface PartUsageMapper {
 
     // ✅ DTO → Entity (ignore relationships that are set manually)
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "usageId", ignore = true)
     @Mapping(target = "record", ignore = true)
     @Mapping(target = "part", ignore = true)
     PartUsage toEntity(PartUsageDto dto);
 
-    // ✅ Entity → DTO (extract only part.id)
+    // ✅ Entity → DTO (extract part.id → partId)
     @Mapping(source = "part.id", target = "partId")
     PartUsageDto toDto(PartUsage entity);
 
-    // ✅ Optional: update existing entity from DTO (if you reuse objects)
+    // ✅ Update existing entity from DTO (ignore certain relationships)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "usageId", ignore = true)
     @Mapping(target = "record", ignore = true)
     @Mapping(target = "part", ignore = true)
     void updatePartUsageFromDto(PartUsageDto dto, @MappingTarget PartUsage entity);
