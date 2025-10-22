@@ -14,7 +14,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "worklog")
 //@Table(name = "[WorkLog]")
-public class WorkLog {
+public class Worklog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "log_id", nullable = false)
