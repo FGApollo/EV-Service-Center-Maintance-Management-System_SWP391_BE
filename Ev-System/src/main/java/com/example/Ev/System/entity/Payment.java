@@ -7,7 +7,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -31,7 +30,7 @@ public class Payment {
 
     @ColumnDefault("now()")
     @Column(name = "payment_date")
-    private LocalDateTime paymentDate;
+    private Instant paymentDate;
 
     @Column(name = "reference_no", length = 100)
     private String referenceNo;

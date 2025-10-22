@@ -5,13 +5,9 @@ import com.example.Ev.System.dto.LoginResponse;
 import com.example.Ev.System.dto.UpdateUserRequest;
 import com.example.Ev.System.dto.UserProfileResponse;
 import com.example.Ev.System.entity.User;
-import com.example.Ev.System.entity.Vehicle;
-import com.example.Ev.System.exception.BadRequestException;
-import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -29,12 +25,12 @@ public class AuthService {
     public LoginResponse login(LoginRequest request){
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
         if(userOpt.isEmpty()){
-            throw new NotFoundException("User not found");
+            throw new RuntimeException("User not found");
         }
 
         User user = userOpt.get();
         if(!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())){
-            throw new BadRequestException("Invalid password");
+            throw new RuntimeException("Invalid password");
         }
 
         String token = jwtService.generateToken(user.getEmail(), user.getRole());
@@ -47,9 +43,7 @@ public class AuthService {
         return response;
     }
 
-
     //Update User
-    @Transactional
     public User updateUser(UpdateUserRequest request) {
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
         if (userOpt.isEmpty()) {
@@ -67,8 +61,6 @@ public class AuthService {
             user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         }
 
-
-
         return userRepository.save(user);
     }
 
@@ -76,7 +68,7 @@ public class AuthService {
         Optional<User> user = userRepository.findByEmail(email);
 
         if(user.isEmpty()){
-            throw new NotFoundException("User not found");
+            throw new RuntimeException("User not found");
         }
 
         UserProfileResponse profile = new UserProfileResponse();

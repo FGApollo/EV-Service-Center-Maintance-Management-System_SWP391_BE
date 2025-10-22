@@ -1,34 +1,32 @@
 package com.example.Ev.System.controller;
 
-
-import com.example.Ev.System.dto.AppointmentRequest;
-import com.example.Ev.System.dto.AppointmentResponse;
-import com.example.Ev.System.dto.AppointmentStatusDTO;
-import com.example.Ev.System.service.AppointmentService;
-import com.example.Ev.System.service.AppointmentStatusService;
-import jakarta.validation.Valid;
+import com.example.Ev.System.dto.AppointmentDto;
+import com.example.Ev.System.dto.MaintainanceRecordDto;
+import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.repository.AppointmentRepository;
+import com.example.Ev.System.service.MaintenanceRecordService;
+import com.example.Ev.System.service.ServiceAppointmentService;
+import com.example.Ev.System.service.StaffAppointmentService;
+import com.example.Ev.System.service.WorkLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/appointments")
+@RequestMapping("/appointments")
 public class AppointmentController {
     private final ServiceAppointmentService appointmentService;
     private final MaintenanceRecordService maintenanceRecordService;
     private final StaffAppointmentService staffAppointmentService;
     private final WorkLogService workLogService;
-    private final AppointmentStatusService appointmentStatusService;
 
     public AppointmentController(ServiceAppointmentService appointmentService, MaintenanceRecordService maintenanceRecordService, StaffAppointmentService staffAppointmentService, WorkLogService workLogService) {
         this.appointmentService = appointmentService;
         this.maintenanceRecordService = maintenanceRecordService;
         this.staffAppointmentService = staffAppointmentService;
         this.workLogService = workLogService;
-        this.appointmentStatusService = appointmentStatusService;
     }
 
     @PutMapping("/{id}/accept")
@@ -40,16 +38,6 @@ public class AppointmentController {
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
     }
 
-    @PostMapping
-    public ResponseEntity<AppointmentResponse> createAppointment(
-            @Valid @RequestBody AppointmentRequest request) {
-
-        // Lấy email từ JWT (được lưu trong SecurityContext)
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        AppointmentResponse response = appointmentService.createAppointment(request, email);
-        return ResponseEntity.ok(response);
-    }
 
     @PutMapping("/{id}/cancel")
     public ResponseEntity<ServiceAppointment> cancelAppointment(
@@ -59,11 +47,6 @@ public class AppointmentController {
         return ResponseEntity.ok(updatedAppointment);
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
-    }
-
-    @GetMapping
-    public List<AppointmentStatusDTO> getUserAppointment(Authentication authentication){
-        return appointmentStatusService.getUserAppointment(authentication.getName());
     }
 
     @PutMapping("/{id}/inProgress")

@@ -3,8 +3,6 @@ package com.example.Ev.System.service;
 import com.example.Ev.System.dto.VehicleDto;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.entity.Vehicle;
-import com.example.Ev.System.exception.BadRequestException;
-import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.repository.VehicleRepository;
 import org.springframework.security.core.parameters.P;
@@ -40,7 +38,7 @@ public class VehicleService {
     public List<VehicleDto> getUserVehicle(String email){
         Optional<User> user = userRepository.findByEmail(email);
         if(user.isEmpty()){
-            throw new NotFoundException("User not found");
+            throw new RuntimeException("User not found");
         }
 
         List<Vehicle> vehicle = vehicleRepository.findVehicleByCustomerAndDeleted(user.get(), false );
@@ -56,7 +54,7 @@ public class VehicleService {
     public VehicleDto addVehicle(String email, VehicleDto dto){
         Optional<User> user = userRepository.findByEmail(email);
         if(user.isEmpty()){
-            throw new NotFoundException("User not found");
+            throw new RuntimeException("User not found");
         }
 
         Vehicle v = new Vehicle();
@@ -75,16 +73,16 @@ public class VehicleService {
     public void deleteVehicle(String email, Integer id){
         Optional<User> user = userRepository.findByEmail(email);
         if(user.isEmpty()){
-            throw new NotFoundException("User not found");
+            throw new RuntimeException("User not found");
         }
 
         Vehicle v = vehicleRepository.findVehicleById(id);
         if(v == null){
-            throw new NotFoundException("Vehicle not found");
+            throw new RuntimeException("Vehicle not found");
         }
 
         if(!v.getCustomer().getId().equals(user.get().getId())){
-            throw new BadRequestException("Not authorized");
+            throw new RuntimeException("Not authorized");
         }
 
         v.setDeleted(true);

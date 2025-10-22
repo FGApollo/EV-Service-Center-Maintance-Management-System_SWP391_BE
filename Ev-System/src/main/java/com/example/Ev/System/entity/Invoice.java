@@ -7,7 +7,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -32,11 +31,11 @@ public class Invoice {
     private String status;
 
     @Column(name = "payment_date")
-    private LocalDateTime paymentDate;
+    private Instant paymentDate;
 
     @ColumnDefault("now()")
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @OneToMany(mappedBy = "invoice")
     private Set<Payment> payments = new LinkedHashSet<>();
