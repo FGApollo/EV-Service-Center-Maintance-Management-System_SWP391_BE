@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthController {
     private final AuthService authService;
 
@@ -19,7 +19,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public LoginResponse login(@RequestBody LoginRequest request){
         return authService. login(request);
     }
