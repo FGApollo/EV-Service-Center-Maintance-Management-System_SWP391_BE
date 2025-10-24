@@ -41,7 +41,7 @@ public class NotificationService {
         if (to == null) {
             System.err.println("Không tìm thấy email cho vehicle_id=" + reminder.getVehicle().getId());
             reminder.setIsSent(true);
-            reminder.setSentAt(Instant.from(LocalDateTime.now()));
+            reminder.setSentAt(Instant.now());
             reminderRepo.save(reminder);
             return;
         }
@@ -55,14 +55,22 @@ public class NotificationService {
                 : "Xe của bạn đã đến kỳ bảo dưỡng định kỳ. Vui lòng đặt lịch hẹn tại trung tâm dịch vụ gần nhất.";
         msg.setText(body);
 
-        mailSender.send(msg);
+        System.out.println("🚀 Đang gửi mail đến: " + to);
+        try {
+            mailSender.send(msg);
+            System.out.println("✅ Đã gửi mail thành công đến: " + to);
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi khi gửi mail: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         reminder.setIsSent(true);
         reminder.setSentAt(Instant.now());
         reminderRepo.save(reminder);
 
-        System.out.println("✅ Gửi email nhắc bảo dưỡng cho: " + to);
+        System.out.println("📩 Đã cập nhật reminder là sent cho: " + to);
     }
+
 
     private String fetchEmailByVehicleId(Long vehicleId) {
         if (vehicleId == null) return null;

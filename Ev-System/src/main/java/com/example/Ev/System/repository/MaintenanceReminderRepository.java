@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.List;
 
 public interface MaintenanceReminderRepository extends JpaRepository<MaintenanceReminder, Integer> {
-    List<MaintenanceReminder> findByIsSentFalseAndReminderDateBeforeEqualOrEqual(Instant date);
+
     // simpler: custom query
     @Query("SELECT m FROM MaintenanceReminder m WHERE m.isSent = false AND m.reminderDate <= :now")
     List<MaintenanceReminder> findDueReminders(@Param("now") Instant now);
