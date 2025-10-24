@@ -4,9 +4,15 @@ import com.example.Ev.System.entity.MaintenanceRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
+
+import java.util.List;
+
+@Repository
 
 public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRecord, Integer> {
 
@@ -19,6 +25,7 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     List<MaintenanceRecord> findByAppointment_Id(Integer appointmentId);
 
     void deleteByAppointment_Id(Integer appointmentId);
-
+    List<MaintenanceRecord> findByEndTimeIsNotNull();
 
 }
+
