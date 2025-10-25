@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @NoArgsConstructor
-public class InvoiceService {
+public class InvoiceService implements InvoiceServiceI {
     @Autowired
     private InvoiceRepository invoiceRepository;
     @Autowired
@@ -43,13 +43,13 @@ public class InvoiceService {
         return invoiceRepository.save(invoice);
     }
 
-    public Invoice MarkInvoiceAsPaid(Integer invoiceId) {
+    public void MarkInvoiceAsPaid(Integer invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
 
         invoice.setStatus("PAID");
         invoice.setPaymentDate(LocalDateTime.now());
-        return invoiceRepository.save(invoice);
+        invoiceRepository.save(invoice);
     }
 
     public double getRevenue(LocalDateTime startDate, LocalDateTime endDate) {

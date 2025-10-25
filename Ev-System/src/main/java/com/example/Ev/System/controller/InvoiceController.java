@@ -1,7 +1,7 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.entity.Invoice;
-import com.example.Ev.System.service.InvoiceService;
+import com.example.Ev.System.service.InvoiceServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 @RequestMapping("/invoices")
 public class InvoiceController {
     @Autowired
-    private InvoiceService invoiceService;
+    private InvoiceServiceI invoiceServiceI;
 
     @PostMapping("/create/{appointmentId}")
     public ResponseEntity<Invoice> createInvoice(@PathVariable Integer appointmentId) {
-        Invoice invoice = invoiceService.createInvoice(appointmentId);
+        Invoice invoice = invoiceServiceI.createInvoice(appointmentId);
         return ResponseEntity.ok(invoice);
     }
 
@@ -25,7 +25,7 @@ public class InvoiceController {
             @RequestParam String startDate,
             @RequestParam String endDate) {
 
-        Double revenue = invoiceService.getRevenue(
+        Double revenue = invoiceServiceI.getRevenue(
                 LocalDateTime.parse(startDate),
                 LocalDateTime.parse(endDate)
         );
