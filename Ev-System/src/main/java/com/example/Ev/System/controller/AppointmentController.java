@@ -4,8 +4,9 @@ package com.example.Ev.System.controller;
 import com.example.Ev.System.dto.AppointmentRequest;
 import com.example.Ev.System.dto.AppointmentResponse;
 import com.example.Ev.System.dto.AppointmentStatusDTO;
-import com.example.Ev.System.service.AppointmentService;
-import com.example.Ev.System.service.AppointmentStatusService;
+import com.example.Ev.System.dto.MaintainanceRecordDto;
+import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,10 +34,16 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final AppointmentStatusService appointmentStatusService;
+    private final ServiceAppointmentService serviceAppointmentService;
+    private final MaintenanceRecordService maintenanceRecordService;
+    private final WorkLogService workLogService;
 
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService) {
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
+        this.serviceAppointmentService = serviceAppointmentService;
+        this.maintenanceRecordService = maintenanceRecordService;
+        this.workLogService = workLogService;
     }
 
     @PostMapping
@@ -53,5 +60,54 @@ public class AppointmentController {
     @GetMapping
     public List<AppointmentStatusDTO> getUserAppointment(Authentication authentication){
         return appointmentStatusService.getUserAppointment(authentication.getName());
+    }
+
+    @PutMapping("/{id}/accept")
+    public ResponseEntity<ServiceAppointment> acceptAppointment(
+            @PathVariable Integer id ) {
+        ServiceAppointment updatedAppointment = serviceAppointmentService.acceptAppointment(id);
+        return ResponseEntity.ok(updatedAppointment);
+        //Da xong
+        //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
+    }
+
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<ServiceAppointment> cancelAppointment(
+            @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
+    {
+        ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"cancelled");
+        return ResponseEntity.ok(updatedAppointment);
+        //Da xong
+        //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
+    }
+
+    @PutMapping("/{id}/inProgress")
+    public ResponseEntity<ServiceAppointment> inProgressAppointment(
+            @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
+    {
+        ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
+        return ResponseEntity.ok(updatedAppointment);
+        //Da xong
+        //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
+    }
+
+    @PutMapping("/{id}/done")
+    public ResponseEntity<ServiceAppointment> doneAppointment(
+            @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto ) //bo text vao body , chu k phai json , json la 1 class
+    {
+        ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"completed");//nho chuyen thanh done
+        maintenanceRecordService.updateMaintainanceRecord(id, maintainanceRecordDto); // Phai them record moi dc done
+        workLogService.autoCreateWorkLog(id);
+        return ResponseEntity.ok(updatedAppointment);
+    }
+
+    public ResponseEntity<List<ServiceAppointment>> findAllByStatus(@RequestParam String status) {
+        return ResponseEntity.ok(serviceAppointmentService.getStatusAppointments(status));
+    }
+
+    @GetMapping("/staff")
+    public ResponseEntity<List<ServiceAppointment>> findAllByStaffId(@RequestParam Integer id) {
+        return ResponseEntity.ok(serviceAppointmentService.getAppointmentsByStaffId(id));
     }
 }
