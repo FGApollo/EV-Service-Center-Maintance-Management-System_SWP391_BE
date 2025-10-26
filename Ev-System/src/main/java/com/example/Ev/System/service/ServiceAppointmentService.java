@@ -20,8 +20,9 @@ public class ServiceAppointmentService {
     private final AppointmentServiceRepository appointmentServiceRepository;
     private final StaffAppointmentService staffAppointmentService  ;
     private final MaintenanceRecordService maintenanceRecordService;
+    private final NotificationProgressService notificationProgressService;
 
-    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -31,6 +32,7 @@ public class ServiceAppointmentService {
         this.appointmentServiceRepository = appointmentServiceRepository;
         this.staffAppointmentService = staffAppointmentService;
         this.maintenanceRecordService = maintenanceRecordService;
+        this.notificationProgressService = notificationProgressService;
     }
 
     public List<ServiceAppointment> getStatusAppointments(String status) {
@@ -41,18 +43,26 @@ public class ServiceAppointmentService {
     @Transactional
     public ServiceAppointment acceptAppointment(Integer appointmentId) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
+
+        String oldStatus = appointment.getStatus();//new
         appointment.setStatus("accept");
         appointment.setCreatedAt(Instant.now());
         staffAppointmentService.autoAssignTechnician(appointmentId ,"Auto assign technician");
         appointmentRepository.save(appointment);
+
+        notificationProgressService.sendAppointmentStatusChanged(appointment.getCustomer(), appointment, oldStatus, "accept"); //new
         return appointment;
     }
 
     @Transactional
     public ServiceAppointment updateAppointment(Integer appointmentId,String status) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
+
+        String oldStatus = appointment.getStatus(); //new
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
+
+        notificationProgressService.sendAppointmentStatusChanged(appointment.getCustomer(), appointment, oldStatus, status); //new
         return appointment;
     }
 
