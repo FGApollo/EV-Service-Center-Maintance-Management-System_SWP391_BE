@@ -2,6 +2,7 @@ package com.example.Ev.System.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +14,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -29,12 +31,17 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/api/auth/**").permitAll()  //  Cho phép truy cập root path
+                        // Permit preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Public
+                        .requestMatchers("/", "/api/auth/**").permitAll()
+                        // Role-based
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
                         .requestMatchers("/api/technician/**").hasAuthority("technician")
                         .requestMatchers("/api/customer/**").hasAuthority("customer")
+                        // Các API còn lại chỉ cần authenticated
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -55,9 +62,9 @@ public class SecurityConfig {
                 "https://ev-service-center-maintance-management-um2j.onrender.com" // cho phép chạy dev ở local
         ));
 
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Auth-Token"));
-        configuration.setExposedHeaders(Arrays.asList("X-Auth-Token"));
+        configuration.setExposedHeaders(List.of("X-Auth-Token"));
         configuration.setAllowCredentials(true); // ✅ Cho phép gửi cookie/token qua request
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
