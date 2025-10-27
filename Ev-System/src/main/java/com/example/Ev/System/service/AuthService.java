@@ -45,7 +45,7 @@ public class AuthService {
         response.setToken(token);
         response.setRole(user.getRole());
         response.setFullName(user.getFullName());
-
+        response.setId(user.getId());
         return response;
     }
 
