@@ -32,8 +32,8 @@ public class VehicleService {
         vehicleDto.setVin(v.getVin());
         vehicleDto.setModel(v.getModel());
         vehicleDto.setYear(v.getYear());
-        vehicleDto.setBatteryCapacity(v.getBatteryCapacity());
-
+        vehicleDto.setColor(v.getColor());
+        vehicleDto.setLicensePlate(v.getLicensePlate());
         return vehicleDto;
 
     }
@@ -66,7 +66,8 @@ public class VehicleService {
         v.setVin(dto.getVin());
         v.setModel(dto.getModel());
         v.setYear(dto.getYear());
-        v.setBatteryCapacity(dto.getBatteryCapacity());
+        v.setColor(dto.getColor());
+        v.setLicensePlate(dto.getLicensePlate());
         v.setDeleted(false);
         v.setCreatedAt(Instant.now());
         vehicleRepository.save(v);
@@ -93,4 +94,6 @@ public class VehicleService {
         vehicleRepository.save(v);
 
     }
+
+
 }
