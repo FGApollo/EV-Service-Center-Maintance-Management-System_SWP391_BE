@@ -97,7 +97,7 @@ public class AppointmentController {
             @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto ) //bo text vao body , chu k phai json , json la 1 class
     {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"completed");//nho chuyen thanh done
-        maintenanceRecordService.updateMaintainanceRecord(id, maintainanceRecordDto); // Phai them record moi dc done
+        maintenanceRecordService.updateMaintainanceRecord(id, maintainanceRecordDto,1); // Phai them record moi dc done
         workLogService.autoCreateWorkLog(id);
         return ResponseEntity.ok(updatedAppointment);
     }
