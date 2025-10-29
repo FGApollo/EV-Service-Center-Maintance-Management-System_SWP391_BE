@@ -1,9 +1,6 @@
 package com.example.Ev.System.repository;
 
-import com.example.Ev.System.entity.AppointmentService;
-import com.example.Ev.System.entity.AppointmentServiceId;
-import com.example.Ev.System.entity.ServiceAppointment;
-import com.example.Ev.System.entity.User;
+import com.example.Ev.System.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.Instant;
@@ -15,6 +12,15 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
     List<ServiceAppointment> findByCustomerOrderByAppointmentDateDesc(User customer);
     public List<ServiceAppointment> findAllByStatus(String status);
     public List<ServiceAppointment> findAllByStaffAssignments_staff_id(Integer staffId);
+
+    List<ServiceAppointment> findAllByCustomer(User customer);
+
+    public ServiceAppointment findFirstByVehicleOrderByCreatedAtDesc(Vehicle vehicle);
+
+    List<ServiceAppointment> findAllByVehicle(Vehicle vehicle);
+
+    
+
 }
 
 

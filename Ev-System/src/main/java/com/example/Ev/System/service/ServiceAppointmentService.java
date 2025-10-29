@@ -1,13 +1,18 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.AppointmentResponse;
+import com.example.Ev.System.dto.VehicleRespone;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.mapper.AppointmentMapper;
 import com.example.Ev.System.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ServiceAppointmentService {
@@ -21,8 +26,9 @@ public class ServiceAppointmentService {
     private final StaffAppointmentService staffAppointmentService  ;
     private final MaintenanceRecordService maintenanceRecordService;
     private final NotificationProgressService notificationProgressService;
+    private final MaintenanceRecordRepository maintenanceRecordRepository;
 
-    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -33,6 +39,7 @@ public class ServiceAppointmentService {
         this.staffAppointmentService = staffAppointmentService;
         this.maintenanceRecordService = maintenanceRecordService;
         this.notificationProgressService = notificationProgressService;
+        this.maintenanceRecordRepository = maintenanceRecordRepository;
     }
 
     public List<ServiceAppointment> getStatusAppointments(String status) {
@@ -76,6 +83,8 @@ public class ServiceAppointmentService {
         List<ServiceAppointment> appointments = appointmentRepository.findAllByStaffAssignments_staff_id(staffId);
         return appointments;
     }
+
+
 
 
 

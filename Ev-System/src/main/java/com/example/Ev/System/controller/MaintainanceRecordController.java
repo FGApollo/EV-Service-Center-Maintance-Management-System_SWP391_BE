@@ -23,7 +23,7 @@ public class MaintainanceRecordController {
             @PathVariable("appointmentId") Integer appointmentId,
             @RequestBody MaintainanceRecordDto maintainanceRecordDto) {
         if(maintenanceRecordService.findMaintainanceRecordByAppointmentId(appointmentId)){
-            maintenanceRecordService.updateMaintainanceRecord(appointmentId, maintainanceRecordDto);
+            maintenanceRecordService.updateMaintainanceRecord(appointmentId, maintainanceRecordDto,0);
             System.out.println("Da chay update");
         }
         else {

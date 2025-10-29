@@ -1,6 +1,7 @@
 package com.example.Ev.System.repository;
 
 import com.example.Ev.System.entity.MaintenanceRecord;
+import com.example.Ev.System.entity.ServiceAppointment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,10 +23,13 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
 
     Optional<MaintenanceRecord> findFirstByAppointment_Id(Integer appointmentId);
 
+    Optional<MaintenanceRecord> findFirstByAppointment_IdOrderByIdDesc(Integer appointmentId); //Sau nay dung cai nay
+
+
     List<MaintenanceRecord> findByAppointment_Id(Integer appointmentId);
 
     void deleteByAppointment_Id(Integer appointmentId);
-    List<MaintenanceRecord> findByEndTimeIsNotNull();
+
 
 }
 
