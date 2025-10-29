@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -18,6 +19,7 @@ public class VehicleRespone {
     private String color;
     private String ownerName;
     private int maintenanceCount;
+    private Instant closetTime;
 
     private List<String> maintenanceServices;
 }
