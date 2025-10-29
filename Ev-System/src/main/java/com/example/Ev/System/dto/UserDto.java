@@ -2,6 +2,8 @@ package com.example.Ev.System.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UserDto {
     private Integer id;
@@ -10,4 +12,5 @@ public class UserDto {
     private String phone;
     private String role;
 
+    List<VehicleRespone> vehicles;
 }
