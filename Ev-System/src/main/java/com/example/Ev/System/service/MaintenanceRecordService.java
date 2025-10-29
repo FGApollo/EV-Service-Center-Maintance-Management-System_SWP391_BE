@@ -1,5 +1,6 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.AppointmentDto;
 import com.example.Ev.System.dto.MaintainanceRecordDto;
 import com.example.Ev.System.dto.PartUsageDto;
 import com.example.Ev.System.dto.UserDto;
@@ -42,23 +43,19 @@ public class MaintenanceRecordService {
     @Transactional
     public void recordMaintenance(Integer appointmentId, MaintainanceRecordDto maintainanceRecordDto) {
 
-        // 🔹 Find appointment
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        // 🔹 Collect technician IDs
         List<Integer> staffIds = maintainanceRecordDto.getStaffIds();
         if (staffIds == null || staffIds.isEmpty()) {
             throw new RuntimeException("No technicians assigned");
         }
 
-        // Validate staff exist
         for (Integer staffId : staffIds) {
             userRepository.findById(staffId)
                     .orElseThrow(() -> new RuntimeException("Staff not found: " + staffId));
         }
 
-        // 🔹 Create ONE maintenance record for all technicians
         MaintenanceRecord record = maintainanceRecordMapper.toEntity(maintainanceRecordDto);
         record.setAppointment(appointment);
         record.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
@@ -92,16 +89,25 @@ public class MaintenanceRecordService {
     }
 
     @Transactional
-    public void updateMaintainanceRecord(Integer appointmentID, MaintainanceRecordDto maintainanceRecordDto) {
+    public void updateMaintainanceRecord(Integer appointmentID, MaintainanceRecordDto maintainanceRecordDto, int status) {
+
         System.out.println("da chay toi day");
         MaintenanceRecord existMaintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentID)
                 .orElseThrow(() -> new RuntimeException("Maintenance record not found for appointment ID: " + appointmentID));
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord();
         maintenanceRecord.setAppointment(existMaintenanceRecord.getAppointment());
         maintenanceRecord.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
-        maintenanceRecord.setChecklist(existMaintenanceRecord + maintainanceRecordDto.getChecklist());
+        maintenanceRecord.setChecklist(
+                existMaintenanceRecord.getChecklist() + " | " + maintainanceRecordDto.getChecklist()
+        );
+        if(status == 1){
+            maintenanceRecord.setEndTime(Instant.now());
+        }
         maintenanceRecord.setStartTime(existMaintenanceRecord.getStartTime());
-        maintenanceRecord.setRemarks(existMaintenanceRecord.getRemarks() + maintenanceRecord.getRemarks());
+
+        maintenanceRecord.setRemarks(
+                existMaintenanceRecord.getRemarks() + " | " + maintainanceRecordDto.getRemarks()
+        );
 
         List<Integer> staffIds = maintainanceRecordDto.getStaffIds();
         String technicianIds = staffIds.stream().map(String::valueOf).collect(Collectors.joining(","));
@@ -110,7 +116,6 @@ public class MaintenanceRecordService {
         Set<PartUsage> oldPartUsages = existMaintenanceRecord.getPartUsages();
         List<PartUsageDto> updatedUsageDtos = maintainanceRecordDto.getPartsUsed();
         System.out.println(updatedUsageDtos.size());
-        Set<PartUsage> oldPartUsage = existMaintenanceRecord.getPartUsages();
         Set<PartUsage> newPartUsages = new LinkedHashSet<>();
         if (maintainanceRecordDto.getPartsUsed() != null) {
             for (PartUsageDto partUsageDto : maintainanceRecordDto.getPartsUsed()) {
@@ -118,7 +123,7 @@ public class MaintenanceRecordService {
                         .orElseThrow(() -> new RuntimeException("Part not found: " + partUsageDto.getPartId()));
                 PartUsage newUsage = new PartUsage();
                 newUsage.setPart(part);
-                PartUsage temp = oldPartUsage.stream().
+                PartUsage temp = oldPartUsages.stream().
                         filter(pu -> pu.getPart().getId().equals(partUsageDto.getPartId().longValue())).findFirst().orElse(null);
                 if(temp != null){
                     newUsage.setQuantityUsed(partUsageDto.getQuantityUsed() + temp.getQuantityUsed());
@@ -152,5 +157,7 @@ public class MaintenanceRecordService {
         Optional<MaintenanceRecord> maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentId);
         return maintenanceRecord.isPresent();
     }
+
+
 
 }

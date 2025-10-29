@@ -1,11 +1,13 @@
 package com.example.Ev.System.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class AppointmentResponse {
     private Integer appointmentId;
     private String customerName;
@@ -34,9 +36,10 @@ public class ServiceAppointmentDto {
         this.serviceCenterName = serviceCenterName;
         this.appointmentDate = appointmentDate;
         this.serviceNames = serviceNames;
-
         this.status = status;
     }
+
+
 
 
 }

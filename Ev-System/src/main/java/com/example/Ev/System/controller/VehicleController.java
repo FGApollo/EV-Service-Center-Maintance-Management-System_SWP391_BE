@@ -1,6 +1,7 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.VehicleDto;
+import com.example.Ev.System.dto.VehicleRespone;
 import com.example.Ev.System.entity.Vehicle;
 import com.example.Ev.System.service.VehicleService;
 import org.springframework.security.core.Authentication;
@@ -31,4 +32,11 @@ public class VehicleController {
     public void deleteVehicle(@PathVariable Integer id, Authentication authentication ) {
         vehicleService.deleteVehicle(authentication.getName(), id);
     }
+
+    @GetMapping("/serviced")
+    public List<VehicleRespone> getServicedVehiclesByCurrentCustomer(Authentication authentication) {
+        return vehicleService.getVeicleResponeByCurrentCustomer(authentication);
+    }
+
+
 }
