@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+
 @Service
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
@@ -33,6 +34,8 @@ public class VehicleService {
         this.userRepository = userRepo;
         this.appointmentRepository = appointmentRepository;
     }
+
+
 
     private VehicleDto toDto(Vehicle v) {
         VehicleDto vehicleDto = new VehicleDto();
