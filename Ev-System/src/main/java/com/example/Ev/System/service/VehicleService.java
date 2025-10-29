@@ -117,6 +117,7 @@ public class VehicleService {
                 response.setModel(vehicle.getModel());
                 response.setYear(vehicle.getYear());
                 response.setVin(vehicle.getVin());
+                response.setClosetTime(serviceAppointment.getCreatedAt());
                 //response.setLicensePlate(vehicle.getLicensePlate());
                 //response.setColor(vehicle.getColor());
                 response.setOwnerName(user.getFullName());

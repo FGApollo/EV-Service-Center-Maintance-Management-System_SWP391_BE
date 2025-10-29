@@ -86,6 +86,7 @@ public class UserService {
                         "vehicle.getColor()",
                         user.getFullName(),
                         appointmentServices.size(),
+                        null,
                         serviceTypes
                 );
                 vehicleResponses.add(vehicleRespone);
