@@ -27,9 +27,8 @@ public class ServiceAppointmentService {
     private final MaintenanceRecordService maintenanceRecordService;
     private final NotificationProgressService notificationProgressService;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
-    private final NotificationService notificationService;
 
-    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository, NotificationService notificationService) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -41,7 +40,6 @@ public class ServiceAppointmentService {
         this.maintenanceRecordService = maintenanceRecordService;
         this.notificationProgressService = notificationProgressService;
         this.maintenanceRecordRepository = maintenanceRecordRepository;
-        this.notificationService = notificationService;
     }
 
     public List<ServiceAppointment> getStatusAppointments(String status) {
