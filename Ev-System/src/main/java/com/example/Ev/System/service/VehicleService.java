@@ -106,39 +106,39 @@ public class VehicleService {
 
     }
 
-    @Transactional
-    public List<VehicleRespone> getVeicleResponeByCurrentCustomer(Authentication authentication){
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        List<Vehicle> vehicles = vehicleRepository.findVehicleByCustomer(user);
-        List<VehicleRespone> responses = new ArrayList<>();
-        for (Vehicle vehicle : vehicles) {
-            ServiceAppointment serviceAppointment = appointmentRepository.findFirstByVehicleOrderByCreatedAtDesc(vehicle);
-            if(serviceAppointment != null){
-                VehicleRespone response = new VehicleRespone();
-                response.setVehicleId(vehicle.getId());
-                response.setModel(vehicle.getModel());
-                response.setYear(vehicle.getYear());
-                response.setVin(vehicle.getVin());
-                response.setClosetTime(serviceAppointment.getCreatedAt());
-                //response.setLicensePlate(vehicle.getLicensePlate());
-                //response.setColor(vehicle.getColor());
-                response.setOwnerName(user.getFullName());
-                int number = numberOfCareByCar(vehicle);
-                response.setMaintenanceCount(number);
-                Set<ServiceType> serviceTypes = serviceAppointment.getServiceTypes();
-                List<String> serviceString = new ArrayList<>();
-                for (ServiceType serviceType : serviceTypes) {
-                    serviceString.add(serviceType.getName());
-                }
-                response.setMaintenanceServices(serviceString);
-                responses.add(response);
-            }
-
-        }
-        return responses;
-    }
+//    @Transactional
+//    public List<VehicleRespone> getVeicleResponeByCurrentCustomer(Authentication authentication){
+//        String email = authentication.getName();
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//        List<Vehicle> vehicles = vehicleRepository.findVehicleByCustomer(user);
+//        List<VehicleRespone> responses = new ArrayList<>();
+//        for (Vehicle vehicle : vehicles) {
+//            ServiceAppointment serviceAppointment = appointmentRepository.findFirstByVehicleOrderByCreatedAtDesc(vehicle);
+//            if(serviceAppointment != null){
+//                VehicleRespone response = new VehicleRespone();
+//                response.setVehicleId(vehicle.getId());
+//                response.setModel(vehicle.getModel());
+//                response.setYear(vehicle.getYear());
+//                response.setVin(vehicle.getVin());
+//                response.setClosetTime(serviceAppointment.getCreatedAt());
+//                //response.setLicensePlate(vehicle.getLicensePlate());
+//                //response.setColor(vehicle.getColor());
+//                response.setOwnerName(user.getFullName());
+//                int number = numberOfCareByCar(vehicle);
+//                response.setMaintenanceCount(number);
+//                Set<ServiceType> serviceTypes = serviceAppointment.getServiceTypes();
+//                List<String> serviceString = new ArrayList<>();
+//                for (ServiceType serviceType : serviceTypes) {
+//                    serviceString.add(serviceType.getName());
+//                }
+//                response.setMaintenanceServices(serviceString);
+//                responses.add(response);
+//            }
+//
+//        }
+//        return responses;
+//    }
 
     public int numberOfCareByCar(Vehicle vehicle) {
         int number = 0;
@@ -151,9 +151,8 @@ public class VehicleService {
         return number;
     }
 
-    public ServiceAppointment findServiceAppointmentByVehicle(Vehicle vehicle){
-        return appointmentRepository.findFirstByVehicleOrderByCreatedAtDesc(vehicle);
-    }
-
+//    public ServiceAppointment findServiceAppointmentByVehicle(Vehicle vehicle){
+//        return appointmentRepository.findFirstByVehicleOrderByCreatedAtDesc(vehicle);
+//    }
 
 }
