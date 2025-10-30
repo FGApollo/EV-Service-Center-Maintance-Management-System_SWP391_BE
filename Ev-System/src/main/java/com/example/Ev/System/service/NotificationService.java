@@ -97,8 +97,7 @@ public class NotificationService {
         String to = customer.getEmail();
         String subject = "Cập nhật trạng thái lịch hẹn dịch vụ";
         String body = String.format(
-                "Xin chào %s,\n\nTrạng thái lịch hẹn bảo dưỡng của bạn (Mã: %d) đã thay đổi.\n" +
-                        "Từ: %s → %s\n\nCảm ơn bạn đã sử dụng dịch vụ EV Service Center.",
+                "Xin chào %s,\n\nTrạng thái lịch hẹn bảo dưỡng của bạn (Mã: %d) đã thay đổi thành: %s.\n\nCảm ơn bạn đã sử dụng dịch vụ EV Service Center.",
                 customer.getFullName(),
                 appointment.getId(),
                 newStatus

@@ -68,8 +68,8 @@ public class ServiceAppointmentService {
     public ServiceAppointment updateAppointment(Integer appointmentId,String status) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
         User user = appointment.getCustomer();
-        notificationService.sendAppointmentStatusChanged(user,appointment,"accept");
-        
+        notificationService.sendAppointmentStatusChanged(user,appointment,status);
+
         String oldStatus = appointment.getStatus(); //new
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
