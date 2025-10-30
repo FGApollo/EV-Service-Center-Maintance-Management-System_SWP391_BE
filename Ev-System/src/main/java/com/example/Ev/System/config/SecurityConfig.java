@@ -1,3 +1,4 @@
+
 package com.example.Ev.System.config;
 
 import org.springframework.context.annotation.Bean;
@@ -36,13 +37,6 @@ public class SecurityConfig {
                         // Public
                         .requestMatchers("/", "/api/auth/**").permitAll()
                         // Role-based
-//                        .requestMatchers("/api/appointments/**").permitAll() // ✅ public nho xoa
-//                        .requestMatchers("/assignments/**").permitAll() // ✅ public nho xoa
-//                        .requestMatchers("/MaintainanceRecord/**").permitAll() // ✅ public nho xoa
-//                        .requestMatchers("/worklogs/**").permitAll() // ✅ public nho xoa
-//                        .requestMatchers("/Users/**").permitAll() // ✅ public nho xoa
-//                        .requestMatchers("/api/auth/register/**").permitAll() // ✅ public nho xoa
-
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")

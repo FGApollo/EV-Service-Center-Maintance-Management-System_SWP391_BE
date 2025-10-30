@@ -2,6 +2,7 @@ package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.VehicleDto;
 import com.example.Ev.System.dto.VehicleRespone;
+import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.Vehicle;
 import com.example.Ev.System.service.VehicleService;
 import org.springframework.security.core.Authentication;
@@ -33,10 +34,14 @@ public class VehicleController {
         vehicleService.deleteVehicle(authentication.getName(), id);
     }
 
-    @GetMapping("/serviced")
-    public List<VehicleRespone> getServicedVehiclesByCurrentCustomer(Authentication authentication) {
-        return vehicleService.getVeicleResponeByCurrentCustomer(authentication);
-    }
-
+//    @GetMapping("/serviced")
+//    public List<VehicleRespone> getServicedVehiclesByCurrentCustomer(Authentication authentication) {
+//        return vehicleService.getVeicleResponeByCurrentCustomer(authentication);
+//    }
+//
+//    @GetMapping("/last_appointment")
+//    public ServiceAppointment findLastServiceAppointment (Vehicle vehicle){
+//        return vehicleService.findServiceAppointmentByVehicle(vehicle);
+//    }
 
 }
