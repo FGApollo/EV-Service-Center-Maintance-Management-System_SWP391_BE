@@ -71,7 +71,6 @@ public class AppointmentController {
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
     }
 
-
     @PutMapping("/{id}/cancel")
     public ResponseEntity<ServiceAppointment> cancelAppointment(
             @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class

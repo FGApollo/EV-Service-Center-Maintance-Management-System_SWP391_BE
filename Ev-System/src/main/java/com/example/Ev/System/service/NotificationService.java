@@ -1,6 +1,7 @@
 package com.example.Ev.System.service;
 
 import com.example.Ev.System.entity.MaintenanceReminder;
+import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.entity.Vehicle;
 import com.example.Ev.System.repository.MaintenanceReminderRepository;
@@ -85,5 +86,35 @@ public class NotificationService {
 
         Optional<User> userOpt = userRepo.findById(customerId);
         return userOpt.map(User::getEmail).orElse(null);
+    }
+
+    public void sendAppointmentStatusChanged(User customer, ServiceAppointment appointment, String newStatus) {
+        if (customer == null || customer.getEmail() == null) {
+            System.err.println("❌ Không thể gửi email: thông tin khách hàng không hợp lệ.");
+            return;
+        }
+
+        String to = customer.getEmail();
+        String subject = "Cập nhật trạng thái lịch hẹn dịch vụ";
+        String body = String.format(
+                "Xin chào %s,\n\nTrạng thái lịch hẹn bảo dưỡng của bạn (Mã: %d) đã thay đổi.\n" +
+                        "Từ: %s → %s\n\nCảm ơn bạn đã sử dụng dịch vụ EV Service Center.",
+                customer.getFullName(),
+                appointment.getId(),
+                newStatus
+        );
+
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setFrom(from);
+        msg.setTo(to);
+        msg.setSubject(subject);
+        msg.setText(body);
+
+        try {
+            mailSender.send(msg);
+            System.out.println("✅ Đã gửi email thay đổi trạng thái cho: " + to);
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi khi gửi email: " + e.getMessage());
+        }
     }
 }

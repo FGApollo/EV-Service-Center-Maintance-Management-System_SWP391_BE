@@ -27,8 +27,9 @@ public class ServiceAppointmentService {
     private final MaintenanceRecordService maintenanceRecordService;
     private final NotificationProgressService notificationProgressService;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
+    private final NotificationService notificationService;
 
-    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository, NotificationService notificationService) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -40,6 +41,7 @@ public class ServiceAppointmentService {
         this.maintenanceRecordService = maintenanceRecordService;
         this.notificationProgressService = notificationProgressService;
         this.maintenanceRecordRepository = maintenanceRecordRepository;
+        this.notificationService = notificationService;
     }
 
     public List<ServiceAppointment> getStatusAppointments(String status) {
@@ -50,7 +52,8 @@ public class ServiceAppointmentService {
     @Transactional
     public ServiceAppointment acceptAppointment(Integer appointmentId) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
-
+        User user = appointment.getCustomer();
+        notificationService.sendAppointmentStatusChanged(user,appointment,"accept");
         String oldStatus = appointment.getStatus();//new
         appointment.setStatus("accept");
         appointment.setCreatedAt(Instant.now());
@@ -64,7 +67,9 @@ public class ServiceAppointmentService {
     @Transactional
     public ServiceAppointment updateAppointment(Integer appointmentId,String status) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
-
+        User user = appointment.getCustomer();
+        notificationService.sendAppointmentStatusChanged(user,appointment,"accept");
+        
         String oldStatus = appointment.getStatus(); //new
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
