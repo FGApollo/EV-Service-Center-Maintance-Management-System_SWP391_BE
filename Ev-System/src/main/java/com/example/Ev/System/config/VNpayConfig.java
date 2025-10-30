@@ -12,8 +12,7 @@ import java.util.TimeZone;
 @Configuration
 public class VNpayConfig {
 
-    @Value("${VNP_TMNCODE}")
-    private String vnp_TmnCode;
+    private String vnp_TmnCode = PaymentConfig.vnp_tmncode;
     String vnp_TxnRef = PaymentConfig.getRandomNumber(8);
 
     public Map<String, String> getVnPayConfig() {

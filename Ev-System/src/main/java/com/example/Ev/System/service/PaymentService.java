@@ -23,10 +23,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class PaymentService implements  PaymentServiceI {
 
-    @Value("${SECRETKEY}")
-    private String vnp_SecretKey;
-    @Value("${VNP_PAYURL}")
-    private String payUrl;
+    private String vnp_SecretKey = PaymentConfig.secretKey;
+
+    private String payUrl = PaymentConfig.vnp_payurl;
 
     @Autowired
     private InvoiceRepository invoiceRepository;
@@ -69,6 +68,10 @@ public class PaymentService implements  PaymentServiceI {
         vnp_ParamsMap.put("vnp_IpAddr", paymentDto.getClientIp());
         vnp_ParamsMap.put("vnp_TxnRef", payment.getId().toString());
         vnp_ParamsMap.put("vnp_OrderInfo", "Pay invoice " + invoiceInfo.getId());
+        vnp_ParamsMap.put("vnp_OrderType", "billpayment");
+        vnp_ParamsMap.put("vnp_Locale", "vn");
+        vnp_ParamsMap.put("vnp_ReturnUrl", PaymentConfig.vnp_returnurl);
+
         String queryUrl = PaymentConfig.getPaymentUrl(vnp_ParamsMap, true);
         String hashdata = PaymentConfig.getPaymentUrl(vnp_ParamsMap, false);
         String vnp_SecureHash = PaymentConfig.hmacSHA512(vnp_SecretKey, hashdata);
@@ -89,7 +92,7 @@ public class PaymentService implements  PaymentServiceI {
     @Override
     public PaymentResponse handlePaymentCallback(Map<String, String> allParams) {
         String responseCode = allParams.get("vnp_ResponseCode");
-        String invoiceId = allParams.get("vnp_OrderInfo").replace("Pay invoice: ","");
+        String invoiceId = allParams.get("vnp_OrderInfo").replaceAll("\\D+", "");
         BigDecimal amount = BigDecimal.valueOf(Long.parseLong(allParams.get("vnp_Amount"))).divide(BigDecimal.valueOf(100));
         String vnp_TxnRef = allParams.get("vnp_TxnRef");
         Integer paymentId = Integer.parseInt(vnp_TxnRef);

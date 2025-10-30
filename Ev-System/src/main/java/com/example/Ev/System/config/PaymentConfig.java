@@ -13,54 +13,45 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class PaymentConfig {
+    public static String vnp_tmncode = "XX2RNFO3";
+    public static String secretKey = "XEE13TZ9HH3Y1455OBKCDJ2QYKB5RWZ8";
+    public static String vnp_payurl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+    public static String vnp_returnurl = "http://localhost:8080/api/auth/payments/return";
 
-    @Value("${SECRETKEY}")
-    private static String secretKey;
-
-    public static String getPaymentUrl(Map<String,String> vnp_Params, boolean type) {
-        List fieldNames = new ArrayList(vnp_Params.keySet());
+    public static String getPaymentUrl(Map<String, String> vnp_Params, boolean type) {
+        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
+        Iterator<String> itr = fieldNames.iterator();
+
         while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) vnp_Params.get(fieldName);
+            String fieldName = itr.next();
+            String fieldValue = vnp_Params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                if (!type)           {
+                if (!type) {
+                    // Build hash data
                     hashData.append(fieldName);
                     hashData.append('=');
-                    try {
-                        hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (itr.hasNext()) {
-                        query.append('&');
-                        hashData.append('&');
-                    }
-                    return hashData.toString();
+                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8));
                 } else {
-                    try {
-                        query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8.toString()));
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
+                    // Build query string
+                    query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8));
                     query.append('=');
-                    try {
-                        query.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (itr.hasNext()) {
-                        query.append('&');
+                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8));
+                }
+
+                if (itr.hasNext()) {
+                    if (!type) {
                         hashData.append('&');
+                    } else {
+                        query.append('&');
                     }
-                    return query.toString();
                 }
             }
         }
-        return null;
+
+        return type ? query.toString() : hashData.toString();
     }
 
     public static String Sha256(String message) {
