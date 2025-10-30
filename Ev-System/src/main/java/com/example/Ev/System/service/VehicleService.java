@@ -151,5 +151,9 @@ public class VehicleService {
         return number;
     }
 
+    public ServiceAppointment findServiceAppointmentByVehicle(Vehicle vehicle){
+        return appointmentRepository.findFirstByVehicleOrderByCreatedAtDesc(vehicle);
+    }
+
 
 }
