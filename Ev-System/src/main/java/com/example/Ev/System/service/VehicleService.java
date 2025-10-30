@@ -106,6 +106,8 @@ public class VehicleService {
 
     }
 
+
+
 //    @Transactional
 //    public List<VehicleRespone> getVeicleResponeByCurrentCustomer(Authentication authentication){
 //        String email = authentication.getName();
@@ -140,6 +142,7 @@ public class VehicleService {
 //        return responses;
 //    }
 
+    
     public int numberOfCareByCar(Vehicle vehicle) {
         int number = 0;
         List<ServiceAppointment> serviceAppointments = appointmentRepository.findAllByVehicle(vehicle);
