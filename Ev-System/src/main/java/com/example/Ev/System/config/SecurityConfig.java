@@ -1,4 +1,3 @@
-
 package com.example.Ev.System.config;
 
 import org.springframework.context.annotation.Bean;
@@ -31,48 +30,54 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Permit preflight
+                        // Preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Public
+
+                        // Swagger/OpenAPI
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**"
+                        ).permitAll()
+
+                        // Public (auth)
                         .requestMatchers("/", "/api/auth/**").permitAll()
+
                         // Role-based
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/manager/**").hasAuthority("manager")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
                         .requestMatchers("/api/technician/**").hasAuthority("technician")
                         .requestMatchers("/api/customer/**").hasAuthority("customer")
-                        // Các API còn lại chỉ cần authenticated
+
+                        // Còn lại yêu cầu authenticated
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ⚙️ Ghi rõ domain frontend (ở Vercel và local)
         configuration.setAllowedOrigins(Arrays.asList(
-                "https://ev-teal.vercel.app",  //
+                "https://ev-teal.vercel.app",
                 "http://localhost:5173",
-                "https://ev-service-center-maintance-management-um2j.onrender.com" // cho phép chạy dev ở local
+                "https://ev-service-center-maintance-management-um2j.onrender.com"
         ));
-
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Auth-Token"));
         configuration.setExposedHeaders(List.of("X-Auth-Token"));
-        configuration.setAllowCredentials(true); // ✅ Cho phép gửi cookie/token qua request
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
