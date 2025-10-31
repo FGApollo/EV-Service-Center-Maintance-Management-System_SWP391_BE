@@ -14,4 +14,6 @@ public class AppointmentStatusDTO {
     private String status;
     private String ServiceCenterName;
     private String VehicleModel;
+    private String ServiceTypeName;
+    private int cost;
 }
