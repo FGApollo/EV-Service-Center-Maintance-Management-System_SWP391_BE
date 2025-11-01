@@ -3,9 +3,12 @@ package com.example.Ev.System.controller;
 import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.repository.StaffAssignmentRepository;
+import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.service.StaffAppointmentService;
+import com.example.Ev.System.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +17,13 @@ import java.util.List;
 @RequestMapping("/assignments")
 public class StaffAssignmentController {
     private final StaffAppointmentService staffAppointmentService;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public StaffAssignmentController(StaffAppointmentService staffAppointmentService) {
+    public StaffAssignmentController(StaffAppointmentService staffAppointmentService, UserService userService, UserRepository userRepository) {
         this.staffAppointmentService = staffAppointmentService;
+        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @PutMapping("/{appointmentId}/staff")
@@ -32,9 +39,13 @@ public class StaffAssignmentController {
     }
 
     @GetMapping("/free")
-    public List<User> findFreeStaff() {
-        return staffAppointmentService.getFreeTechnician();
+    public List<User> findFreeStaff(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
+        int id = user.getServiceCenter().getId();
+        Integer centerId = user.getServiceCenter().getId();
+        return staffAppointmentService.getFreeTechnician(centerId,"in_progress");//lay in_progress vi bo no vo de tim busy employeed trc
     }
-    //da xong
+    //da xong , chi hien free cua thg manager vs center cua no
 
 }

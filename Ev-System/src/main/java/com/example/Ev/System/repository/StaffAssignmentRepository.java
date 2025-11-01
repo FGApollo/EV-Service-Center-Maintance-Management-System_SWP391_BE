@@ -21,4 +21,6 @@ public interface StaffAssignmentRepository extends JpaRepository<StaffAssignment
 
     void deleteByAppointment_Id(Integer appointmentId);
 
+
+
 }

@@ -2,12 +2,10 @@ package com.example.Ev.System.service;
 import com.example.Ev.System.dto.RegisterUserDto;
 import com.example.Ev.System.dto.UserDto;
 import com.example.Ev.System.dto.VehicleRespone;
-import com.example.Ev.System.entity.ServiceAppointment;
-import com.example.Ev.System.entity.ServiceType;
-import com.example.Ev.System.entity.User;
-import com.example.Ev.System.entity.Vehicle;
+import com.example.Ev.System.entity.*;
 import com.example.Ev.System.mapper.UserMapper;
 import com.example.Ev.System.repository.AppointmentRepository;
+import com.example.Ev.System.repository.ServiceCenterRepository;
 import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.repository.VehicleRepository;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +27,14 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final VehicleRepository vehicleRepository;
     private final AppointmentRepository appointmentRepository;
-
-    public UserService(UserMapper userMapper, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, VehicleRepository vehicleRepository, AppointmentRepository appointmentRepository) {
+    private final ServiceCenterRepository serviceCenterRepository;
+    public UserService(UserMapper userMapper, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, VehicleRepository vehicleRepository, AppointmentRepository appointmentRepository, ServiceCenterRepository serviceCenterRepository) {
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.vehicleRepository = vehicleRepository;
         this.appointmentRepository = appointmentRepository;
+        this.serviceCenterRepository = serviceCenterRepository;
     }
 
 
@@ -57,8 +56,9 @@ public class UserService {
     }
 
     @Transactional
-    public List<UserDto> getAllByRole(String role) {
-        List<User> userByRole = userRepository.findAllByRole(role);
+    public List<UserDto> getAllByRole(String role,int id) {
+        ServiceCenter serviceCenter = serviceCenterRepository.findById(id).get();
+        List<User> userByRole = userRepository.findAllByRoleAndServiceCenter(role,serviceCenter);
         List<UserDto> userDtos = new ArrayList<>();
 
         for (User user : userByRole) {
@@ -101,7 +101,8 @@ public class UserService {
 
 
     @Transactional
-    public UserDto createEmployee(RegisterUserDto userDto,String role){
+    public UserDto createEmployee(RegisterUserDto userDto,String role,int id){
+        ServiceCenter serviceCenter = serviceCenterRepository.findById(id).orElse(null);
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
@@ -110,6 +111,7 @@ public class UserService {
         user.setStatus("active");
         user.setCreatedAt(Instant.now());
         user.setPasswordHash(passwordEncoder.encode(userDto.getPassword()));
+        user.setServiceCenter(serviceCenter);
         userRepository.save(user);
         var userDTO = userMapper.toDTO(user);
         return userDTO;
@@ -123,6 +125,10 @@ public class UserService {
         userRepository.save(user);
         UserDto userDTO = userMapper.toDTO(user);
         return userDTO;
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
 }

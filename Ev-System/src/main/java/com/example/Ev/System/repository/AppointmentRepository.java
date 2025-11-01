@@ -10,7 +10,8 @@ import java.util.List;
 public interface AppointmentRepository extends JpaRepository<ServiceAppointment, Integer> {
     boolean existsByServiceCenter_IdAndAppointmentDate(Long centerId, Instant appointmentDate);
     List<ServiceAppointment> findByCustomerOrderByAppointmentDateDesc(User customer);
-    public List<ServiceAppointment> findAllByStatus(String status);
+
+    List<ServiceAppointment> findAllByStatusAndServiceCenter(String status, ServiceCenter serviceCenter);
     public List<ServiceAppointment> findAllByStaffAssignments_staff_id(Integer staffId);
 
     List<ServiceAppointment> findAllByCustomer(User customer);
@@ -18,6 +19,8 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
     public ServiceAppointment findFirstByVehicleOrderByCreatedAtDesc(Vehicle vehicle);
 
     List<ServiceAppointment> findAllByVehicle(Vehicle vehicle);
+
+    
 
     
 

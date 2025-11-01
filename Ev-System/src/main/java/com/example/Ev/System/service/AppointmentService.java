@@ -89,7 +89,7 @@ public class ServiceAppointmentService {
             throw new BadRequestException("This vehicle not match your account");
         }
 
-        Optional<ServiceCenter> serviceCenter = serviceCenterRepo.findById(request.getServiceCenterId());
+        Optional<ServiceCenter> serviceCenter = serviceCenterRepo.findById(request.getServiceCenterId().intValue());
         if(serviceCenter.isEmpty()){
             throw new BadRequestException("Center not found");
         }

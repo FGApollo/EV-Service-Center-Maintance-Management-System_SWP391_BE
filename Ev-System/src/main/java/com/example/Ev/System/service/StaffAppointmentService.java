@@ -1,9 +1,11 @@
 package com.example.Ev.System.service;
 
 import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.entity.ServiceCenter;
 import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.repository.AppointmentRepository;
+import com.example.Ev.System.repository.ServiceCenterRepository;
 import com.example.Ev.System.repository.StaffAssignmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -19,11 +21,13 @@ public class StaffAppointmentService {
     private  final AppointmentRepository appointmentRepository;
     private final StaffAssignmentRepository staffAssignmentRepository;
     private final UserRepository userRepository;
+    private final ServiceCenterRepository serviceCenterRepository;
 
-    public StaffAppointmentService(AppointmentRepository appointmentRepository, StaffAssignmentRepository staffAssignmentRepository, UserRepository userRepository) {
+    public StaffAppointmentService(AppointmentRepository appointmentRepository, StaffAssignmentRepository staffAssignmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository) {
         this.appointmentRepository = appointmentRepository;
         this.staffAssignmentRepository = staffAssignmentRepository;
         this.userRepository = userRepository;
+        this.serviceCenterRepository = serviceCenterRepository;
     }
 
     @Transactional
@@ -53,20 +57,23 @@ public class StaffAppointmentService {
     }
 
 
-    public void  autoAssignTechnician(Integer appointmentId , String note){
-        List<User> freeTech = getFreeTechnician();
+    public void  autoAssignTechnician(Integer appointmentId , String note , int serviceCenterId,String status){
+        List<User> freeTech = getFreeTechnician(serviceCenterId,status);
         List<Integer> chosenTech = new ArrayList<>();
         chosenTech.add(freeTech.get(0).getId());
         assignTechnicians(appointmentId, chosenTech , note);
     }
 
-    public List<User> getFreeTechnician(){
+
+    public List<User> getFreeTechnician(int id,String status){
+        ServiceCenter serviceCenter = serviceCenterRepository.findServiceCenterById(id);
         Set<User> busyTech = new HashSet<>();
-        List<ServiceAppointment> appointments = appointmentRepository.findAllByStatus("progress");
+        List<ServiceAppointment> appointments = appointmentRepository.findAllByStatusAndServiceCenter(status,serviceCenter);
+        List<User> employeeCenter = userRepository.findAllByServiceCenter(serviceCenter);
         for(ServiceAppointment appointment : appointments){
             staffAssignmentRepository.findStaffByAppointmentId(appointment.getId()).forEach(busyTech::add);
         }
-        List<User> allTech = userRepository.findAllByRole("technician");
+        List<User> allTech = userRepository.findAllByRoleAndServiceCenter("technician",serviceCenter);
         return allTech.stream()
                 .filter(tech -> !busyTech.contains(tech))
                 .toList();
