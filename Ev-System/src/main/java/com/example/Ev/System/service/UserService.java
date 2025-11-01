@@ -130,6 +130,10 @@ public class UserService {
         return userDTO;
     }
 
+
+
+
+    
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
@@ -171,3 +175,21 @@ public class UserService {
         return userDtos;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
