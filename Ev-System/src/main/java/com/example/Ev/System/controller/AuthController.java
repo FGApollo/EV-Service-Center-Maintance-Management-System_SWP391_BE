@@ -1,11 +1,9 @@
 package com.example.Ev.System.controller;
 
-import com.example.Ev.System.dto.LoginRequest;
-import com.example.Ev.System.dto.LoginResponse;
-import com.example.Ev.System.dto.UpdateUserRequest;
-import com.example.Ev.System.dto.UpdateUserResponse;
+import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.service.AuthService;
+import com.example.Ev.System.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,15 +11,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class AuthController {
     private final AuthService authService;
+    private final UserService userService;
 
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, UserService userService) {
         this.authService = authService;
+        this.userService = userService;
     }
 
     @PostMapping("/auth/login")
     public LoginResponse login(@RequestBody LoginRequest request){
         return authService. login(request);
+    }
+
+    @PostMapping("/auth/register")
+    public ResponseEntity<UserDto> register(@RequestBody RegisterUserDto registerUserDto)
+    {
+        UserDto userDTO = userService.createUser(registerUserDto);
+        return ResponseEntity.ok(userDTO);
     }
 
     @PutMapping("/update/{id}")

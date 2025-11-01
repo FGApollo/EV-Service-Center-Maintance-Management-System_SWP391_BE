@@ -6,6 +6,7 @@ import com.example.Ev.System.dto.AppointmentResponse;
 import com.example.Ev.System.dto.AppointmentStatusDTO;
 import com.example.Ev.System.dto.MaintainanceRecordDto;
 import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.entity.User;
 import com.example.Ev.System.service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +70,7 @@ public class AppointmentController {
         return ResponseEntity.ok(updatedAppointment);
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
+        //da test dc
     }
 
 
@@ -102,8 +104,14 @@ public class AppointmentController {
         return ResponseEntity.ok(updatedAppointment);
     }
 
-    public ResponseEntity<List<ServiceAppointment>> findAllByStatus(@RequestParam String status) {
-        return ResponseEntity.ok(serviceAppointmentService.getStatusAppointments(status));
+    @GetMapping("/appointments/status/{status}")
+    public List<ServiceAppointment> getAppointmentsByStatus(
+            @PathVariable String status,
+            Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        Integer centerId = currentUser.getServiceCenter().getId();
+        return serviceAppointmentService.getStatusAppointments(status, centerId);
+        //moi
     }
 
     @GetMapping("/staff")
