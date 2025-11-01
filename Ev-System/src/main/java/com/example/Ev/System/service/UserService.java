@@ -1,8 +1,10 @@
 package com.example.Ev.System.service;
 import com.example.Ev.System.dto.RegisterUserDto;
 import com.example.Ev.System.dto.UserDto;
+import com.example.Ev.System.dto.VehicleDto;
 import com.example.Ev.System.dto.VehicleRespone;
 import com.example.Ev.System.entity.*;
+import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.mapper.UserMapper;
 import com.example.Ev.System.repository.AppointmentRepository;
 import com.example.Ev.System.repository.ServiceCenterRepository;
@@ -18,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -131,4 +134,40 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    @Transactional
+    public List<UserDto> getAllCustomer(String role){
+        List<User> customer = userRepository.findAllByRole(role);
+        List<UserDto> userDtos = new ArrayList<>();
+
+        if(customer.isEmpty()){
+            throw new NotFoundException("Not Found");
+        }
+
+        for(User c : customer){
+            UserDto dto = new UserDto();
+            dto.setRole(c.getRole());
+            dto.setPhone(c.getPhone());
+            dto.setEmail(c.getEmail());
+            dto.setFullName(c.getFullName());
+            dto.setId(c.getId());
+
+            List<VehicleRespone> vehicleResponeList = new ArrayList<>();
+            if(c.getVehicles() != null){
+                for(Vehicle v : c.getVehicles()){
+                    VehicleRespone vr = new VehicleRespone();
+                    vr.setVehicleId(v.getId());
+                    vr.setVin(v.getVin());
+                    vr.setYear(v.getYear());
+                    vr.setLicensePlate(v.getLicensePlate());
+                    vr.setModel(v.getModel());
+                    vr.setColor(v.getColor());
+                    vehicleResponeList.add(vr);
+                }
+            }
+            dto.setVehicles(vehicleResponeList);
+
+            userDtos.add(dto);
+        }
+        return userDtos;
+    }
 }

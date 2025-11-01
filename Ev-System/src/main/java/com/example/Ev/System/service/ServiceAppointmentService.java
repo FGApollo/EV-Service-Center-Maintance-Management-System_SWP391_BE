@@ -93,22 +93,64 @@ public class ServiceAppointmentService {
     }
 
 
-    public List<AppointmentAllFieldsDto> getAllAppointment(){
-        return appointmentRepository.findAll()
-                .stream()
-                .map(sa -> {
-                    AppointmentAllFieldsDto dto = new AppointmentAllFieldsDto();
-                    dto.setAppointmentId(sa.getId());
-                    dto.setCustomerId(sa.getCustomer().getId());
-                    dto.setStatus(sa.getStatus());
-                    dto.setCenterId(sa.getServiceCenter().getId());
-                    dto.setAppoimentDate(sa.getAppointmentDate());
-                    dto.setVehicleId(sa.getVehicle().getId());
-                    dto.setCreateAt(sa.getCreatedAt());
-                    return dto;
-                })
-                .collect(Collectors.toList());
+//    @Transactional
+//    public List<AppointmentAllFieldsDto> getAllAppointment(){
+//        return appointmentRepository.findAll()
+//                .stream()
+//                .map(sa -> {
+//                    AppointmentAllFieldsDto dto = new AppointmentAllFieldsDto();
+//                    dto.setAppointmentId(sa.getId());
+//                    dto.setCustomerId(sa.getCustomer().getId());
+//                    dto.setStatus(sa.getStatus());
+//                    dto.setCenterId(sa.getServiceCenter().getId());
+//                    dto.setAppoimentDate(sa.getAppointmentDate());
+//                    dto.setVehicleId(sa.getVehicle().getId());
+//                    dto.setCreateAt(sa.getCreatedAt());
+//                    dto.setEmail(sa.getCustomer().getEmail());
+//                    dto.setPhone(sa.getCustomer().getPhone());
+//                    dto.setFullName(sa.getCustomer().getFullName());
+//
+//                    String serviceTypeName = sa.getServiceTypes()
+//                            .stream()
+//                            .map(ServiceType::getName)
+//                            .collect(Collectors.joining(", "));
+//                    dto.setServiceType(serviceTypeName);
+//
+//                    return dto;
+//                })
+//                .collect(Collectors.toList());
+//
+//    }
 
+    @Transactional
+    public List<AppointmentAllFieldsDto> getAllAppointment(){
+        List<ServiceAppointment> appointments = appointmentRepository.findAll();
+        List<AppointmentAllFieldsDto> appointmentAllFieldsDtos = new ArrayList<>();
+
+        for(ServiceAppointment sa : appointments){
+            AppointmentAllFieldsDto dto = new AppointmentAllFieldsDto();
+            dto.setAppointmentId(sa.getId());
+            dto.setCustomerId(sa.getCustomer().getId());
+            dto.setStatus(sa.getStatus());
+            dto.setCenterId(sa.getServiceCenter().getId());
+            dto.setAppoimentDate(sa.getAppointmentDate());
+            dto.setVehicleId(sa.getVehicle().getId());
+            dto.setCreateAt(sa.getCreatedAt());
+            dto.setEmail(sa.getCustomer().getEmail());
+            dto.setPhone(sa.getCustomer().getPhone());
+            dto.setFullName(sa.getCustomer().getFullName());
+
+            String serviceTypeName = sa.getServiceTypes()
+                           .stream()
+                           .map(ServiceType::getName)
+                           .collect(Collectors.joining(", "));
+                 dto.setServiceType(serviceTypeName);
+
+            appointmentAllFieldsDtos.add(dto);
+        }
+
+        return appointmentAllFieldsDtos;
     }
+
     
 }

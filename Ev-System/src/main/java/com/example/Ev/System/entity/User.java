@@ -6,6 +6,8 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -46,4 +48,6 @@ public class User {
     @JoinColumn(name = "center_id", referencedColumnName = "center_id")
     private ServiceCenter serviceCenter;
 
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Vehicle> vehicles = new ArrayList<>();
 }
