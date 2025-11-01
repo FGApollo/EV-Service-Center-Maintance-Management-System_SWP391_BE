@@ -42,6 +42,7 @@ public class ServiceAppointmentService {
         this.maintenanceRecordRepository = maintenanceRecordRepository;
     }
 
+    @Transactional
     public List<ServiceAppointment> getStatusAppointments(String status ,int serviceCenterId) {
         ServiceCenter serviceCenter = serviceCenterRepository.findById(serviceCenterId).orElse(null);
         List<ServiceAppointment> appointments = appointmentRepository.findAllByStatusAndServiceCenter(status,serviceCenter);
