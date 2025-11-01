@@ -105,17 +105,20 @@ public class AppointmentController {
     }
 
     @GetMapping("/appointments/status/{status}")
-    public List<ServiceAppointment> getAppointmentsByStatus(
+    public List<AppointmentDto> getAppointmentsByStatus(
             @PathVariable String status,
             Authentication authentication) {
         User currentUser = (User) authentication.getPrincipal();
         Integer centerId = currentUser.getServiceCenter().getId();
-        return serviceAppointmentService.getStatusAppointments(status, centerId);
+        List<ServiceAppointment> appointments =
+                serviceAppointmentService.getStatusAppointments(status, centerId);
+        return appointmentMapper.toDtoList(appointments);
         //moi
     }
 
     @GetMapping("/staff")
-    public ResponseEntity<List<ServiceAppointment>> findAllByStaffId(@RequestParam Integer id) {
-        return ResponseEntity.ok(serviceAppointmentService.getAppointmentsByStaffId(id));
+    public ResponseEntity<List<AppointmentDto>> findAllByStaffId(@RequestParam Integer id) {
+        List<ServiceAppointment> appointments = serviceAppointmentService.getAppointmentsByStaffId(id);
+        return ResponseEntity.ok(appointmentMapper.toDtoList(appointments));
     }
 }
