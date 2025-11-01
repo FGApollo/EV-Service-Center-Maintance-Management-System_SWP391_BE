@@ -12,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
@@ -47,5 +47,11 @@ public class UserController {
     public ResponseEntity<UserDto> deleteEmployee(@PathVariable("id") Integer id) {
         UserDto userDto = userService.deleteAccount(id);
         return ResponseEntity.ok(userDto);
+    }
+
+    @GetMapping("/all_customer")
+    public ResponseEntity<List<UserDto>> getAllCustomer(){
+        List<UserDto> customers = userService.getAllCustomer("customer");
+        return ResponseEntity.ok(customers);
     }
 }

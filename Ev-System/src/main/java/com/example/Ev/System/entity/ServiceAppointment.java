@@ -14,6 +14,7 @@ import java.util.Set;
 @Entity
 @Table(name = "serviceappointment")
 public class ServiceAppointment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "appointment_id", nullable = false)

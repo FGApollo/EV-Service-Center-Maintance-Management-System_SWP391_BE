@@ -17,6 +17,8 @@ public class AppointmentAllFieldsDto {
     private Instant appoimentDate;
     private String status;
     private Instant createAt;
-
-
+    private String fullName;
+    private String email;
+    private String phone;
+    private String serviceType;
 }
