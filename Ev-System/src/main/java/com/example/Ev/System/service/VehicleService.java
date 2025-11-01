@@ -142,7 +142,7 @@ public class VehicleService {
 //        return responses;
 //    }
 
-    
+
     public int numberOfCareByCar(Vehicle vehicle) {
         int number = 0;
         List<ServiceAppointment> serviceAppointments = appointmentRepository.findAllByVehicle(vehicle);
@@ -154,8 +154,29 @@ public class VehicleService {
         return number;
     }
 
-//    public ServiceAppointment findServiceAppointmentByVehicle(Vehicle vehicle){
-//        return appointmentRepository.findFirstByVehicleOrderByCreatedAtDesc(vehicle);
-//    }
+    public Instant getLastestAppointmentDate(String email, Integer vehicleId){
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isEmpty()){
+            throw new NotFoundException("User not found");
+
+        }
+
+        Vehicle vehicle = vehicleRepository.findVehicleById(vehicleId);
+        if(vehicle == null){
+            throw new NotFoundException("Vehicle not found");
+        }
+
+        if(!vehicle.getCustomer().getId().equals(user.get().getId())){
+            throw new BadRequestException("Not authorized");
+        }
+
+        ServiceAppointment sa = appointmentRepository.findFirstByVehicleOrderByCreatedAtDesc(vehicle);
+        if(sa == null){
+            throw new BadRequestException("Not appointment found");
+        }
+
+        return sa.getAppointmentDate();
+
+    }
 
 }
