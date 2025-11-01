@@ -8,6 +8,7 @@ import com.example.Ev.System.service.VehicleService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -39,9 +40,11 @@ public class VehicleController {
 //        return vehicleService.getVeicleResponeByCurrentCustomer(authentication);
 //    }
 //
-//    @GetMapping("/last_appointment")
-//    public ServiceAppointment findLastServiceAppointment (Vehicle vehicle){
-//        return vehicleService.findServiceAppointmentByVehicle(vehicle);
-//    }
+    @GetMapping(value = "/{vehicleId}/appointments/latest_time", produces = "text/plain")
+    public String getLastestAppointment(@PathVariable Integer vehicleId, Authentication authentication){
+        Instant time = vehicleService.getLastestAppointmentDate(authentication.getName(), vehicleId);
+        return time.toString();
+    }
+
 
 }
