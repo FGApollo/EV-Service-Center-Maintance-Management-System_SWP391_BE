@@ -5,6 +5,7 @@ import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.mapper.AppointmentMapper;
+import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -37,14 +38,16 @@ public class AppointmentController {
     private final MaintenanceRecordService maintenanceRecordService;
     private final WorkLogService workLogService;
     private final AppointmentMapper appointmentMapper;
+    private final UserRepository userRepository;
 
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper) {
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
         this.serviceAppointmentService = serviceAppointmentService;
         this.maintenanceRecordService = maintenanceRecordService;
         this.workLogService = workLogService;
         this.appointmentMapper = appointmentMapper;
+        this.userRepository = userRepository;
     }
 
     @PostMapping
@@ -108,7 +111,8 @@ public class AppointmentController {
     public List<AppointmentDto> getAppointmentsByStatus(
             @PathVariable String status,
             Authentication authentication) {
-        User currentUser = (User) authentication.getPrincipal();
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElse(null);
         Integer centerId = currentUser.getServiceCenter().getId();
         List<ServiceAppointment> appointments =
                 serviceAppointmentService.getStatusAppointments(status, centerId);
