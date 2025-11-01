@@ -1,5 +1,6 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.AppointmentAllFieldsDto;
 import com.example.Ev.System.dto.AppointmentResponse;
 import com.example.Ev.System.dto.VehicleRespone;
 import com.example.Ev.System.entity.*;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceAppointmentService {
@@ -91,7 +93,22 @@ public class ServiceAppointmentService {
     }
 
 
+    public List<AppointmentAllFieldsDto> getAllAppointment(){
+        return appointmentRepository.findAll()
+                .stream()
+                .map(sa -> {
+                    AppointmentAllFieldsDto dto = new AppointmentAllFieldsDto();
+                    dto.setAppointmentId(sa.getId());
+                    dto.setCustomerId(sa.getCustomer().getId());
+                    dto.setStatus(sa.getStatus());
+                    dto.setCenterId(sa.getServiceCenter().getId());
+                    dto.setAppoimentDate(sa.getAppointmentDate());
+                    dto.setVehicleId(sa.getVehicle().getId());
+                    dto.setCreateAt(sa.getCreatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
 
-
-
+    }
+    
 }

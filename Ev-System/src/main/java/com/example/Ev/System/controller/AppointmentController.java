@@ -1,10 +1,7 @@
 package com.example.Ev.System.controller;
 
 
-import com.example.Ev.System.dto.AppointmentRequest;
-import com.example.Ev.System.dto.AppointmentResponse;
-import com.example.Ev.System.dto.AppointmentStatusDTO;
-import com.example.Ev.System.dto.MaintainanceRecordDto;
+import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.service.*;
@@ -117,5 +114,10 @@ public class AppointmentController {
     @GetMapping("/staff")
     public ResponseEntity<List<ServiceAppointment>> findAllByStaffId(@RequestParam Integer id) {
         return ResponseEntity.ok(serviceAppointmentService.getAppointmentsByStaffId(id));
+    }
+
+    @GetMapping("/all")
+    public List<AppointmentAllFieldsDto> getAllAppointment(){
+        return serviceAppointmentService.getAllAppointment();
     }
 }

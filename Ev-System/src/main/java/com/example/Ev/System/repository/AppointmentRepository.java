@@ -22,8 +22,6 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
 
     
 
-    
-
 }
 
 
