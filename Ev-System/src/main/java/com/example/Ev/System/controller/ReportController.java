@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth/reports")
+@RequestMapping("/api/admin/reports")
 public class ReportController {
     @Autowired
     private PartUsageServiceI partUsageService;

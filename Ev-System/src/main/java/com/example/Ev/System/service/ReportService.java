@@ -5,11 +5,15 @@ import com.example.Ev.System.repository.InvoiceRepository;
 import com.example.Ev.System.repository.PartUsageRepository;
 import com.example.Ev.System.repository.ServiceAppointmentRepository;
 import com.example.Ev.System.repository.ServiceTypeRepository;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +29,7 @@ public class ReportService implements ReportServiceI {
     @Autowired
     private ServiceAppointmentRepository serviceAppointmentRepository;
 
+    //REVENUE REPORT
     @Override
     public Map<String, Double> getMonthlyRevenue() {
         List<Invoice> paidInvoices = invoiceRepository.findByStatus("PAID");
@@ -36,13 +41,16 @@ public class ReportService implements ReportServiceI {
                 ));
     }
 
+    //PROFIT REPORT
     @Override
     public Map<YearMonth, Double> getMonthlyProfit() {
 
         // Calculate revenue from paid invoices
         Map<YearMonth, Double> revenueByMonth = invoiceRepository.findByStatus("PAID").stream()
                 .collect(Collectors.groupingBy(
-                        invoice -> YearMonth.from(invoice.getPaymentDate()),
+                        invoice -> YearMonth.from(invoice.getPaymentDate()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()),
                         Collectors.summingDouble(invoice -> invoice.getTotalAmount().doubleValue())
                 ));
 
@@ -50,7 +58,9 @@ public class ReportService implements ReportServiceI {
         Map<YearMonth, Double> costByMonth = partUsageRepository.findAll()
                 .stream()
                 .collect(Collectors.groupingBy(
-                        partUsage -> YearMonth.from(partUsage.getRecord().getEndTime()),
+                        partUsage -> YearMonth.from(partUsage.getRecord().getEndTime()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()),
                         Collectors.summingDouble(partUsage -> partUsage.getPart().getUnitPrice().doubleValue() * partUsage.getQuantityUsed())
                 ));
 
@@ -69,7 +79,9 @@ public class ReportService implements ReportServiceI {
         return profitByMonth;
     }
 
+    //TRENDING SERVICES
     @Override
+    @Transactional(readOnly = true)
     public List<Map.Entry<String, Long>> getTrendingServicesLastMonth() {
         Instant oneMonthAgo = Instant.now().minus(30, ChronoUnit.DAYS);
         List<ServiceAppointment> recentAppointments = serviceAppointmentRepository.findByCreatedAtAfter(oneMonthAgo);
@@ -77,6 +89,8 @@ public class ReportService implements ReportServiceI {
         return calculateTrendingServices(recentAppointments);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<Map.Entry<String, Long>> getTrendingServices() {
         List<ServiceAppointment> appointments = serviceAppointmentRepository.findAll();
         return calculateTrendingServices(appointments);
