@@ -29,4 +29,5 @@ public class PartUsage {
     @Column(name = "unit_cost")
     private Double unitCost;
 
+
 }

@@ -1,9 +1,7 @@
 package com.example.Ev.System.service;
 
-import com.example.Ev.System.dto.AppointmentDto;
 import com.example.Ev.System.dto.MaintainanceRecordDto;
 import com.example.Ev.System.dto.PartUsageDto;
-import com.example.Ev.System.dto.UserDto;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.mapper.MaintainanceRecordMapper;
 import com.example.Ev.System.mapper.PartUsageMapper;
@@ -20,7 +18,6 @@ public class MaintenanceRecordService {
 
     private final AppointmentRepository appointmentRepository;
     private final PartRepository partRepository;
-    private final PartyUsageRepository partyUsageRepository;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
     private final MaintainanceRecordMapper maintainanceRecordMapper;
     private final UserRepository userRepository;
@@ -28,12 +25,11 @@ public class MaintenanceRecordService {
 
     public MaintenanceRecordService(AppointmentRepository appointmentRepository,
                                     PartRepository partRepository,
-                                    PartyUsageRepository partyUsageRepository,
+
                                     MaintenanceRecordRepository maintenanceRecordRepository,
                                     MaintainanceRecordMapper maintainanceRecordMapper, UserRepository userRepository, PartUsageMapper partUsageMapper) {
         this.appointmentRepository = appointmentRepository;
         this.partRepository = partRepository;
-        this.partyUsageRepository = partyUsageRepository;
         this.maintenanceRecordRepository = maintenanceRecordRepository;
         this.maintainanceRecordMapper = maintainanceRecordMapper;
         this.userRepository = userRepository;
