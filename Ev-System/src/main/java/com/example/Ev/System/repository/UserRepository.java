@@ -21,4 +21,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findAllByServiceCenter(ServiceCenter serviceCenter);
 
     boolean existsByEmail(String email);
+
 }
