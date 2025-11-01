@@ -127,4 +127,9 @@ public class AppointmentController {
         List<ServiceAppointment> appointments = serviceAppointmentService.getAppointmentsByStaffId(id);
         return ResponseEntity.ok(appointmentMapper.toDtoList(appointments));
     }
+
+    @GetMapping("/all")
+    public List<AppointmentAllFieldsDto> getAllAppointment(){
+        return serviceAppointmentService.getAllAppointment();
+    }
 }

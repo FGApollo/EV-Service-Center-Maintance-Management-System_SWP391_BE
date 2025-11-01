@@ -84,7 +84,7 @@ public class AuthService {
         profile.setEmail(user.get().getEmail());
         profile.setPhone(user.get().getPhone());
         profile.setRole(user.get().getRole());
-
+        profile.setStatus(user.get().getStatus());
         return profile;
     }
 
