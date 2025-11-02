@@ -5,6 +5,7 @@ import com.example.Ev.System.dto.AppointmentResponse;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.exception.BadRequestException;
 import com.example.Ev.System.exception.NotFoundException;
+import com.example.Ev.System.mapper.AppointmentMapper;
 import com.example.Ev.System.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,17 +24,19 @@ public class AppointmentService {
     private final ServiceTypeRepository serviceTypeRepos;
     private final VehicleRepository vehicleRepo;
     private final UserRepository userRepo;
+    private final AppointmentMapper appointmentMapper;
 
 
     public AppointmentService(AppointmentRepository appointmentRepo, AppointmentServiceRepository appointmentServiceRepo,
                               ServiceCenterRepository serviceCenterRepo, ServiceTypeRepository serviceTypeRepos,
-                              VehicleRepository vehicleRepo, UserRepository userRepo) {
+                              VehicleRepository vehicleRepo, UserRepository userRepo, AppointmentMapper appointmentMapper) {
         this.appointmentRepo = appointmentRepo;
         this.appointmentServiceRepo = appointmentServiceRepo;
         this.serviceCenterRepo = serviceCenterRepo;
         this.serviceTypeRepos = serviceTypeRepos;
         this.vehicleRepo = vehicleRepo;
         this.userRepo = userRepo;
+        this.appointmentMapper = appointmentMapper;
     }
 
     /*@Service
@@ -120,13 +123,14 @@ public class ServiceAppointmentService {
             appointmentServiceRepo.save(appointmentService);
         }
 
-        return new AppointmentResponse(appointment.getId(),
-                user.get().getFullName(),
-                vehicle.getModel(),
-                serviceCenter.get().getName(),
-                appointment.getAppointmentDate(),
-                serviceTypeList.stream().map(ServiceType::getName).collect(Collectors.toList()),
-                appointment.getStatus());
+//        return new AppointmentResponse(appointment.getId(),
+//                user.get().getFullName(),
+//                vehicle.getModel(),
+//                serviceCenter.get().getName(),
+//                appointment.getAppointmentDate(),
+//                serviceTypeList.stream().map(ServiceType::getName).collect(Collectors.toList()),
+//                appointment.getStatus());
+        return appointmentMapper.toResponse(appointment);
 
     }
 
