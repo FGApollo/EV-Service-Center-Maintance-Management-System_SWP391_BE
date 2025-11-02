@@ -110,7 +110,7 @@ public class AppointmentController {
 
     @GetMapping("/appointments/status/{status}")
     @Transactional
-    public List<AppointmentDto> getAppointmentsByStatus(
+    public List<AppointmentResponse> getAppointmentsByStatus(
             @PathVariable String status,
             Authentication authentication) {
         String email = authentication.getName();
@@ -118,7 +118,7 @@ public class AppointmentController {
         Integer centerId = currentUser.getServiceCenter().getId();
         List<ServiceAppointment> appointments =
                 serviceAppointmentService.getStatusAppointments(status, centerId);
-        return appointmentMapper.toDtoList(appointments);
+        return appointmentMapper.toResponseList(appointments);
         //moi
     }
 

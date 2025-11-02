@@ -1,6 +1,7 @@
 package com.example.Ev.System.mapper;
 
 import com.example.Ev.System.dto.AppointmentDto;
+import com.example.Ev.System.dto.AppointmentResponse;
 import com.example.Ev.System.entity.ServiceAppointment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -44,5 +45,29 @@ public interface AppointmentMapper {
                 .stream()
                 .map(serviceType -> serviceType.getId())
                 .collect(Collectors.toSet());
+    }
+
+    // ENTITY → RESPONSE DTO
+    @Mapping(target = "appointmentId", source = "id")
+    @Mapping(target = "customerName", source = "customer.fullName") // Assuming User entity has 'fullName'
+    @Mapping(target = "phone", source = "customer.phone")
+    @Mapping(target = "vehicleModel", source = "vehicle.model") // Assuming Vehicle entity has 'model'
+    @Mapping(target = "serviceCenterName", source = "serviceCenter.name") // Assuming ServiceCenter entity has 'name'
+    @Mapping(target = "appointmentDate", source = "appointmentDate")
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "serviceNames", expression = "java(mapServiceNames(serviceAppointment))")
+    AppointmentResponse toResponse(ServiceAppointment serviceAppointment);
+
+    List<AppointmentResponse> toResponseList(List<ServiceAppointment> appointments);
+
+    // Helper: extract all service type names
+    default List<String> mapServiceNames(ServiceAppointment serviceAppointment) {
+        if (serviceAppointment.getServiceTypes() == null) {
+            return null;
+        }
+        return serviceAppointment.getServiceTypes()
+                .stream()
+                .map(serviceType -> serviceType.getName()) // assuming field is 'serviceName'
+                .collect(Collectors.toList());
     }
 }
