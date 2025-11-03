@@ -13,7 +13,7 @@ public class PartUsage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usage_id", nullable = false)
-    private Long usageId;
+    private Integer usageId;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "record_id", nullable = false)

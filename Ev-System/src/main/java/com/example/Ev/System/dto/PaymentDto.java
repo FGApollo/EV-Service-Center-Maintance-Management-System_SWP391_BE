@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class PaymentDto {
     private Integer invoiceId;
     private String method;
-    private String clientIp;
+    private String clientIp; //127.0.0.1
 }
