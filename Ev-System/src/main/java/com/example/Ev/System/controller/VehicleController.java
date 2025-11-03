@@ -2,8 +2,6 @@ package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.VehicleDto;
 import com.example.Ev.System.dto.VehicleRespone;
-import com.example.Ev.System.entity.ServiceAppointment;
-import com.example.Ev.System.entity.Vehicle;
 import com.example.Ev.System.service.VehicleService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -46,5 +44,9 @@ public class VehicleController {
         return time.toString();
     }
 
+    @GetMapping("/maintained")
+    public List<VehicleRespone> getVehicleMaintained(){
+        return vehicleService.getVehicleCompletedMantances("completed");
+    }
 
 }

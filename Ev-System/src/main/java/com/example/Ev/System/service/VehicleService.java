@@ -147,7 +147,7 @@ public class VehicleService {
         int number = 0;
         List<ServiceAppointment> serviceAppointments = appointmentRepository.findAllByVehicle(vehicle);
         for(ServiceAppointment serviceAppointment : serviceAppointments){
-            if(serviceAppointment.getStatus().equals("done")){
+            if(serviceAppointment.getStatus().equals("done") || serviceAppointment.getStatus().equals("completed")){
                 number++;
             }
         }
@@ -179,4 +179,25 @@ public class VehicleService {
 
     }
 
+    @Transactional
+    public List<VehicleRespone> getVehicleCompletedMantances(String status){
+        List<Vehicle> vehicles = appointmentRepository.findDistincVehicleByStatus(status);
+        List<VehicleRespone> respones = new ArrayList<>();
+        for(Vehicle x : vehicles){
+            VehicleRespone vehicleRespone = new VehicleRespone();
+            vehicleRespone.setVin(x.getVin());
+            vehicleRespone.setModel(x.getModel());
+            vehicleRespone.setColor(x.getColor());
+            vehicleRespone.setLicensePlate(x.getLicensePlate());
+            vehicleRespone.setYear(x.getYear());
+            if(x.getCustomer() != null){
+                vehicleRespone.setOwnerName(x.getCustomer().getFullName());
+            }
+
+            vehicleRespone.setMaintenanceCount(numberOfCareByCar(x));
+
+            respones.add(vehicleRespone);
+        }
+        return respones;
+    }
 }

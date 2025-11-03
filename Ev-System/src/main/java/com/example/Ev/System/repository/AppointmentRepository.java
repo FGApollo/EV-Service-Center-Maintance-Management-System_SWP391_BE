@@ -1,7 +1,10 @@
 package com.example.Ev.System.repository;
 
 import com.example.Ev.System.entity.*;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -20,7 +23,8 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
 
     List<ServiceAppointment> findAllByVehicle(Vehicle vehicle);
 
-    
+    @Query("SELECT DISTINCT sa.vehicle FROM ServiceAppointment sa WHERE sa.status = :status")
+    List<Vehicle> findDistincVehicleByStatus(@Param("status") String status);
 
 }
 
