@@ -41,7 +41,9 @@ public class AppointmentController {
     private final AppointmentMapper appointmentMapper;
     private final UserRepository userRepository;
     private final StaffAppointmentService staffAppointmentService;
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService) {
+    private final MaintenanceReminderCreationService maintenanceReminderCreationService;
+
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService, MaintenanceReminderCreationService maintenanceReminderCreationService) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
         this.serviceAppointmentService = serviceAppointmentService;
@@ -50,6 +52,7 @@ public class AppointmentController {
         this.appointmentMapper = appointmentMapper;
         this.userRepository = userRepository;
         this.staffAppointmentService = staffAppointmentService;
+        this.maintenanceReminderCreationService = maintenanceReminderCreationService;
     }
 
     @PostMapping
@@ -119,6 +122,9 @@ public class AppointmentController {
         else {
             maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto);
         }
+
+        maintenanceReminderCreationService.createReminderForAppointmentIfDone(id);
+
         ServiceAppointment refreshed = serviceAppointmentService.getAppointmentWithAllDetails(id);
         workLogService.autoCreateWorkLog(id);
         return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
