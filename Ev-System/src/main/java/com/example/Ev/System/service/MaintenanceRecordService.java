@@ -22,18 +22,20 @@ public class MaintenanceRecordService {
     private final MaintainanceRecordMapper maintainanceRecordMapper;
     private final UserRepository userRepository;
     private final PartUsageMapper partUsageMapper;
+    private final PartUsageService partUsageService;
 
     public MaintenanceRecordService(AppointmentRepository appointmentRepository,
                                     PartRepository partRepository,
 
                                     MaintenanceRecordRepository maintenanceRecordRepository,
-                                    MaintainanceRecordMapper maintainanceRecordMapper, UserRepository userRepository, PartUsageMapper partUsageMapper) {
+                                    MaintainanceRecordMapper maintainanceRecordMapper, UserRepository userRepository, PartUsageMapper partUsageMapper, PartUsageService partUsageService) {
         this.appointmentRepository = appointmentRepository;
         this.partRepository = partRepository;
         this.maintenanceRecordRepository = maintenanceRecordRepository;
         this.maintainanceRecordMapper = maintainanceRecordMapper;
         this.userRepository = userRepository;
         this.partUsageMapper = partUsageMapper;
+        this.partUsageService = partUsageService;
     }
 
     @Transactional
@@ -98,6 +100,7 @@ public class MaintenanceRecordService {
         );
         if(status == 1){
             maintenanceRecord.setEndTime(Instant.now());
+            getPartUsageByAppointmentId(existMaintenanceRecord.getAppointment()); //mot test xem co hoat dong k
         }
         maintenanceRecord.setStartTime(existMaintenanceRecord.getStartTime());
 
@@ -137,6 +140,15 @@ public class MaintenanceRecordService {
 
     }
 
+    public void getPartUsageByAppointmentId(ServiceAppointment appointment) {
+
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointment.getId()).orElse(null);
+        Set<PartUsage> partUsages = maintenanceRecord.getPartUsages();
+        for(PartUsage partUsage : partUsages){
+            partUsageService.usePathNoUsage(partUsage.getPart().getId().intValue(),partUsage.getQuantityUsed(),appointment.getServiceCenter().getId());
+        }
+    }
+
     public List<MaintainanceRecordDto> getMaintainanceRecordByStaff_id(String staffId) {
         List<MaintenanceRecord> maintenanceRecord = maintenanceRecordRepository.findByTechnicianId(staffId).orElse(null);
         List<MaintainanceRecordDto> maintainanceRecordDtos = new ArrayList<>();
@@ -153,6 +165,8 @@ public class MaintenanceRecordService {
         Optional<MaintenanceRecord> maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentId);
         return maintenanceRecord.isPresent();
     }
+
+
 
 
 

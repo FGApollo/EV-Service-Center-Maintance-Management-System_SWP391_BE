@@ -58,17 +58,10 @@ public class ServiceAppointmentService {
         appointment.setStatus("accept");
         appointment.setCreatedAt(Instant.now());
         Integer serviceCenterId = appointment.getServiceCenter().getId();
-        staffAppointmentService.autoAssignTechnician(
-                appointmentId,
-                "Auto assign technician",
-                serviceCenterId,
-                "in_progress"
-        );
         appointmentRepository.save(appointment);
 
         notificationProgressService.sendAppointmentStatusChanged(appointment.getCustomer(), appointment, oldStatus, "accept"); //new
         return appointment;
-        //da test dc nhung return cuc lau => phai sua
     }
 
     @Transactional

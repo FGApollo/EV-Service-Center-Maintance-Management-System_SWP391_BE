@@ -40,8 +40,8 @@ public class AppointmentController {
     private final WorkLogService workLogService;
     private final AppointmentMapper appointmentMapper;
     private final UserRepository userRepository;
-
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository) {
+    private final StaffAppointmentService staffAppointmentService;
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
         this.serviceAppointmentService = serviceAppointmentService;
@@ -49,6 +49,7 @@ public class AppointmentController {
         this.workLogService = workLogService;
         this.appointmentMapper = appointmentMapper;
         this.userRepository = userRepository;
+        this.staffAppointmentService = staffAppointmentService;
     }
 
     @PostMapping
@@ -93,6 +94,12 @@ public class AppointmentController {
             @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
     {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
+        staffAppointmentService.autoAssignTechnician(
+                updatedAppointment.getId(),
+                "Auto assign technician",
+                updatedAppointment.getServiceCenter().getId(),
+                "in_progress"
+        );
         return ResponseEntity.ok(appointmentMapper.toDto(updatedAppointment));
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
