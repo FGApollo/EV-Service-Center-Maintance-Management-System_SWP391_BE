@@ -1,6 +1,7 @@
 package com.example.Ev.System.repository;
 
 import com.example.Ev.System.entity.*;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,7 +33,8 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
 """)
     Optional<ServiceAppointment> findByIdWithDetails(@Param("id") Integer id); //giup load tranh lazy loading
 
-    
+    @Query("SELECT DISTINCT sa.vehicle FROM ServiceAppointment sa WHERE sa.status = :status")
+    List<Vehicle> findDistincVehicleByStatus(@Param("status") String status);
 
 }
 

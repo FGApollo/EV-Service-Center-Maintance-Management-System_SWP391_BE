@@ -1,8 +1,6 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.PartUsageRequest;
-import com.example.Ev.System.repository.PartUsageRepository;
-import com.example.Ev.System.service.PartUsageService;
 import com.example.Ev.System.service.PartUsageServiceI;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
