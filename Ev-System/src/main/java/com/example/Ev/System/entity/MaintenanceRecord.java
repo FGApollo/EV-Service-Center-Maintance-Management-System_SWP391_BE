@@ -41,7 +41,7 @@ public class MaintenanceRecord {
     @Column(name = "remarks", columnDefinition = "text")
     private String remarks;
 
-    @OneToMany(mappedBy = "record")
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PartUsage> partUsages = new LinkedHashSet<>();
 }
 

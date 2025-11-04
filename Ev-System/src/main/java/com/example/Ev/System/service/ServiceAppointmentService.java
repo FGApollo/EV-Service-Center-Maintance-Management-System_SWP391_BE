@@ -86,6 +86,12 @@ public class ServiceAppointmentService {
         return appointments;
     }
 
+    @Transactional
+    public ServiceAppointment getAppointmentWithAllDetails(Integer id) {
+        return appointmentRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+    }
+
 
 //    @Transactional
 //    public List<AppointmentAllFieldsDto> getAllAppointment(){

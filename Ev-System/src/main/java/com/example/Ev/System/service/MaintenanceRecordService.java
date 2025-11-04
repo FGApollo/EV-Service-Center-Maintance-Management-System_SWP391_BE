@@ -98,10 +98,6 @@ public class MaintenanceRecordService {
         maintenanceRecord.setChecklist(
                 existMaintenanceRecord.getChecklist() + " | " + maintainanceRecordDto.getChecklist()
         );
-        if(status == 1){
-            maintenanceRecord.setEndTime(Instant.now());
-            getPartUsageByAppointmentId(existMaintenanceRecord.getAppointment()); //mot test xem co hoat dong k
-        }
         maintenanceRecord.setStartTime(existMaintenanceRecord.getStartTime());
 
         maintenanceRecord.setRemarks(
@@ -135,8 +131,27 @@ public class MaintenanceRecordService {
                 newPartUsages.add(newUsage);
             }
         }
+        if(status == 1){
+            maintenanceRecord.setEndTime(Instant.now());
+        }
         maintenanceRecord.setPartUsages(newPartUsages);
-        MaintenanceRecord saved = maintenanceRecordRepository.save(maintenanceRecord);
+        MaintenanceRecord saved = maintenanceRecordRepository.saveAndFlush(maintenanceRecord);
+        if (status == 1) {
+            saved.setEndTime(Instant.now());
+            maintenanceRecordRepository.save(saved);
+
+            for (PartUsage partUsage : saved.getPartUsages()) {
+                if (partUsage.getPart() == null) {
+                    System.out.println("⚠️ partUsage part is null for usageId: " + partUsage.getPart().getId());
+                    continue;
+                }
+                partUsageService.usePathNoUsage(
+                        partUsage.getPart().getId().intValue(),
+                        partUsage.getQuantityUsed(),
+                        saved.getAppointment().getServiceCenter().getId()
+                );
+            }
+        }
 
     }
 

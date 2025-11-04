@@ -63,6 +63,7 @@ public class PartUsageService implements PartUsageServiceI{
         }
     }
 
+    @Transactional
     public void usePathNoUsage(Integer partId, Integer quantityUsed, Integer centerId){
         Part part = partRepository.findById(partId)
                 .orElseThrow(() -> new RuntimeException("Part not found"));
