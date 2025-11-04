@@ -35,15 +35,13 @@ public class AppointmentController {
     private final ServiceAppointmentService serviceAppointmentService;
     private final MaintenanceRecordService maintenanceRecordService;
     private final WorkLogService workLogService;
-    private final MaintenanceReminderCreationService maintenanceReminderCreationService;
 
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, MaintenanceReminderCreationService maintenanceReminderCreationService) {
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
         this.serviceAppointmentService = serviceAppointmentService;
         this.maintenanceRecordService = maintenanceRecordService;
         this.workLogService = workLogService;
-        this.maintenanceReminderCreationService = maintenanceReminderCreationService;
     }
 
     @PostMapping
@@ -98,18 +96,7 @@ public class AppointmentController {
             @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto ) //bo text vao body , chu k phai json , json la 1 class
     {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"completed");//nho chuyen thanh done
-
-        // Ghi/Cập nhật MaintenanceRecord như hiện có
-        boolean recordExists = maintenanceRecordService.findMaintainanceRecordByAppointmentId(id);
-        if (recordExists) {
-            maintenanceRecordService.updateMaintainanceRecord(id, maintainanceRecordDto, 1);
-        } else {
-            maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto);
-        }
-
-        // Tao reminder
-        maintenanceReminderCreationService.createReminderForAppointmentIfDone(id);
-
+        maintenanceRecordService.updateMaintainanceRecord(id, maintainanceRecordDto,1); // Phai them record moi dc done
         workLogService.autoCreateWorkLog(id);
         return ResponseEntity.ok(updatedAppointment);
     }
