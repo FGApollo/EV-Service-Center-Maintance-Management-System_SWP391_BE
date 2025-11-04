@@ -22,18 +22,20 @@ public class MaintenanceRecordService {
     private final MaintainanceRecordMapper maintainanceRecordMapper;
     private final UserRepository userRepository;
     private final PartUsageMapper partUsageMapper;
+    private final PartUsageService partUsageService;
 
     public MaintenanceRecordService(AppointmentRepository appointmentRepository,
                                     PartRepository partRepository,
 
                                     MaintenanceRecordRepository maintenanceRecordRepository,
-                                    MaintainanceRecordMapper maintainanceRecordMapper, UserRepository userRepository, PartUsageMapper partUsageMapper) {
+                                    MaintainanceRecordMapper maintainanceRecordMapper, UserRepository userRepository, PartUsageMapper partUsageMapper, PartUsageService partUsageService) {
         this.appointmentRepository = appointmentRepository;
         this.partRepository = partRepository;
         this.maintenanceRecordRepository = maintenanceRecordRepository;
         this.maintainanceRecordMapper = maintainanceRecordMapper;
         this.userRepository = userRepository;
         this.partUsageMapper = partUsageMapper;
+        this.partUsageService = partUsageService;
     }
 
     @Transactional
@@ -96,9 +98,6 @@ public class MaintenanceRecordService {
         maintenanceRecord.setChecklist(
                 existMaintenanceRecord.getChecklist() + " | " + maintainanceRecordDto.getChecklist()
         );
-        if(status == 1){
-            maintenanceRecord.setEndTime(Instant.now());
-        }
         maintenanceRecord.setStartTime(existMaintenanceRecord.getStartTime());
 
         maintenanceRecord.setRemarks(
@@ -132,9 +131,37 @@ public class MaintenanceRecordService {
                 newPartUsages.add(newUsage);
             }
         }
+        if(status == 1){
+            maintenanceRecord.setEndTime(Instant.now());
+        }
         maintenanceRecord.setPartUsages(newPartUsages);
-        MaintenanceRecord saved = maintenanceRecordRepository.save(maintenanceRecord);
+        MaintenanceRecord saved = maintenanceRecordRepository.saveAndFlush(maintenanceRecord);
+        if (status == 1) {
+            saved.setEndTime(Instant.now());
+            maintenanceRecordRepository.save(saved);
 
+            for (PartUsage partUsage : saved.getPartUsages()) {
+                if (partUsage.getPart() == null) {
+                    System.out.println("⚠️ partUsage part is null for usageId: " + partUsage.getPart().getId());
+                    continue;
+                }
+                partUsageService.usePathNoUsage(
+                        partUsage.getPart().getId().intValue(),
+                        partUsage.getQuantityUsed(),
+                        saved.getAppointment().getServiceCenter().getId()
+                );
+            }
+        }
+
+    }
+
+    public void getPartUsageByAppointmentId(ServiceAppointment appointment) {
+
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointment.getId()).orElse(null);
+        Set<PartUsage> partUsages = maintenanceRecord.getPartUsages();
+        for(PartUsage partUsage : partUsages){
+            partUsageService.usePathNoUsage(partUsage.getPart().getId().intValue(),partUsage.getQuantityUsed(),appointment.getServiceCenter().getId());
+        }
     }
 
     public List<MaintainanceRecordDto> getMaintainanceRecordByStaff_id(String staffId) {
@@ -153,6 +180,8 @@ public class MaintenanceRecordService {
         Optional<MaintenanceRecord> maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentId);
         return maintenanceRecord.isPresent();
     }
+
+
 
 
 

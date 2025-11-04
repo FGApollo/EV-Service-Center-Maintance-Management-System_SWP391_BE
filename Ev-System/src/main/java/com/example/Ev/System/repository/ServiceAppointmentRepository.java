@@ -11,4 +11,5 @@ import java.util.List;
 public interface ServiceAppointmentRepository extends JpaRepository<ServiceAppointment, Integer> {
     public ServiceAppointment findById(int id);
     List<ServiceAppointment> findByCreatedAtAfter(Instant startDate);
+
 }

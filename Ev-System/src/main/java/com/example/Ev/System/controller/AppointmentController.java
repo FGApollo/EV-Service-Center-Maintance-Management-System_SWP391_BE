@@ -40,8 +40,8 @@ public class AppointmentController {
     private final WorkLogService workLogService;
     private final AppointmentMapper appointmentMapper;
     private final UserRepository userRepository;
-
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository) {
+    private final StaffAppointmentService staffAppointmentService;
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
         this.serviceAppointmentService = serviceAppointmentService;
@@ -49,6 +49,7 @@ public class AppointmentController {
         this.workLogService = workLogService;
         this.appointmentMapper = appointmentMapper;
         this.userRepository = userRepository;
+        this.staffAppointmentService = staffAppointmentService;
     }
 
     @PostMapping
@@ -68,10 +69,10 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/accept")
-    public ResponseEntity<AppointmentDto> acceptAppointment(
+    public ResponseEntity<AppointmentResponse> acceptAppointment(
             @PathVariable Integer id ) {
         ServiceAppointment updatedAppointment = serviceAppointmentService.acceptAppointment(id);
-        return ResponseEntity.ok(appointmentMapper.toDto(updatedAppointment));
+        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
         //da test dc
@@ -79,33 +80,48 @@ public class AppointmentController {
 
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<AppointmentDto> cancelAppointment(
+    public ResponseEntity<AppointmentResponse> cancelAppointment(
             @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
     {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"cancelled");
-        return ResponseEntity.ok(appointmentMapper.toDto(updatedAppointment));
+        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
     }
 
     @PutMapping("/{id}/inProgress")
-    public ResponseEntity<AppointmentDto> inProgressAppointment(
+    public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
     {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
-        return ResponseEntity.ok(appointmentMapper.toDto(updatedAppointment));
+        staffAppointmentService.autoAssignTechnician(
+                updatedAppointment.getId(),
+                "Auto assign technician",
+                updatedAppointment.getServiceCenter().getId(),
+                "in_progress"
+        );
+        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
     }
 
     @PutMapping("/{id}/done")
-    public ResponseEntity<AppointmentDto> doneAppointment(
+    @Transactional
+    public ResponseEntity<AppointmentResponse> doneAppointment(
             @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto ) //bo text vao body , chu k phai json , json la 1 class
     {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"completed");//nho chuyen thanh done
-        maintenanceRecordService.updateMaintainanceRecord(id, maintainanceRecordDto,1); // Phai them record moi dc done
+        boolean recordExists = maintenanceRecordService.findMaintainanceRecordByAppointmentId(id);
+        if(recordExists) {
+            maintenanceRecordService.updateMaintainanceRecord(updatedAppointment.getId(), maintainanceRecordDto, 1); // Phai them record moi dc done
+        //khong ma giao , da hoat dong duoc , chi hoat dong duoc 1 lan dau tien
+        }
+        else {
+            maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto);
+        }
+        ServiceAppointment refreshed = serviceAppointmentService.getAppointmentWithAllDetails(id);
         workLogService.autoCreateWorkLog(id);
-        return ResponseEntity.ok(appointmentMapper.toDto(updatedAppointment));
+        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
     }
 
     @GetMapping("/appointments/status/{status}")

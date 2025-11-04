@@ -63,6 +63,24 @@ public class PartUsageService implements PartUsageServiceI{
         }
     }
 
+    @Transactional
+    public void usePathNoUsage(Integer partId, Integer quantityUsed, Integer centerId){
+        Part part = partRepository.findById(partId)
+                .orElseThrow(() -> new RuntimeException("Part not found"));
+        Inventory inventory = inventoryRepository.findByCenterIdAndPart(centerId, part)
+                .orElseThrow(() -> new RuntimeException("Inventory record not found for part: " + part.getName()));
+
+        if (inventory.getQuantity() < quantityUsed) {
+            throw new RuntimeException("Insufficient stock for part: " + part.getName());
+        }
+        inventory.setQuantity(inventory.getQuantity() - quantityUsed);
+        inventoryRepository.save(inventory);
+
+        if (inventory.getQuantity() < part.getMinStockLevel()) {
+            sendStockNotification(part, inventory);
+        }
+    }
+
     @Override
     public List<Map.Entry<String, Long>> getTop5PartsUsedInLastMonth() {
         Instant startTime = Instant.now();
