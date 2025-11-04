@@ -44,6 +44,7 @@ public class ServiceAppointmentService {
         this.maintenanceRecordRepository = maintenanceRecordRepository;
     }
 
+    @Transactional
     public List<ServiceAppointment> getStatusAppointments(String status ,int serviceCenterId) {
         ServiceCenter serviceCenter = serviceCenterRepository.findById(serviceCenterId).orElse(null);
         List<ServiceAppointment> appointments = appointmentRepository.findAllByStatusAndServiceCenter(status,serviceCenter);
@@ -57,17 +58,10 @@ public class ServiceAppointmentService {
         appointment.setStatus("accept");
         appointment.setCreatedAt(Instant.now());
         Integer serviceCenterId = appointment.getServiceCenter().getId();
-        staffAppointmentService.autoAssignTechnician(
-                appointmentId,
-                "Auto assign technician",
-                serviceCenterId,
-                "in_progress"
-        );
         appointmentRepository.save(appointment);
 
         notificationProgressService.sendAppointmentStatusChanged(appointment.getCustomer(), appointment, oldStatus, "accept"); //new
         return appointment;
-        //da test dc nhung return cuc lau => phai sua
     }
 
     @Transactional
@@ -90,6 +84,12 @@ public class ServiceAppointmentService {
     public List<ServiceAppointment> getAppointmentsByStaffId(Integer staffId) {
         List<ServiceAppointment> appointments = appointmentRepository.findAllByStaffAssignments_staff_id(staffId);
         return appointments;
+    }
+
+    @Transactional
+    public ServiceAppointment getAppointmentWithAllDetails(Integer id) {
+        return appointmentRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
     }
 
 
