@@ -42,22 +42,7 @@ public class MaintenanceReminderScheduler {
         try {
             notificationService.sendReminderEmail(r);
 
-            LocalDateTime sentAt = (r.getSentAt() != null)
-                    ? LocalDateTime.ofInstant(r.getSentAt(), ZONE)
-                    : LocalDateTime.now(ZONE);
 
-            Instant next = sentAt.plusMonths(6).atZone(ZONE).toInstant();
-
-            boolean existsNext = reminderRepo.existsByVehicleIdAndReminderDate(
-                    Long.valueOf(r.getVehicle().getId()), next);
-            if (!existsNext) {
-                MaintenanceReminder nextRem = new MaintenanceReminder();
-                nextRem.setVehicle(r.getVehicle());
-                nextRem.setReminderDate(next);
-                nextRem.setMessage("Nhắc bảo dưỡng định kỳ (chu kỳ 6 tháng)");
-                nextRem.setIsSent(false);
-                reminderRepo.save(nextRem);
-            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
