@@ -30,6 +30,16 @@ public class UserController {
         //lay user theo role va theo thang manager centerId
     }
 
+    @GetMapping("/allTechnicians")
+    public ResponseEntity<List<UserDto>> getTechnician(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
+        int id = user.getServiceCenter().getId();
+        return ResponseEntity.ok(userService.getAllByRole("technician",id));
+        //test xong
+        //lay user theo role va theo thang manager centerId
+    }
+
     @PostMapping("/employees")
     public ResponseEntity<UserDto> createEmployee(
             @RequestBody RegisterUserDto userDto,
@@ -54,4 +64,6 @@ public class UserController {
         List<UserDto> customers = userService.getAllCustomer("customer");
         return ResponseEntity.ok(customers);
     }
+
+
 }
