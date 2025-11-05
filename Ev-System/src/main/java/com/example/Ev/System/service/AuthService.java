@@ -46,7 +46,12 @@ public class AuthService {
         response.setRole(user.getRole());
         response.setFullName(user.getFullName());
         response.setId(user.getId());
-        response.setCenterId(user.getServiceCenter().getId());
+        if(user.getServiceCenter() != null){
+            response.setCenterId(user.getServiceCenter().getId());
+        }else{
+            response.setCenterId(null);
+        }
+
         return response;
     }
 
