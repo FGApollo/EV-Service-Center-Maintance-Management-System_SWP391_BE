@@ -1,7 +1,10 @@
 package com.example.Ev.System.controller;
 import com.example.Ev.System.dto.RegisterUserDto;
+import com.example.Ev.System.dto.StaffAssignmentDto;
 import com.example.Ev.System.dto.UserDto;
+import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.User;
+import com.example.Ev.System.mapper.StaffAssignmentMapper;
 import com.example.Ev.System.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -9,7 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -64,6 +69,8 @@ public class UserController {
         List<UserDto> customers = userService.getAllCustomer("customer");
         return ResponseEntity.ok(customers);
     }
+
+
 
 
 }

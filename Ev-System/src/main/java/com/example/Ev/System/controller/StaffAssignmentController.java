@@ -1,7 +1,9 @@
 package com.example.Ev.System.controller;
 
+import com.example.Ev.System.dto.StaffAssignmentDto;
 import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
+import com.example.Ev.System.mapper.StaffAssignmentMapper;
 import com.example.Ev.System.repository.StaffAssignmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.service.StaffAppointmentService;
@@ -19,11 +21,13 @@ public class StaffAssignmentController {
     private final StaffAppointmentService staffAppointmentService;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final StaffAssignmentMapper staffAssignmentMapper;
 
-    public StaffAssignmentController(StaffAppointmentService staffAppointmentService, UserService userService, UserRepository userRepository) {
+    public StaffAssignmentController(StaffAppointmentService staffAppointmentService, UserService userService, UserRepository userRepository, StaffAssignmentRepository staffAssignmentRepository, StaffAssignmentMapper staffAssignmentMapper) {
         this.staffAppointmentService = staffAppointmentService;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.staffAssignmentMapper = staffAssignmentMapper;
     }
 
     @PutMapping("/{appointmentId}/staff")
@@ -33,6 +37,12 @@ public class StaffAssignmentController {
             ) {
         List<StaffAssignment> assignments = staffAppointmentService
                 .assignTechnicians(appointmentId, staffIds, "notes");
+        List<StaffAssignmentDto> assignmentDtos = assignments.stream()
+                .map(a -> staffAssignmentMapper.toDtoWithStatus(
+                        a.getStaff(),
+                        true
+                ))
+                .toList();
         return ResponseEntity.ok(assignments);
         //Da xong
         //ToDO : Nen tra ve DTO

@@ -1,14 +1,17 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.StaffAssignmentDto;
 import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.ServiceCenter;
 import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
+import com.example.Ev.System.mapper.StaffAssignmentMapper;
 import com.example.Ev.System.repository.AppointmentRepository;
 import com.example.Ev.System.repository.ServiceCenterRepository;
 import com.example.Ev.System.repository.StaffAssignmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.beans.Customizer;
@@ -78,6 +81,26 @@ public class StaffAppointmentService {
                 .filter(tech -> !busyTech.contains(tech))
                 .toList();
     }
+
+//    public List<StaffAssignmentDto> getTechniciansWithStatus(String status , Authentication authentication) {
+//        String email = authentication.getName();
+//        User user = userRepository.findByEmail(email).orElse(null);
+//        int id = user.getServiceCenter().getId();
+//        Set<User> busyTechs = new HashSet<>();
+//
+//        List<ServiceAppointment> appointments = appointmentRepository.findAllByStatusAndServiceCenter(status,id);
+//        for (ServiceAppointment appointment : appointments) {
+//            staffAssignmentRepository.findStaffByAppointmentId(appointment.getId())
+//                    .forEach(busyTechs::add);
+//        }
+//
+//        List<User> allTechs = userRepository.findAllByRoleAndServiceCenter("technician", id);
+//
+//        // Map all with their current working status
+//        return allTechs.stream()
+//                .map(tech -> StaffAssignmentMapper.toDtoWithStatus(tech, busyTechs.contains(tech)))
+//                .toList();
+//    }
 
 
 
