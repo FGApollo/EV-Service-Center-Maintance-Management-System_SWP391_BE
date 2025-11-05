@@ -72,6 +72,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/accept")
+    @Transactional
     public ResponseEntity<AppointmentResponse> acceptAppointment(
             @PathVariable Integer id ) {
         ServiceAppointment updatedAppointment = serviceAppointmentService.acceptAppointment(id);
@@ -83,6 +84,7 @@ public class AppointmentController {
 
 
     @PutMapping("/{id}/cancel")
+    @Transactional
     public ResponseEntity<AppointmentResponse> cancelAppointment(
             @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
     {
@@ -93,6 +95,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/inProgress")
+    @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
     {
@@ -145,6 +148,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/staff")
+    @Transactional
     public ResponseEntity<List<AppointmentDto>> findAllByStaffId(@RequestParam Integer id) {
         List<ServiceAppointment> appointments = serviceAppointmentService.getAppointmentsByStaffId(id);
         return ResponseEntity.ok(appointmentMapper.toDtoList(appointments));

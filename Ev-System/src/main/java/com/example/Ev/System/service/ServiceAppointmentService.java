@@ -55,7 +55,7 @@ public class ServiceAppointmentService {
     public ServiceAppointment acceptAppointment(Integer appointmentId) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
         String oldStatus = appointment.getStatus();//new
-        appointment.setStatus("accept");
+        appointment.setStatus("accepted");
         appointment.setCreatedAt(Instant.now());
         Integer serviceCenterId = appointment.getServiceCenter().getId();
         appointmentRepository.save(appointment);
