@@ -105,8 +105,9 @@ public class AppointmentController {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
         List<StaffAssignment> assignments = staffAppointmentService
                 .assignTechnicians(id, staffIds, "notes");
+        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
         AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
-        String sId = staffIds.stream()
+        String sId = staffIdList.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
         response.setTechIds(sId);

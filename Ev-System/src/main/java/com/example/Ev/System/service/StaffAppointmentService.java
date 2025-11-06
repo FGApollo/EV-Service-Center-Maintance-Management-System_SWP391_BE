@@ -121,6 +121,15 @@ public class StaffAppointmentService {
         return appointments;
     }
 
+    public List<Integer> staffIdsByAppointmentId(Integer appointmentId) {
+        List<StaffAssignment> staffAssignments = staffAssignmentRepository.findStaffAssignmentsByAppointment_Id(appointmentId);
+        List<Integer> staffIds = new ArrayList<>();
+        for(StaffAssignment staffAssignment : staffAssignments){
+            staffIds.add(staffAssignment.getStaff().getId());
+        }
+        return  staffIds;
+    }
+
 
 
 
