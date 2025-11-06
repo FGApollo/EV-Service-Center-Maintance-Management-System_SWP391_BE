@@ -20,6 +20,7 @@ public class AppointmentResponse {
     private List<String> serviceNames;
     private String status;
 
+    private Integer invoiceId;
     private String techIds;
 
 }
