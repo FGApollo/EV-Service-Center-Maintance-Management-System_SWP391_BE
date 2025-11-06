@@ -25,12 +25,14 @@ public class StaffAppointmentService {
     private final StaffAssignmentRepository staffAssignmentRepository;
     private final UserRepository userRepository;
     private final ServiceCenterRepository serviceCenterRepository;
+    private final StaffAssignmentMapper staffAssignmentMapper;
 
-    public StaffAppointmentService(AppointmentRepository appointmentRepository, StaffAssignmentRepository staffAssignmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository) {
+    public StaffAppointmentService(AppointmentRepository appointmentRepository, StaffAssignmentRepository staffAssignmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, StaffAssignmentMapper staffAssignmentMapper) {
         this.appointmentRepository = appointmentRepository;
         this.staffAssignmentRepository = staffAssignmentRepository;
         this.userRepository = userRepository;
         this.serviceCenterRepository = serviceCenterRepository;
+        this.staffAssignmentMapper = staffAssignmentMapper;
     }
 
     @Transactional
@@ -81,6 +83,44 @@ public class StaffAppointmentService {
                 .filter(tech -> !busyTech.contains(tech))
                 .toList();
     }
+
+    public List<StaffAssignmentDto> getStaffAsignment(Authentication authentication)
+    {
+        List<StaffAssignmentDto> staffAssignmentDtos = new ArrayList<>();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email).orElse(null);
+        List<User> allTechs = userRepository.findAllByRoleAndServiceCenter("technician", user.getServiceCenter())
+                .stream()
+                .filter(tech -> "active".equalsIgnoreCase(tech.getStatus())) // ✅ only active users
+                .toList();;
+        for(User tech : allTechs){
+            StaffAssignmentDto dto = staffAssignmentMapper.toDto(tech);
+            if(getFreeTechnician(user.getServiceCenter().getId(),"in_progress").contains(tech)){
+                dto.setWorking(false);
+                staffAssignmentDtos.add(dto);
+            } else {
+                dto.setWorking(true);
+                List<ServiceAppointment> appointments = getAppointmentsByStaffId(tech.getId());
+                if(!appointments.isEmpty()){
+                    for(ServiceAppointment appointment : appointments){
+                        String appointmentIds = appointments.stream()
+                                .map(a -> a.getId().toString())
+                                .collect(Collectors.joining(","));
+                        dto.setAppointmentId(appointmentIds);
+                    }
+                }
+                staffAssignmentDtos.add(dto);
+            }
+
+        }
+        return  staffAssignmentDtos;
+    }
+
+    public List<ServiceAppointment> getAppointmentsByStaffId(Integer staffId) {
+        List<ServiceAppointment> appointments = appointmentRepository.findAllByStaffAssignments_staff_id(staffId);
+        return appointments;
+    }
+
 
 //    public List<StaffAssignmentDto> getTechniciansWithStatus(String status , Authentication authentication) {
 //        String email = authentication.getName();

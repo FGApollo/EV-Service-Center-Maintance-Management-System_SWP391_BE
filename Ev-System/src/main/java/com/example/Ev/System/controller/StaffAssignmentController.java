@@ -8,6 +8,7 @@ import com.example.Ev.System.repository.StaffAssignmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.service.StaffAppointmentService;
 import com.example.Ev.System.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -49,12 +50,15 @@ public class StaffAssignmentController {
     }
 
     @GetMapping("/free")
-    public List<User> findFreeStaff(Authentication authentication) {
+    @Transactional
+    public List<StaffAssignmentDto> findFreeStaff(Authentication authentication) {
         String email = authentication.getName();
         User user = userService.getUserByEmail(email);
         int id = user.getServiceCenter().getId();
         Integer centerId = user.getServiceCenter().getId();
-        return staffAppointmentService.getFreeTechnician(centerId,"in_progress");//lay in_progress vi bo no vo de tim busy employeed trc
+        List<User> users = staffAppointmentService.getFreeTechnician(centerId,"in_progress");
+        List<StaffAssignmentDto> staffAssignmentDtos = staffAssignmentMapper.toDtoList(users);
+        return staffAssignmentDtos ;//lay in_progress vi bo no vo de tim busy employeed trc
     }
     //da xong , chi hien free cua thg manager vs center cua no
 
