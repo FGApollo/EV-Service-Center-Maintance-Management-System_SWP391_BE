@@ -163,18 +163,15 @@ public class AppointmentController {
         //moi
     }
 
-    @GetMapping("/appointments/status/done")
+    @GetMapping("/status/done/{id}")
     @Transactional
     public AppointmentResponse getAppointmentsByDone(
-            @PathVariable String status,
             Authentication authentication,
             @PathVariable Integer id
             ) {
         String email = authentication.getName();
         User currentUser = userRepository.findByEmail(email).orElse(null);
         Integer centerId = currentUser.getServiceCenter().getId();
-        List<ServiceAppointment> appointments =
-                serviceAppointmentService.getStatusAppointments(status, centerId);
         List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
         ServiceAppointment updatedAppointment = serviceAppointmentRepository.findById(id).orElse(null);
         AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
