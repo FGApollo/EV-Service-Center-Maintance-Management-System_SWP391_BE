@@ -27,19 +27,22 @@ public class InvoiceService implements InvoiceServiceI {
     private ServiceAppointmentRepository serviceAppointmentRepository;
 
     public Invoice createInvoice(Integer appointmentId) {
-        List<AppointmentService> service = appointmentServiceRepository.findByAppointmentId(appointmentId);
+        if (invoiceRepository.existsByAppointment_Id(appointmentId)) {
+            throw new RuntimeException("Invoice already exists for this appointment");
+        }
 
+        List<AppointmentService> service = appointmentServiceRepository.findByAppointmentId(appointmentId);
         BigDecimal totalAmount = service.stream()
                 .map(s -> s.getServiceType().getPrice())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Invoice invoice = new Invoice();
         ServiceAppointment appointment = serviceAppointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found "));
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
+        Invoice invoice = new Invoice();
         invoice.setAppointment(appointment);
         invoice.setTotalAmount(totalAmount);
-        invoice.setStatus("UNPAID");
+        invoice.setStatus("unpaid");
         return invoiceRepository.save(invoice);
     }
 

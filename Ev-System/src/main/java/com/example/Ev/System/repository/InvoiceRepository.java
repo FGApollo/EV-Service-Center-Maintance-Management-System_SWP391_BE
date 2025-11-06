@@ -10,4 +10,6 @@ import java.util.List;
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     public List<Invoice> findByStatusAndPaymentDateBetween(String status, LocalDateTime startDate, LocalDateTime endDate);
     List<Invoice> findByStatus(String status);
+
+    boolean existsByAppointment_Id(Integer appointmentId);
 }

@@ -1,6 +1,7 @@
 package com.example.Ev.System.service;
 
 import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.entity.ServiceType;
 import com.example.Ev.System.entity.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
@@ -8,6 +9,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationProgressService {
@@ -46,11 +49,33 @@ public class NotificationProgressService {
         try {
             mailSender.send(msg);
         } catch (Exception ex) {
-            // Có thể thay bằng logger nếu dự án đã dùng logging
             System.err.println("Gửi email thất bại: " + ex.getMessage());
         }
     }
 
+    // MỚI: Email xác nhận đặt lịch thành công
+    @Transactional
+    public void sendAppointmentBooked(@NonNull User customer,
+                                      @NonNull ServiceAppointment appointment) {
+        if (customer.getEmail() == null || customer.getEmail().isBlank()) {
+            return;
+        }
+
+        String subject = String.format("Xác nhận đặt lịch thành công – Mã #%d", appointment.getId());
+        String body = buildBookedBody(customer, appointment);
+
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setFrom(from);
+        msg.setTo(customer.getEmail());
+        msg.setSubject(subject);
+        msg.setText(body);
+
+        try {
+            mailSender.send(msg);
+        } catch (Exception ex) {
+            System.err.println("Gửi email thất bại: " + ex.getMessage());
+        }
+    }
 
     private String buildBody(User customer,
                              ServiceAppointment appointment,
@@ -67,6 +92,32 @@ public class NotificationProgressService {
                 + "- Ngày hẹn: " + (appointment.getAppointmentDate() != null ? appointment.getAppointmentDate() : "Chưa xác định") + "\n"
                 + "- Trạng thái: " + safe(oldStatus) + " → " + safe(newStatus) + "\n\n"
                 + "Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ bộ phận hỗ trợ.\n"
+                + "Trân trọng,\nEV Service Center";
+    }
+
+    // MỚI: Nội dung chuyên nghiệp cho xác nhận đặt lịch
+    private String buildBookedBody(User customer,
+                                   ServiceAppointment appointment) {
+        String serviceCenterName = appointment.getServiceCenter() != null ? appointment.getServiceCenter().getName() : "Trung tâm dịch vụ";
+        String vehicleModel = appointment.getVehicle() != null ? appointment.getVehicle().getModel() : "Xe của bạn";
+
+        String services = (appointment.getServiceTypes() == null || appointment.getServiceTypes().isEmpty())
+                ? "—"
+                : appointment.getServiceTypes().stream()
+                .map(ServiceType::getName)
+                .collect(Collectors.joining(", "));
+
+        return "Kính gửi " + safe(customer.getFullName() != null ? customer.getFullName() : customer.getEmail()) + ",\n\n"
+                + "EV Service Center trân trọng xác nhận lịch hẹn của Quý khách đã được đặt thành công.\n\n"
+                + "Thông tin lịch hẹn:\n"
+                + "- Mã lịch hẹn: #" + appointment.getId() + "\n"
+                + "- Trung tâm: " + serviceCenterName + "\n"
+                + "- Phương tiện: " + vehicleModel + "\n"
+                + "- Ngày giờ: " + (appointment.getAppointmentDate() != null ? appointment.getAppointmentDate() : "Chưa xác định") + "\n"
+                + "- Dịch vụ: " + services + "\n"
+                + "- Trạng thái: Đang chờ xác nhận\n\n"
+                + "Lưu ý: Quý khách vui lòng đến trước giờ hẹn 10–15 phút để hoàn tất thủ tục tiếp nhận.\n"
+                + "Nếu cần hỗ trợ thay đổi thời gian hoặc có thắc mắc, vui lòng phản hồi email này.\n\n"
                 + "Trân trọng,\nEV Service Center";
     }
 
