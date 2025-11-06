@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Where;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 @Entity
 //@Table(name = "users")
 //@Table(name = "[User]")
+@Where(clause = "status = 'active'")
 @Table(name = "users")
 public class User {
     @Id
