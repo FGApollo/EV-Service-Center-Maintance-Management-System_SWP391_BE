@@ -25,11 +25,12 @@ public class AppointmentService {
     private final VehicleRepository vehicleRepo;
     private final UserRepository userRepo;
     private final AppointmentMapper appointmentMapper;
-
+    private final NotificationProgressService notificationProgressService;
+    private final InvoiceServiceI invoiceServiceI;
 
     public AppointmentService(AppointmentRepository appointmentRepo, AppointmentServiceRepository appointmentServiceRepo,
                               ServiceCenterRepository serviceCenterRepo, ServiceTypeRepository serviceTypeRepos,
-                              VehicleRepository vehicleRepo, UserRepository userRepo, AppointmentMapper appointmentMapper) {
+                              VehicleRepository vehicleRepo, UserRepository userRepo, AppointmentMapper appointmentMapper, NotificationProgressService notificationProgressService, InvoiceServiceI invoiceServiceI) {
         this.appointmentRepo = appointmentRepo;
         this.appointmentServiceRepo = appointmentServiceRepo;
         this.serviceCenterRepo = serviceCenterRepo;
@@ -37,6 +38,8 @@ public class AppointmentService {
         this.vehicleRepo = vehicleRepo;
         this.userRepo = userRepo;
         this.appointmentMapper = appointmentMapper;
+        this.notificationProgressService = notificationProgressService;
+        this.invoiceServiceI = invoiceServiceI;
     }
 
     /*@Service
@@ -130,6 +133,9 @@ public class ServiceAppointmentService {
 //                appointment.getAppointmentDate(),
 //                serviceTypeList.stream().map(ServiceType::getName).collect(Collectors.toList()),
 //                appointment.getStatus());
+        invoiceServiceI.createInvoice(appointment.getId());
+        notificationProgressService.sendAppointmentBooked(user.get(), appointment);
+
         return appointmentMapper.toResponse(appointment);
 
     }
