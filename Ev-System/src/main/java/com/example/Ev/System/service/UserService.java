@@ -155,6 +155,7 @@ public class UserService {
             dto.setFullName(c.getFullName());
             dto.setId(c.getId());
             dto.setCreate_at(c.getCreatedAt());
+            dto.setStatus(c.getStatus());
 
             List<VehicleRespone> vehicleResponeList = new ArrayList<>();
             if(c.getVehicles() != null){
