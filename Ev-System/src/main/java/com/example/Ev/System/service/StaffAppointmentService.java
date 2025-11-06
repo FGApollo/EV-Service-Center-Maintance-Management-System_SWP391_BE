@@ -122,6 +122,8 @@ public class StaffAppointmentService {
     }
 
 
+
+
 //    public List<StaffAssignmentDto> getTechniciansWithStatus(String status , Authentication authentication) {
 //        String email = authentication.getName();
 //        User user = userRepository.findByEmail(email).orElse(null);

@@ -3,6 +3,7 @@ package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.mapper.AppointmentMapper;
 import com.example.Ev.System.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*@RestController
 @RequestMapping("/api/appointments")
@@ -97,16 +99,18 @@ public class AppointmentController {
     @PutMapping("/{id}/inProgress")
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
-            @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
+            @PathVariable Integer id,
+            @RequestBody List<Integer> staffIds) //bo text vao body , chu k phai json , json la 1 class
     {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
-        staffAppointmentService.autoAssignTechnician(
-                updatedAppointment.getId(),
-                "Auto assign technician",
-                updatedAppointment.getServiceCenter().getId(),
-                "in_progress"
-        );
-        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
+        List<StaffAssignment> assignments = staffAppointmentService
+                .assignTechnicians(id, staffIds, "notes");
+        AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
+        String sId = staffIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        response.setTechIds(sId);
+        return ResponseEntity.ok(response);
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
     }
