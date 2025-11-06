@@ -27,10 +27,11 @@ public class AppointmentService {
     private final AppointmentMapper appointmentMapper;
     private final NotificationProgressService notificationProgressService;
     private final InvoiceServiceI invoiceServiceI;
+    private final ServiceAppointmentRepository serviceAppointmentRepository;
 
     public AppointmentService(AppointmentRepository appointmentRepo, AppointmentServiceRepository appointmentServiceRepo,
                               ServiceCenterRepository serviceCenterRepo, ServiceTypeRepository serviceTypeRepos,
-                              VehicleRepository vehicleRepo, UserRepository userRepo, AppointmentMapper appointmentMapper, NotificationProgressService notificationProgressService, InvoiceServiceI invoiceServiceI) {
+                              VehicleRepository vehicleRepo, UserRepository userRepo, AppointmentMapper appointmentMapper, NotificationProgressService notificationProgressService, InvoiceServiceI invoiceServiceI, ServiceAppointmentRepository appointmentRepository, ServiceAppointmentRepository serviceAppointmentRepository) {
         this.appointmentRepo = appointmentRepo;
         this.appointmentServiceRepo = appointmentServiceRepo;
         this.serviceCenterRepo = serviceCenterRepo;
@@ -40,6 +41,7 @@ public class AppointmentService {
         this.appointmentMapper = appointmentMapper;
         this.notificationProgressService = notificationProgressService;
         this.invoiceServiceI = invoiceServiceI;
+        this.serviceAppointmentRepository = serviceAppointmentRepository;
     }
 
     /*@Service
@@ -119,24 +121,28 @@ public class ServiceAppointmentService {
         appointment.setCreatedAt(Instant.now());
         appointmentRepo.save(appointment);
 
-        for(ServiceType st : serviceTypeList){
-            com.example.Ev.System.entity.AppointmentService appointmentService = new com.example.Ev.System.entity.AppointmentService();
-            appointmentService.setAppointment(appointment);
-            appointmentService.setServiceType(st);
-            appointmentServiceRepo.save(appointmentService);
+        for (ServiceType st : serviceTypeList) {
+            com.example.Ev.System.entity.AppointmentService as = new com.example.Ev.System.entity.AppointmentService();
+            as.setAppointment(appointment);
+            as.setServiceType(st);
+            appointmentServiceRepo.save(as);
         }
 
-//        return new AppointmentResponse(appointment.getId(),
-//                user.get().getFullName(),
-//                vehicle.getModel(),
-//                serviceCenter.get().getName(),
-//                appointment.getAppointmentDate(),
-//                serviceTypeList.stream().map(ServiceType::getName).collect(Collectors.toList()),
-//                appointment.getStatus());
-        invoiceServiceI.createInvoice(appointment.getId());
-        notificationProgressService.sendAppointmentBooked(user.get(), appointment);
 
-        return appointmentMapper.toResponse(appointment);
+
+        // Tạo invoice và lấy id
+        Invoice invoice = invoiceServiceI.createInvoice(appointment.getId());
+        notificationProgressService.sendAppointmentBooked(user.get(), appointment);
+        // Nạp lại appointment kèm serviceTypes bằng fetch join
+        ServiceAppointment loaded = serviceAppointmentRepository
+                .findByIdWithServiceTypes(appointment.getId())
+                .orElseThrow(() -> new RuntimeException("Appointment not found after save"));
+
+        // Map response + gắn invoiceId
+        AppointmentResponse response = appointmentMapper.toResponse(appointment);
+        response.setInvoiceId(invoice.getId());
+
+        return response;
 
     }
 
