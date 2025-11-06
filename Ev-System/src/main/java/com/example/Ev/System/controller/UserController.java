@@ -1,23 +1,35 @@
 package com.example.Ev.System.controller;
 import com.example.Ev.System.dto.RegisterUserDto;
+import com.example.Ev.System.dto.StaffAssignmentDto;
 import com.example.Ev.System.dto.UserDto;
+import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
+import com.example.Ev.System.mapper.StaffAssignmentMapper;
+import com.example.Ev.System.service.StaffAppointmentService;
 import com.example.Ev.System.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
-    public UserController(UserService userService) {
+    private final StaffAssignmentMapper staffAssignmentMapper;
+    private final StaffAppointmentService staffAppointmentService;
+    public UserController(UserService userService, StaffAssignmentMapper staffAssignmentMapper, StaffAppointmentService staffAppointmentService) {
         this.userService = userService;
+        this.staffAssignmentMapper = staffAssignmentMapper;
+        this.staffAppointmentService = staffAppointmentService;
     }
 
     @GetMapping("")
@@ -31,11 +43,13 @@ public class UserController {
     }
 
     @GetMapping("/allTechnicians")
-    public ResponseEntity<List<UserDto>> getTechnician(Authentication authentication) {
+    @Transactional
+    public ResponseEntity<List<StaffAssignmentDto>> getTechnician(Authentication authentication) {
         String email = authentication.getName();
         User user = userService.getUserByEmail(email);
         int id = user.getServiceCenter().getId();
-        return ResponseEntity.ok(userService.getAllByRole("technician",id));
+        List<StaffAssignmentDto> staffAssignmentList = staffAppointmentService.getStaffAsignment(authentication);
+        return ResponseEntity.ok(staffAssignmentList);
         //test xong
         //lay user theo role va theo thang manager centerId
     }
@@ -64,6 +78,8 @@ public class UserController {
         List<UserDto> customers = userService.getAllCustomer("customer");
         return ResponseEntity.ok(customers);
     }
+
+
 
 
 }
