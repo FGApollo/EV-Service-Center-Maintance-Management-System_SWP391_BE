@@ -32,19 +32,21 @@ public class StaffAssignmentController {
     }
 
     @PutMapping("/{appointmentId}/staff")
-    public ResponseEntity<List<StaffAssignment>> assignTechnicians(
+    public ResponseEntity<List<StaffAssignmentDto>> assignTechnicians(
             @PathVariable Integer appointmentId,
             @RequestBody List<Integer> staffIds
             ) {
         List<StaffAssignment> assignments = staffAppointmentService
                 .assignTechnicians(appointmentId, staffIds, "notes");
         List<StaffAssignmentDto> assignmentDtos = assignments.stream()
-                .map(a -> staffAssignmentMapper.toDtoWithStatus(
-                        a.getStaff(),
-                        true
-                ))
+                .map(a -> {
+                    StaffAssignmentDto dto = staffAssignmentMapper.toDtoWithStatus(a.getStaff(), true);
+                    dto.setAppointmentId(appointmentId.toString());
+                    return dto;
+                })
                 .toList();
-        return ResponseEntity.ok(assignments);
+
+        return ResponseEntity.ok(assignmentDtos);
         //Da xong
         //ToDO : Nen tra ve DTO
     }
