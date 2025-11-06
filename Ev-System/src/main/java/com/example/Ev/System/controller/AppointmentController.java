@@ -3,8 +3,10 @@ package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.mapper.AppointmentMapper;
+import com.example.Ev.System.repository.ServiceAppointmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.service.*;
 import jakarta.validation.Valid;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*@RestController
 @RequestMapping("/api/appointments")
@@ -42,8 +45,9 @@ public class AppointmentController {
     private final UserRepository userRepository;
     private final StaffAppointmentService staffAppointmentService;
     private final MaintenanceReminderCreationService maintenanceReminderCreationService;
+    private final ServiceAppointmentRepository serviceAppointmentRepository;
 
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService, MaintenanceReminderCreationService maintenanceReminderCreationService) {
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService, MaintenanceReminderCreationService maintenanceReminderCreationService, ServiceAppointmentRepository serviceAppointmentRepository) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
         this.serviceAppointmentService = serviceAppointmentService;
@@ -53,6 +57,7 @@ public class AppointmentController {
         this.userRepository = userRepository;
         this.staffAppointmentService = staffAppointmentService;
         this.maintenanceReminderCreationService = maintenanceReminderCreationService;
+        this.serviceAppointmentRepository = serviceAppointmentRepository;
     }
 
     @PostMapping
@@ -97,16 +102,19 @@ public class AppointmentController {
     @PutMapping("/{id}/inProgress")
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
-            @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
+            @PathVariable Integer id,
+            @RequestBody List<Integer> staffIds) //bo text vao body , chu k phai json , json la 1 class
     {
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
-        staffAppointmentService.autoAssignTechnician(
-                updatedAppointment.getId(),
-                "Auto assign technician",
-                updatedAppointment.getServiceCenter().getId(),
-                "in_progress"
-        );
-        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
+        List<StaffAssignment> assignments = staffAppointmentService
+                .assignTechnicians(id, staffIds, "notes");
+        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
+        AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
+        String sId = staffIdList.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        response.setTechIds(sId);
+        return ResponseEntity.ok(response);
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
     }
@@ -129,8 +137,15 @@ public class AppointmentController {
         maintenanceReminderCreationService.createReminderForAppointmentIfDone(id);
 
         ServiceAppointment refreshed = serviceAppointmentService.getAppointmentWithAllDetails(id);
+
+        AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
+        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
+        String sId = staffIdList.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        response.setTechIds(sId);
         workLogService.autoCreateWorkLog(id);
-        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/appointments/status/{status}")
@@ -143,7 +158,28 @@ public class AppointmentController {
         Integer centerId = currentUser.getServiceCenter().getId();
         List<ServiceAppointment> appointments =
                 serviceAppointmentService.getStatusAppointments(status, centerId);
+
         return appointmentMapper.toResponseList(appointments);
+        //moi
+    }
+
+    @GetMapping("/status/done/{id}")
+    @Transactional
+    public AppointmentResponse getAppointmentsByDone(
+            Authentication authentication,
+            @PathVariable Integer id
+            ) {
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElse(null);
+        Integer centerId = currentUser.getServiceCenter().getId();
+        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
+        ServiceAppointment updatedAppointment = serviceAppointmentRepository.findById(id).orElse(null);
+        AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
+        String sId = staffIdList.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        response.setTechIds(sId);
+        return response;
         //moi
     }
 

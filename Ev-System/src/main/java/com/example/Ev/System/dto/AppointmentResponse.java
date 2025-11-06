@@ -21,4 +21,6 @@ public class AppointmentResponse {
     private String status;
 
     private Integer invoiceId;
+    private String techIds;
+
 }
