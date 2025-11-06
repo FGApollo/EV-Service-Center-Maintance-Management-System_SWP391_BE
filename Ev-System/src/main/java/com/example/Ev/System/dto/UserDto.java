@@ -13,6 +13,7 @@ public class UserDto {
     private String phone;
     private String role;
     private Instant create_at;
+    private String status;
 
     List<VehicleRespone> vehicles;
 }
