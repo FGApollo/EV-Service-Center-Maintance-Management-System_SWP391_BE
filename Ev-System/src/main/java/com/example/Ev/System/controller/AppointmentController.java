@@ -2,6 +2,7 @@ package com.example.Ev.System.controller;
 
 
 import com.example.Ev.System.dto.*;
+import com.example.Ev.System.entity.MaintenanceRecord;
 import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
@@ -190,6 +191,19 @@ public class AppointmentController {
             response.setUsers(techDto);
         } else {
             response.setUsers(Collections.emptyList());
+        }
+        if (updatedAppointment != null && updatedAppointment.getServiceTypes() != null) {
+            List<String> serviceNames = updatedAppointment.getServiceTypes().stream()
+                    .map(serviceType -> serviceType.getName())
+                    .collect(Collectors.toList());
+            response.setServiceNames(serviceNames);
+        }
+
+        MaintenanceRecord maintenanceRecord = maintenanceRecordService.getAllByAppointmentId(id);
+        if (maintenanceRecord != null && maintenanceRecord.getChecklist() != null) {
+            // Split comma-separated checklist into list (if stored like "Brake, Battery")
+            List<String> checklist = List.of(maintenanceRecord.getChecklist().split("\\s*,\\s*"));
+            response.setCheckList(checklist);
         }
         return response;
         //moi

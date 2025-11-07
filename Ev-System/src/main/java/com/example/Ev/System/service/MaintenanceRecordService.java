@@ -3,6 +3,7 @@ package com.example.Ev.System.service;
 import com.example.Ev.System.dto.MaintainanceRecordDto;
 import com.example.Ev.System.dto.PartUsageDto;
 import com.example.Ev.System.entity.*;
+import com.example.Ev.System.entity.AppointmentService;
 import com.example.Ev.System.mapper.MaintainanceRecordMapper;
 import com.example.Ev.System.mapper.PartUsageMapper;
 import com.example.Ev.System.repository.*;
@@ -179,6 +180,24 @@ public class MaintenanceRecordService {
     public boolean findMaintainanceRecordByAppointmentId(Integer appointmentId) {
         Optional<MaintenanceRecord> maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentId);
         return maintenanceRecord.isPresent();
+    }
+
+    @Transactional
+    public List<MaintenanceRecord> getAll(List<ServiceAppointment> serviceAppointments) {
+        List<MaintenanceRecord> maintenanceRecords = new ArrayList<>();
+        for(ServiceAppointment serviceAppointment : serviceAppointments){
+            MaintenanceRecord temp = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(serviceAppointment.getId()).orElse(null);
+            if(temp != null){
+                maintenanceRecords.add(temp);
+            }
+        }
+        return maintenanceRecords;
+    }
+
+    @Transactional
+    public MaintenanceRecord getAllByAppointmentId(Integer appointmentId) {
+        MaintenanceRecord maintenanceRecords = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointmentId).orElse(null);
+        return maintenanceRecords;
     }
 
 

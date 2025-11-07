@@ -81,6 +81,7 @@ public class ServiceAppointmentService {
         return appointment;
     }
 
+    @Transactional
     public List<ServiceAppointment> getAppointmentsByStaffId(Integer staffId) {
         List<ServiceAppointment> appointments = appointmentRepository.findAllByStaffAssignments_staff_id(staffId);
         return appointments;
@@ -91,6 +92,18 @@ public class ServiceAppointmentService {
         return appointmentRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
     }
+
+    @Transactional
+    public List<ServiceAppointment> findAll(){
+        return appointmentRepository.findAll();
+    }
+
+    @Transactional
+    public List<ServiceAppointment> findAllByServiceCenter(ServiceCenter serviceCenter) {
+        return  appointmentRepository.findAllByServiceCenter(serviceCenter);
+    }
+
+
 
 
 //    @Transactional

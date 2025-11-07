@@ -36,6 +36,10 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
     @Query("SELECT DISTINCT sa.vehicle FROM ServiceAppointment sa WHERE sa.status = :status")
     List<Vehicle> findDistincVehicleByStatus(@Param("status") String status);
 
+    List<ServiceAppointment> findAll();
+
+    List<ServiceAppointment> findAllByServiceCenter(ServiceCenter serviceCenter);
+
 }
 
 
