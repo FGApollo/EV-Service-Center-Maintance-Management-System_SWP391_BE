@@ -20,5 +20,10 @@ public interface WorkLogMapper {
     @Mapping(target = "appointment", ignore = true)
     Worklog toEntity(WorkLogDto workLogDto);
 
+    // ✅ List<Entity> → List<DTO>
+    List<WorkLogDto> toDtoList(List<Worklog> workLogs);
+
+    // (optional) ✅ List<DTO> → List<Entity>
+    List<Worklog> toEntityList(List<WorkLogDto> workLogDtos);
     //Sai la do day
 }

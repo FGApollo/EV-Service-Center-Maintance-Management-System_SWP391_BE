@@ -8,6 +8,7 @@ import com.example.Ev.System.entity.Worklog;
 import com.example.Ev.System.mapper.WorkLogMapper;
 import com.example.Ev.System.repository.*;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,16 +27,18 @@ public class WorkLogService {
     private final StaffAssignmentRepository staffAssignmentRepository;
     private final WorkLogMapper workLogMapper;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
+    private final UserService userService;
 
     public WorkLogService(WorkLogRepository workLogRepository,
                           UserRepository userRepository,
-                          AppointmentRepository appointmentRepository, StaffAssignmentRepository staffAssignmentRepository, WorkLogMapper workLogMapper, MaintenanceRecordRepository maintenanceRecordRepository) {
+                          AppointmentRepository appointmentRepository, StaffAssignmentRepository staffAssignmentRepository, WorkLogMapper workLogMapper, MaintenanceRecordRepository maintenanceRecordRepository, UserService userService) {
         this.workLogRepository = workLogRepository;
         this.userRepository = userRepository;
         this.appointmentRepository = appointmentRepository;
         this.staffAssignmentRepository = staffAssignmentRepository;
         this.workLogMapper = workLogMapper;
         this.maintenanceRecordRepository = maintenanceRecordRepository;
+        this.userService = userService;
     }
 
     @Transactional
@@ -84,6 +87,15 @@ public class WorkLogService {
             WorkLogDto workLogDto = workLogMapper.toDto(workLog);
             workLogDtos.add(workLogDto);
         }
+        return workLogDtos;
+    }
+
+    public List<WorkLogDto> getAllWorkLogsByCenterId(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
+        int centerId = user.getServiceCenter().getId();
+        List<Worklog> worklogs = workLogRepository.findWorklogsByAppointment_ServiceCenter_Id(centerId);
+        List<WorkLogDto> workLogDtos = workLogMapper.toDtoList(worklogs);
         return workLogDtos;
     }
 

@@ -4,6 +4,7 @@ import com.example.Ev.System.dto.WorkLogDto;
 import com.example.Ev.System.entity.Worklog;
 import com.example.Ev.System.service.WorkLogService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,4 +36,12 @@ public class WorkLogController {
         //TODO : WorkLog se dc auto luu khi xong 1 appointment , hoi may thg kia hd nhu the nao
 
     }
+
+    @GetMapping("/center")
+    public ResponseEntity<List<WorkLogDto>> getAllWorkLogsByCenter(Authentication authentication) {
+        List<WorkLogDto> workLogs = workLogService.getAllWorkLogsByCenterId(authentication);
+        return ResponseEntity.ok(workLogs);
+    }
+
+
 }
