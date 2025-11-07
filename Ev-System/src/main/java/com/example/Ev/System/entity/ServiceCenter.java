@@ -3,6 +3,8 @@ package com.example.Ev.System.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Where;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "servicecenter")
+@Where(clause = "status = 'active'")
 public class ServiceCenter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +36,17 @@ public class ServiceCenter {
     @OneToMany(mappedBy = "center", cascade = CascadeType.ALL)
     private List<Inventory> inventories;
 
+    @Column(name = "status", nullable = false, length = 20)
+    @ColumnDefault("'active'")
+    private String status;
+
     @OneToMany(mappedBy = "serviceCenter")
     private Set<ServiceAppointment> serviceAppointments = new LinkedHashSet<>();
 
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = "active";
+        }
+    }
 }
