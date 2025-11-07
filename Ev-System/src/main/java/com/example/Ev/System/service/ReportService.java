@@ -1,10 +1,10 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.PartStockReport;
+import com.example.Ev.System.dto.PaymentMethodStats;
+import com.example.Ev.System.dto.RevenueResponse;
 import com.example.Ev.System.entity.*;
-import com.example.Ev.System.repository.InvoiceRepository;
-import com.example.Ev.System.repository.PartUsageRepository;
-import com.example.Ev.System.repository.ServiceAppointmentRepository;
-import com.example.Ev.System.repository.ServiceTypeRepository;
+import com.example.Ev.System.repository.*;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,15 @@ import java.util.stream.Collectors;
 @Service
 public class ReportService implements ReportServiceI {
     @Autowired
-    private ServiceTypeRepository serviceTypeRepository;
+    private PartRepository partRepository;
     @Autowired
     private InvoiceRepository invoiceRepository;
     @Autowired
     private PartUsageRepository partUsageRepository;
     @Autowired
     private ServiceAppointmentRepository serviceAppointmentRepository;
+    @Autowired
+    PaymentRepository paymentRepository;
 
     //REVENUE REPORT
     @Override
@@ -94,6 +96,138 @@ public class ReportService implements ReportServiceI {
     public List<Map.Entry<String, Long>> getTrendingServices() {
         List<ServiceAppointment> appointments = serviceAppointmentRepository.findAll();
         return calculateTrendingServices(appointments);
+    }
+
+    @Override
+    public RevenueResponse getCurrentMonthRevenue() {
+        YearMonth currentMonth = YearMonth.now(ZoneId.systemDefault());
+        YearMonth lastMonth = currentMonth.minusMonths(1);
+
+        List<Invoice> paidInvoices = invoiceRepository.findByStatus("PAID");
+        Map<YearMonth, Double> revenueByMonth = paidInvoices.stream()
+                .collect(Collectors.groupingBy(
+                   invoice -> YearMonth.from(invoice.getPaymentDate()
+                           .atZone(ZoneId.systemDefault())
+                           .toLocalDate()),
+                        Collectors.summingDouble(invoice -> invoice.getTotalAmount().doubleValue())
+                ));
+
+        double thisMonthRevenue = revenueByMonth.getOrDefault(currentMonth, 0.0);
+        double lastMonthRevenue = revenueByMonth.getOrDefault(lastMonth, 0.0);
+
+        int percentChange = 0;
+        if (lastMonthRevenue >0) {
+            percentChange = (int) Math.round(((thisMonthRevenue-lastMonthRevenue)/lastMonthRevenue)*100);
+        }
+
+        String trend;
+        if(lastMonthRevenue < thisMonthRevenue) {
+            trend = "UP";
+        } else {
+            trend = "DOWN";
+        }
+
+        return new RevenueResponse(
+                Math.round(thisMonthRevenue),
+                Math.round(lastMonthRevenue),
+                percentChange,
+                trend
+        );
+    }
+
+    @Override
+    public Double getCurrentMonthExpense() {
+        YearMonth currentMonth = YearMonth.now(ZoneId.systemDefault());
+        List<PartUsage> allPartUsage = partUsageRepository.findAll();
+
+        return allPartUsage.stream()
+                .filter(partUsage -> {
+                    if(partUsage.getRecord() == null || partUsage.getRecord().getEndTime() == null) {return false;}
+                    YearMonth usageMonth = YearMonth.from(
+                            partUsage.getRecord().getEndTime()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                    );
+                    return usageMonth.equals(currentMonth);
+                })
+                .mapToDouble(usage ->
+                        usage.getPart().getUnitPrice().doubleValue()*usage.getQuantityUsed()
+                ).sum();
+    }
+
+    @Override
+    public Map<String, Double> getRevenueByService() {
+        List<Invoice> paidInvoices = invoiceRepository.findByStatus("PAID");
+
+        List<ServiceAppointment> appointments = paidInvoices.stream()
+                .map(Invoice::getAppointment)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        Map<String, Double> revenueByService = appointments.stream()
+                .flatMap(appointment -> appointment.getServiceTypes().stream())
+                .collect(Collectors.groupingBy(
+                        ServiceType::getName,
+                        Collectors.summingDouble(serviceType ->
+                                serviceType.getPrice() != null ? serviceType.getPrice().doubleValue() : 0.0)
+                ));
+
+        return revenueByService;
+    }
+
+    @Override
+    public Map<String, PaymentMethodStats> getRevenueByPaymentMethod() {
+        List<Payment> allPayments = paymentRepository.findAll();
+
+        List<Payment> validPayments = allPayments.stream()
+                .filter(p -> p.getInvoice() != null &&
+                        "PAID".equalsIgnoreCase(p.getInvoice().getStatus()))
+                .toList();
+
+        Map<String, List<Payment>> grouped = validPayments.stream()
+                .collect(Collectors.groupingBy(
+                        payment -> Optional.ofNullable(payment.getMethod()).orElse("UNKNOWN")
+                ));
+
+        Double totalAmount = validPayments.stream()
+                .mapToDouble(payment -> payment.getAmount().doubleValue())
+                .sum();
+
+        Map<String, PaymentMethodStats> stats = new HashMap<>();
+        for (Map.Entry<String, List<Payment>> entry : grouped.entrySet()) {
+            String method = entry.getKey();
+            List<Payment> payments = entry.getValue();
+
+            long count = payments.size();
+            double amount = payments.stream()
+                    .mapToDouble(p -> p.getAmount().doubleValue())
+                    .sum();
+            double percentage = totalAmount > 0 ? (amount / totalAmount) *100 : 0;
+            stats.put(method, new PaymentMethodStats(count, amount, Math.round(percentage)));
+        }
+        return stats;
+    }
+
+    @Override
+    public List<PartStockReport> getPartStockReport() {
+        List<Part> parts = partRepository.findAll();
+
+        return parts.stream().map(part -> {
+            int totalStock = part.getInventories().stream()
+                    .mapToInt(inventories -> inventories.getQuantity() != null ? inventories.getQuantity() : 0)
+                    .sum();
+            int totalUsage = part.getPartUsages().stream()
+                    .mapToInt(partUsage -> partUsage.getQuantityUsed() != null ? partUsage.getQuantityUsed() : 0)
+                    .sum();
+
+            return new PartStockReport(
+                    part.getId(),
+                    part.getName(),
+                    part.getMinStockLevel() != null ? part.getMinStockLevel() : 0,
+                    totalStock,
+                    totalUsage
+            );
+        }).collect(Collectors.toList());
     }
 
     // Common logic for counting + sorting

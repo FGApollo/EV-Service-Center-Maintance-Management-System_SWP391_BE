@@ -22,7 +22,7 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     public ResponseEntity<?> createPayment(@RequestBody PaymentDto paymentDto) {
         PaymentResponse paymentResponse = paymentService.createPaymentUrl(paymentDto);
         return ResponseEntity.status(HttpStatus.OK).body(paymentResponse);

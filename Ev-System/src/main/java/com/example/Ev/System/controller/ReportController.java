@@ -1,5 +1,8 @@
 package com.example.Ev.System.controller;
 
+import com.example.Ev.System.dto.PartStockReport;
+import com.example.Ev.System.dto.PaymentMethodStats;
+import com.example.Ev.System.dto.RevenueResponse;
 import com.example.Ev.System.service.PartUsageServiceI;
 import com.example.Ev.System.service.ReportServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,4 +47,35 @@ public class ReportController {
     public ResponseEntity<Map<YearMonth, Double>> getProfitReport() {
         return ResponseEntity.ok(reportService.getMonthlyProfit());
     }
+
+    @GetMapping("/revenue/current-month")
+    public ResponseEntity<RevenueResponse> getRevenueCurrentMonth() {
+        RevenueResponse response = reportService.getCurrentMonthRevenue();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/expense/current-month")
+    public ResponseEntity<Double> getCurrentMonthExpense() {
+        Double expense = reportService.getCurrentMonthExpense();
+        return ResponseEntity.ok(expense);
+    }
+
+    @GetMapping("/revenue/service")
+    public ResponseEntity<Map<String, Double>> getRevenueByService() {
+        Map<String, Double> revenueByService = reportService.getRevenueByService();
+        return ResponseEntity.ok(revenueByService);
+    }
+
+    @GetMapping("/payment-methods")
+    public ResponseEntity<Map<String, PaymentMethodStats>> getPaymentMethods() {
+        Map<String, PaymentMethodStats> paymentMethods = reportService.getRevenueByPaymentMethod();
+        return ResponseEntity.ok(paymentMethods);
+    }
+
+    @GetMapping("/parts/stock-report")
+    public ResponseEntity<List<PartStockReport>> getPartStockReport() {
+        List<PartStockReport> report = reportService.getPartStockReport();
+        return ResponseEntity.ok(report);
+    }
+
 }
