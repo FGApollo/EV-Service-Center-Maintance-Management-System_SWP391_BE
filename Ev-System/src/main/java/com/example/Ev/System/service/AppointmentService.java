@@ -2,6 +2,8 @@ package com.example.Ev.System.service;
 
 import com.example.Ev.System.dto.AppointmentRequest;
 import com.example.Ev.System.dto.AppointmentResponse;
+import com.example.Ev.System.dto.PaymentDto;
+import com.example.Ev.System.dto.PaymentResponse;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.exception.BadRequestException;
 import com.example.Ev.System.exception.NotFoundException;
@@ -28,10 +30,11 @@ public class AppointmentService {
     private final NotificationProgressService notificationProgressService;
     private final InvoiceServiceI invoiceServiceI;
     private final ServiceAppointmentRepository serviceAppointmentRepository;
+    private final  PaymentService paymentService;
 
     public AppointmentService(AppointmentRepository appointmentRepo, AppointmentServiceRepository appointmentServiceRepo,
                               ServiceCenterRepository serviceCenterRepo, ServiceTypeRepository serviceTypeRepos,
-                              VehicleRepository vehicleRepo, UserRepository userRepo, AppointmentMapper appointmentMapper, NotificationProgressService notificationProgressService, InvoiceServiceI invoiceServiceI, ServiceAppointmentRepository appointmentRepository, ServiceAppointmentRepository serviceAppointmentRepository) {
+                              VehicleRepository vehicleRepo, UserRepository userRepo, AppointmentMapper appointmentMapper, NotificationProgressService notificationProgressService, InvoiceServiceI invoiceServiceI, ServiceAppointmentRepository appointmentRepository, ServiceAppointmentRepository serviceAppointmentRepository, PaymentService paymentService) {
         this.appointmentRepo = appointmentRepo;
         this.appointmentServiceRepo = appointmentServiceRepo;
         this.serviceCenterRepo = serviceCenterRepo;
@@ -42,6 +45,7 @@ public class AppointmentService {
         this.notificationProgressService = notificationProgressService;
         this.invoiceServiceI = invoiceServiceI;
         this.serviceAppointmentRepository = serviceAppointmentRepository;
+        this.paymentService = paymentService;
     }
 
     /*@Service
@@ -140,7 +144,14 @@ public class ServiceAppointmentService {
 
         // Map response + gắn invoiceId
         AppointmentResponse response = appointmentMapper.toResponse(appointment);
-        response.setInvoiceId(invoice.getId());
+
+        PaymentDto paymentDto = new PaymentDto();
+        paymentDto.setInvoiceId(invoice.getId());
+        paymentDto.setClientIp("127.0.0.1");
+        paymentDto.setMethod("online");
+
+        PaymentResponse response1 = paymentService.createPaymentUrl(paymentDto);
+        response.setUrl(response1.getPaymentUrl());
 
         return response;
 
