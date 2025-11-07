@@ -167,7 +167,7 @@ public class AppointmentController {
         //moi
     }
 
-    @GetMapping("/status/done/{id}")
+    @GetMapping("/status/{id}")
     @Transactional
     public AppointmentResponse getAppointmentsByDone(
             Authentication authentication,
