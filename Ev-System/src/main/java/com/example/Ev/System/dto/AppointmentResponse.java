@@ -1,5 +1,6 @@
 package com.example.Ev.System.dto;
 
+import com.example.Ev.System.entity.MaintenanceRecord;
 import com.example.Ev.System.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,5 +25,6 @@ public class AppointmentResponse {
     private String url;
     private String techIds;
     private List<UserDto> users;
+    private List<String> checkList;
 
 }
