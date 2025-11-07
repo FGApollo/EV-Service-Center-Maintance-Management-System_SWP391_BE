@@ -6,6 +6,7 @@ import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.mapper.AppointmentMapper;
+import com.example.Ev.System.mapper.UserMapper;
 import com.example.Ev.System.repository.ServiceAppointmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.service.*;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,8 +48,9 @@ public class AppointmentController {
     private final StaffAppointmentService staffAppointmentService;
     private final MaintenanceReminderCreationService maintenanceReminderCreationService;
     private final ServiceAppointmentRepository serviceAppointmentRepository;
+    private final UserMapper userMapper;
 
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService, MaintenanceReminderCreationService maintenanceReminderCreationService, ServiceAppointmentRepository serviceAppointmentRepository) {
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService, MaintenanceReminderCreationService maintenanceReminderCreationService, ServiceAppointmentRepository serviceAppointmentRepository, UserMapper userMapper) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
         this.serviceAppointmentService = serviceAppointmentService;
@@ -58,6 +61,7 @@ public class AppointmentController {
         this.staffAppointmentService = staffAppointmentService;
         this.maintenanceReminderCreationService = maintenanceReminderCreationService;
         this.serviceAppointmentRepository = serviceAppointmentRepository;
+        this.userMapper = userMapper;
     }
 
     @PostMapping
@@ -179,6 +183,14 @@ public class AppointmentController {
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
         response.setTechIds(sId);
+
+        if (staffIdList != null && !staffIdList.isEmpty()) {
+            List<User> techUsers = userRepository.findAllById(staffIdList);
+            List<UserDto> techDto = userMapper.toDTOList(techUsers);
+            response.setUsers(techDto);
+        } else {
+            response.setUsers(Collections.emptyList());
+        }
         return response;
         //moi
     }
