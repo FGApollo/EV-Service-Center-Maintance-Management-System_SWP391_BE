@@ -21,7 +21,7 @@ public class AppointmentResponse {
     private List<String> serviceNames;
     private String status;
 
-    private Integer invoiceId;
+    private String url;
     private String techIds;
     private List<UserDto> users;
 
