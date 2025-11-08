@@ -119,6 +119,11 @@ public class AppointmentController {
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
         response.setTechIds(sId);
+
+        List<User> techUsers = userRepository.findAllById(staffIdList);
+        List<UserDto> techDto = userMapper.toDTOList(techUsers);
+        response.setUsers(techDto);
+
         return ResponseEntity.ok(response);
         //Da xong
         //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
