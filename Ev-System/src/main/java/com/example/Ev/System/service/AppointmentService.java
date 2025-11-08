@@ -138,12 +138,14 @@ public class ServiceAppointmentService {
         Invoice invoice = invoiceServiceI.createInvoice(appointment.getId());
         notificationProgressService.sendAppointmentBooked(user.get(), appointment);
         // Nạp lại appointment kèm serviceTypes bằng fetch join
+        // Fetch join lại để có serviceTypes
         ServiceAppointment loaded = serviceAppointmentRepository
                 .findByIdWithServiceTypes(appointment.getId())
                 .orElseThrow(() -> new RuntimeException("Appointment not found after save"));
 
-        // Map response + gắn invoiceId
-        AppointmentResponse response = appointmentMapper.toResponse(appointment);
+        // Map từ loaded thay vì appointment
+        AppointmentResponse response = appointmentMapper.toResponse(loaded);
+
 
         PaymentDto paymentDto = new PaymentDto();
         paymentDto.setInvoiceId(invoice.getId());
