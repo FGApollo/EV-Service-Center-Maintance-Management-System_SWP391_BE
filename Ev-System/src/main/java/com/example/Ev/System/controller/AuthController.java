@@ -31,7 +31,7 @@ public class AuthController {
         return ResponseEntity.ok(userDTO);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/auth/update/{id}")
     public ResponseEntity<UpdateUserResponse> updateUser(
             @PathVariable Integer id,
             @RequestBody UpdateUserRequest request) {
