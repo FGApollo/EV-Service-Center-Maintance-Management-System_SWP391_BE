@@ -87,6 +87,8 @@ public class ServiceAppointmentService {
         return appointments;
     }
 
+
+
     @Transactional
     public ServiceAppointment getAppointmentWithAllDetails(Integer id) {
         return appointmentRepository.findByIdWithDetails(id)
@@ -102,6 +104,8 @@ public class ServiceAppointmentService {
     public List<ServiceAppointment> findAllByServiceCenter(ServiceCenter serviceCenter) {
         return  appointmentRepository.findAllByServiceCenter(serviceCenter);
     }
+
+
 
 
 

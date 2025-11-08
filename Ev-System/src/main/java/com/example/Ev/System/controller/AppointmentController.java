@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -160,12 +161,58 @@ public class AppointmentController {
         String email = authentication.getName();
         User currentUser = userRepository.findByEmail(email).orElse(null);
         Integer centerId = currentUser.getServiceCenter().getId();
+
+        // Get all appointments by status + center
         List<ServiceAppointment> appointments =
                 serviceAppointmentService.getStatusAppointments(status, centerId);
 
-        return appointmentMapper.toResponseList(appointments);
-        //moi
+        List<AppointmentResponse> responses = new ArrayList<>();
+
+        for (ServiceAppointment appointment : appointments) {
+            AppointmentResponse response = appointmentMapper.toResponse(appointment);
+
+            // --- Staff / Technician Info ---
+            List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(appointment.getId());
+            if (staffIdList != null && !staffIdList.isEmpty()) {
+                String sId = staffIdList.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(","));
+                response.setTechIds(sId);
+
+                List<User> techUsers = userRepository.findAllById(staffIdList);
+                List<UserDto> techDto = userMapper.toDTOList(techUsers);
+                response.setUsers(techDto);
+            } else {
+                response.setUsers(Collections.emptyList());
+                response.setTechIds("");
+            }
+
+            // --- Service Names & Total ---
+            if (appointment.getServiceTypes() != null) {
+                List<String> serviceNames = appointment.getServiceTypes().stream()
+                        .map(ServiceType::getName)
+                        .collect(Collectors.toList());
+                response.setServiceNames(serviceNames);
+
+                int total = appointment.getServiceTypes().stream()
+                        .mapToInt(serviceType -> serviceType.getPrice().intValue())
+                        .sum();
+                response.setTotal(total);
+            }
+
+            // --- Maintenance Checklist ---
+            MaintenanceRecord maintenanceRecord = maintenanceRecordService.getAllByAppointmentId(appointment.getId());
+            if (maintenanceRecord != null && maintenanceRecord.getChecklist() != null) {
+                List<String> checklist = List.of(maintenanceRecord.getChecklist().split("\\s*,\\s*"));
+                response.setCheckList(checklist);
+            }
+
+            responses.add(response);
+        }
+
+        return responses;
     }
+
 
     @GetMapping("/status/{id}")
     @Transactional
@@ -218,9 +265,9 @@ public class AppointmentController {
 
     @GetMapping("/staff")
     @Transactional
-    public ResponseEntity<List<AppointmentDto>> findAllByStaffId(@RequestParam Integer id) {
+    public ResponseEntity<List<AppointmentResponse>> findAllByStaffId(@RequestParam Integer id) {
         List<ServiceAppointment> appointments = serviceAppointmentService.getAppointmentsByStaffId(id);
-        return ResponseEntity.ok(appointmentMapper.toDtoList(appointments));
+        return ResponseEntity.ok(appointmentMapper.toResponseList(appointments));
     }
 
     @GetMapping("/all")
