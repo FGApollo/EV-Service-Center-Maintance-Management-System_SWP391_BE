@@ -2,15 +2,13 @@ package com.example.Ev.System.controller;
 
 
 import com.example.Ev.System.dto.*;
-import com.example.Ev.System.entity.MaintenanceRecord;
-import com.example.Ev.System.entity.ServiceAppointment;
-import com.example.Ev.System.entity.StaffAssignment;
-import com.example.Ev.System.entity.User;
+import com.example.Ev.System.entity.*;
 import com.example.Ev.System.mapper.AppointmentMapper;
 import com.example.Ev.System.mapper.UserMapper;
 import com.example.Ev.System.repository.ServiceAppointmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.service.*;
+import com.example.Ev.System.service.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /*@RestController
@@ -198,6 +197,14 @@ public class AppointmentController {
                     .collect(Collectors.toList());
             response.setServiceNames(serviceNames);
         }
+
+        int total = 0;
+        Set<ServiceType> serviceTypes = updatedAppointment.getServiceTypes();
+        for (ServiceType serviceType : serviceTypes) {
+            total += serviceType.getPrice().intValue();
+        }
+        response.setTotal(total);
+
 
         MaintenanceRecord maintenanceRecord = maintenanceRecordService.getAllByAppointmentId(id);
         if (maintenanceRecord != null && maintenanceRecord.getChecklist() != null) {

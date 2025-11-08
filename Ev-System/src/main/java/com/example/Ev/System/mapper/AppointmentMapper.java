@@ -49,13 +49,21 @@ public interface AppointmentMapper {
 
     // ENTITY → RESPONSE DTO
     @Mapping(target = "appointmentId", source = "id")
-    @Mapping(target = "customerName", source = "customer.fullName") // Assuming User entity has 'fullName'
+    @Mapping(target = "customerName", source = "customer.fullName")
     @Mapping(target = "phone", source = "customer.phone")
-    @Mapping(target = "vehicleModel", source = "vehicle.model") // Assuming Vehicle entity has 'model'
-    @Mapping(target = "serviceCenterName", source = "serviceCenter.name") // Assuming ServiceCenter entity has 'name'
+    @Mapping(target = "email", source = "customer.email")
+    @Mapping(target = "vehicleModel", source = "vehicle.model")
+    @Mapping(target = "vehicle", source = "vehicle")
+    @Mapping(target = "serviceCenterName", source = "serviceCenter.name")
     @Mapping(target = "appointmentDate", source = "appointmentDate")
     @Mapping(target = "status", source = "status")
     @Mapping(target = "serviceNames", expression = "java(mapServiceNames(serviceAppointment))")
+
+    @Mapping(target = "url", ignore = true)
+    @Mapping(target = "techIds", ignore = true)
+    @Mapping(target = "users", ignore = true)
+    @Mapping(target = "checkList", ignore = true)
+    @Mapping(target = "total", ignore = true)
     AppointmentResponse toResponse(ServiceAppointment serviceAppointment);
 
     List<AppointmentResponse> toResponseList(List<ServiceAppointment> appointments);
@@ -67,7 +75,9 @@ public interface AppointmentMapper {
         }
         return serviceAppointment.getServiceTypes()
                 .stream()
-                .map(serviceType -> serviceType.getName()) // assuming field is 'serviceName'
+                .map(serviceType -> serviceType.getName())
                 .collect(Collectors.toList());
     }
+
+
 }

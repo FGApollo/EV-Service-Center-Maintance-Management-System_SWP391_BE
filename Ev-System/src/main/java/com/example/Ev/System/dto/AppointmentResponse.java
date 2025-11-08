@@ -2,6 +2,7 @@ package com.example.Ev.System.dto;
 
 import com.example.Ev.System.entity.MaintenanceRecord;
 import com.example.Ev.System.entity.User;
+import com.example.Ev.System.entity.Vehicle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,10 +22,13 @@ public class AppointmentResponse {
     private Instant appointmentDate;
     private List<String> serviceNames;
     private String status;
+    private String email;
+    private Vehicle vehicle;
 
     private String url;
     private String techIds;
     private List<UserDto> users;
     private List<String> checkList;
+    private int total;
 
 }
