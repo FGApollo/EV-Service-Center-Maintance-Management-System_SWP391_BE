@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
+                        .requestMatchers("/ws/**").permitAll()
                         // Swagger/OpenAPI
                         .requestMatchers(
                                 "/v3/api-docs/**",
@@ -69,6 +69,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 "https://ev-teal.vercel.app",
                 "http://localhost:5173",
+                "http://127.0.0.1:5500",
                 "https://ev-service-center-maintance-management-um2j.onrender.com"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
