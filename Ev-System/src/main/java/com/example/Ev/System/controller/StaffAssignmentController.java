@@ -36,10 +36,10 @@ public class StaffAssignmentController {
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<List<StaffAssignmentDto>> assignTechnicians(
             @PathVariable Integer appointmentId,
-            @RequestBody List<Integer> staffIds
+            @RequestBody List<Integer> staffIds,Authentication authentication
             ) {
         List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(appointmentId, staffIds, "notes");
+                .assignTechnicians(appointmentId, staffIds, "notes",authentication);
         List<StaffAssignmentDto> assignmentDtos = assignments.stream()
                 .map(a -> {
                     StaffAssignmentDto dto = staffAssignmentMapper.toDtoWithStatus(a.getStaff(), true);

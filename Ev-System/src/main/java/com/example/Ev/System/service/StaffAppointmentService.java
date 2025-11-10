@@ -11,8 +11,10 @@ import com.example.Ev.System.repository.ServiceCenterRepository;
 import com.example.Ev.System.repository.StaffAssignmentRepository;
 import com.example.Ev.System.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.beans.Customizer;
 import java.time.Instant;
@@ -27,6 +29,7 @@ public class StaffAppointmentService {
     private final ServiceCenterRepository serviceCenterRepository;
     private final StaffAssignmentMapper staffAssignmentMapper;
 
+
     public StaffAppointmentService(AppointmentRepository appointmentRepository, StaffAssignmentRepository staffAssignmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, StaffAssignmentMapper staffAssignmentMapper) {
         this.appointmentRepository = appointmentRepository;
         this.staffAssignmentRepository = staffAssignmentRepository;
@@ -36,7 +39,27 @@ public class StaffAppointmentService {
     }
 
     @Transactional
-    public List<StaffAssignment> assignTechnicians(Integer appointmentId, List<Integer> staffIds,String note) {
+    public List<StaffAssignment> assignTechnicians(Integer appointmentId, List<Integer> staffIds,String note , Authentication authentication) {
+
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElse(null);
+        Integer centerId = currentUser.getServiceCenter().getId();
+
+        ServiceAppointment appointmentCheck = appointmentRepository.findById(appointmentId).orElse(null);
+
+        if (appointmentCheck == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        }
+        if (!appointmentCheck.getServiceCenter().getId().equals(centerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+        }
+        for(Integer staffId : staffIds){
+            User user = userRepository.findById(staffId).orElse(null);
+            if(!user.getServiceCenter().getId().equals(centerId)){
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+            }
+        }
+
         if (staffIds == null || staffIds.isEmpty()) {
             return List.of();
         }
@@ -62,11 +85,11 @@ public class StaffAppointmentService {
     }
 
 
-    public void  autoAssignTechnician(Integer appointmentId , String note , int serviceCenterId,String status){
+    public void  autoAssignTechnician(Integer appointmentId , String note , int serviceCenterId,String status , Authentication authentication) {
         List<User> freeTech = getFreeTechnician(serviceCenterId,status);
         List<Integer> chosenTech = new ArrayList<>();
         chosenTech.add(freeTech.get(0).getId());
-        assignTechnicians(appointmentId, chosenTech , note);
+        assignTechnicians(appointmentId, chosenTech , note , authentication);
     }
 
 

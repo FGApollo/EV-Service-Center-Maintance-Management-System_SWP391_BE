@@ -33,13 +33,14 @@ public class MaintainanceRecordController {
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     public ResponseEntity<MaintainanceRecordDto> createMaintenanceRecord(
             @PathVariable("appointmentId") Integer appointmentId,
-            @RequestBody MaintainanceRecordDto maintainanceRecordDto) {
+            @RequestBody MaintainanceRecordDto maintainanceRecordDto,
+            Authentication authentication) {
         if(maintenanceRecordService.findMaintainanceRecordByAppointmentId(appointmentId)){
-            maintenanceRecordService.updateMaintainanceRecord(appointmentId, maintainanceRecordDto,0);
+            maintenanceRecordService.updateMaintainanceRecord(appointmentId, maintainanceRecordDto,0,authentication);
             System.out.println("Da chay update");
         }
         else {
-            maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto);
+            maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto,authentication);
         }
         return ResponseEntity.ok(maintainanceRecordDto);
         //Da xong

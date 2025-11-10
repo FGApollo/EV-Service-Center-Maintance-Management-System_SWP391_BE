@@ -10,12 +10,14 @@ import com.example.Ev.System.repository.UserRepository;
 import com.example.Ev.System.service.*;
 import com.example.Ev.System.service.AppointmentService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,7 +88,21 @@ public class AppointmentController {
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     @Transactional
     public ResponseEntity<AppointmentResponse> acceptAppointment(
-            @PathVariable Integer id ) {
+            @PathVariable Integer id ,Authentication authentication) {
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElse(null);
+        Integer centerId = currentUser.getServiceCenter().getId();
+
+        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+
+        if (appointment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        }
+        if (!appointment.getServiceCenter().getId().equals(centerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+        }
+
+
         ServiceAppointment updatedAppointment = serviceAppointmentService.acceptAppointment(id);
         return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
         //Da xong
@@ -99,8 +115,22 @@ public class AppointmentController {
     @Transactional
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<AppointmentResponse> cancelAppointment(
-            @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
+            @PathVariable Integer id,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
     {
+
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElse(null);
+        Integer centerId = currentUser.getServiceCenter().getId();
+
+        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+
+        if (appointment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        }
+        if (!appointment.getServiceCenter().getId().equals(centerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+        }
+
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"cancelled");
         return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
         //Da xong
@@ -112,11 +142,24 @@ public class AppointmentController {
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id,
-            @RequestBody List<Integer> staffIds) //bo text vao body , chu k phai json , json la 1 class
+            @RequestBody List<Integer> staffIds,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
     {
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElse(null);
+        Integer centerId = currentUser.getServiceCenter().getId();
+
+        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+
+        if (appointment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        }
+        if (!appointment.getServiceCenter().getId().equals(centerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+        }
+
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
         List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(id, staffIds, "notes");
+                .assignTechnicians(id, staffIds, "notes",authentication);
         List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
         AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
         String sId = staffIdList.stream()
@@ -137,16 +180,31 @@ public class AppointmentController {
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public ResponseEntity<AppointmentResponse> doneAppointment(
-            @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto ) //bo text vao body , chu k phai json , json la 1 class
+            @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto,
+            Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
     {
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElse(null);
+        Integer centerId = currentUser.getServiceCenter().getId();
+
+        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+
+        if (appointment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        }
+        if (!appointment.getServiceCenter().getId().equals(centerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+        }
+
+
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"completed");//nho chuyen thanh done
         boolean recordExists = maintenanceRecordService.findMaintainanceRecordByAppointmentId(id);
         if(recordExists) {
-            maintenanceRecordService.updateMaintainanceRecord(updatedAppointment.getId(), maintainanceRecordDto, 1); // Phai them record moi dc done
+            maintenanceRecordService.updateMaintainanceRecord(updatedAppointment.getId(), maintainanceRecordDto, 1,authentication); // Phai them record moi dc done
         //khong ma giao , da hoat dong duoc , chi hoat dong duoc 1 lan dau tien
         }
         else {
-            maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto);
+            maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto,authentication);
         }
 
         maintenanceReminderCreationService.createReminderForAppointmentIfDone(id);
@@ -211,7 +269,6 @@ public class AppointmentController {
                 response.setTotal(total);
             }
 
-            // --- Maintenance Checklist ---
             MaintenanceRecord maintenanceRecord = maintenanceRecordService.getAllByAppointmentId(appointment.getId());
             if (maintenanceRecord != null && maintenanceRecord.getChecklist() != null) {
                 List<String> checklist = List.of(maintenanceRecord.getChecklist().split("\\s*,\\s*"));
@@ -235,6 +292,16 @@ public class AppointmentController {
         String email = authentication.getName();
         User currentUser = userRepository.findByEmail(email).orElse(null);
         Integer centerId = currentUser.getServiceCenter().getId();
+
+        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+
+        if (appointment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        }
+        if (!appointment.getServiceCenter().getId().equals(centerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+        }
+
         List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
         ServiceAppointment updatedAppointment = serviceAppointmentRepository.findById(id).orElse(null);
         AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
