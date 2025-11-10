@@ -115,25 +115,25 @@ public class PartUsageService implements PartUsageServiceI{
 //        return Map.of();
 //}
 
-public void sendStockNotification(Part part, Inventory inventory) {
-    // Implement notification logic (e.g., email, SMS)
-    System.out.println("Notification: Stock for part " + part.getName() +
-            " | Remaining: " + inventory.getQuantity());
+    public void sendStockNotification(Part part, Inventory inventory) {
+        // Implement notification logic (e.g., email, SMS)
+        System.out.println("Notification: Stock for part " + part.getName() +
+                " | Remaining: " + inventory.getQuantity());
 
-    String subject = "Low Stock Alert";
-    String text = "Part " + inventory.getPart().getName()
-            + " has reached minimum stock level. Current: "
-            + inventory.getQuantity();
+        String subject = "Low Stock Alert";
+        String text = "Part " + inventory.getPart().getName()
+                + " has reached minimum stock level. Current: "
+                + inventory.getQuantity();
 
-    sendNotification("manager@example.com", subject, text);
-}
+        sendNotification("manager@example.com", subject, text);
+    }
 
-public void sendNotification(String to, String subject, String text) {
-    SimpleMailMessage message = new SimpleMailMessage();
-    message.setFrom("thanhbinh642842@gmail.com"); // must be same as spring.mail.username
-    message.setTo(to);
-    message.setSubject(subject);
-    message.setText(text);
-    mailSender.send(message);
-}
+    public void sendNotification(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("thanhbinh642842@gmail.com"); // must be same as spring.mail.username
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        mailSender.send(message);
+    }
 }

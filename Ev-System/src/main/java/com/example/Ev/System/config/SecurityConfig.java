@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
                         .requestMatchers("/api/technician/**").hasAuthority("technician")
                         .requestMatchers("/api/customer/**").hasAuthority("customer")
+                        .requestMatchers("/api/management/**").hasAnyAuthority("admin", "manager")
 
                         // Còn lại yêu cầu authenticated
                         .anyRequest().authenticated()
