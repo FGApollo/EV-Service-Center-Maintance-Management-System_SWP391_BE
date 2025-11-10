@@ -43,6 +43,9 @@ public class ServiceAppointment {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @Column(name = "note", length = 1000)
+    private String note;
+
     @ManyToMany
     @JoinTable(
             name = "appointmentservice", // tên bảng trung gian
