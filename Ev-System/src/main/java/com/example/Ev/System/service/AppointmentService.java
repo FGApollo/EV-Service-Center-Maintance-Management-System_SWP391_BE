@@ -134,17 +134,10 @@ public class ServiceAppointmentService {
 
 
 
-        // Tạo invoice và lấy id
+
         Invoice invoice = invoiceServiceI.createInvoice(appointment.getId());
         notificationProgressService.sendAppointmentBooked(user.get(), appointment);
-        // Nạp lại appointment kèm serviceTypes bằng fetch join
-        // Fetch join lại để có serviceTypes
-        ServiceAppointment loaded = serviceAppointmentRepository
-                .findByIdWithServiceTypes(appointment.getId())
-                .orElseThrow(() -> new RuntimeException("Appointment not found after save"));
 
-        // Map từ loaded thay vì appointment
-        AppointmentResponse response = appointmentMapper.toResponse(loaded);
 
 
         PaymentDto paymentDto = new PaymentDto();
@@ -153,10 +146,20 @@ public class ServiceAppointmentService {
         paymentDto.setMethod("online");
 
         PaymentResponse response1 = paymentService.createPaymentUrl(paymentDto);
-        response.setUrl(response1.getPaymentUrl());
 
-        return response;
 
+        return new AppointmentResponse(
+                appointment.getId(),
+                user.get().getFullName(),
+                vehicle.getModel(),
+                serviceCenter.get().getName(),
+                appointment.getAppointmentDate(),
+                serviceTypeList.stream()
+                        .map(ServiceType::getName)
+                        .collect(Collectors.toList()),
+                appointment.getStatus(),
+                response1.getPaymentUrl()
+        );
     }
 
 
