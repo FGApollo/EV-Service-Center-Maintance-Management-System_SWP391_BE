@@ -11,6 +11,7 @@ import com.example.Ev.System.service.*;
 import com.example.Ev.System.service.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,6 +83,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/accept")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     @Transactional
     public ResponseEntity<AppointmentResponse> acceptAppointment(
             @PathVariable Integer id ) {
@@ -95,6 +97,7 @@ public class AppointmentController {
 
     @PutMapping("/{id}/cancel")
     @Transactional
+    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<AppointmentResponse> cancelAppointment(
             @PathVariable Integer id) //bo text vao body , chu k phai json , json la 1 class
     {
@@ -105,6 +108,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/inProgress")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id,
@@ -130,6 +134,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/done")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public ResponseEntity<AppointmentResponse> doneAppointment(
             @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto ) //bo text vao body , chu k phai json , json la 1 class
@@ -159,6 +164,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/appointments/status/{status}")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public List<AppointmentResponse> getAppointmentsByStatus(
             @PathVariable String status,
@@ -220,6 +226,7 @@ public class AppointmentController {
 
 
     @GetMapping("/status/{id}")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public AppointmentResponse getAppointmentsByDone(
             Authentication authentication,
@@ -269,6 +276,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/staff")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     @Transactional
     public ResponseEntity<List<AppointmentResponse>> findAllByStaffId(@RequestParam Integer id) {
         List<ServiceAppointment> appointments = serviceAppointmentService.getAppointmentsByStaffId(id);

@@ -91,7 +91,7 @@ public class StaffAppointmentService {
         User user = userRepository.findByEmail(email).orElse(null);
         List<User> allTechs = userRepository.findAllByRoleAndServiceCenter("technician", user.getServiceCenter())
                 .stream()
-                .filter(tech -> "active".equalsIgnoreCase(tech.getStatus())) // ✅ only active users
+                .filter(tech -> "active".equalsIgnoreCase(tech.getStatus()))
                 .toList();;
         for(User tech : allTechs){
             StaffAssignmentDto dto = staffAssignmentMapper.toDto(tech);

@@ -11,6 +11,7 @@ import com.example.Ev.System.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,7 @@ public class StaffAssignmentController {
     }
 
     @PutMapping("/{appointmentId}/staff")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<List<StaffAssignmentDto>> assignTechnicians(
             @PathVariable Integer appointmentId,
             @RequestBody List<Integer> staffIds
