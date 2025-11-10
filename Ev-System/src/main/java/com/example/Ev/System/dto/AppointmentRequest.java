@@ -22,4 +22,6 @@ public class AppointmentRequest {
 
     @NotNull(message = "Phải chọn ít nhất một dịch vụ.")
     private List<Integer> serviceTypeIds;
+
+    private String note;
 }

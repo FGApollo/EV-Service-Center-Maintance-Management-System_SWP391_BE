@@ -133,6 +133,7 @@ public class ServiceAppointmentService {
         appointment.setAppointmentDate(request.getAppointmentDate());
         appointment.setStatus("pending");
         appointment.setCreatedAt(Instant.now());
+        appointment.setNote(request.getNote());
         appointmentRepo.save(appointment);
 
         for (ServiceType st : serviceTypeList) {
@@ -168,7 +169,8 @@ public class ServiceAppointmentService {
                         .map(ServiceType::getName)
                         .collect(Collectors.toList()),
                 appointment.getStatus(),
-                response1.getPaymentUrl()
+                response1.getPaymentUrl(),
+                appointment.getNote()
         );
     }
 
