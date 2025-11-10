@@ -11,6 +11,7 @@ import com.example.Ev.System.service.*;
 import com.example.Ev.System.service.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,7 @@ public class ServiceAppointmentController {
 */
 @RestController
 @RequestMapping("/api/appointments")
+
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -66,6 +68,7 @@ public class AppointmentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('customer')")
     public ResponseEntity<AppointmentResponse> createAppointment(
             @Valid @RequestBody AppointmentRequest request) {
 

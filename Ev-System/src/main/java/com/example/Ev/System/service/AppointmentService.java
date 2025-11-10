@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -111,10 +113,18 @@ public class ServiceAppointmentService {
             throw new BadRequestException("1 or more service not valid");
         }
 
-        boolean conflictSchedule = appointmentRepo.existsByServiceCenter_IdAndAppointmentDate(request.getServiceCenterId(), request.getAppointmentDate());
-        if(conflictSchedule){
-            throw new BadRequestException("This schedule have been book, please choose another schedule");
+        Instant appointmentDate = request.getAppointmentDate();
+        Instant allowDate = LocalDate.now().plusMonths(2).atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        if(appointmentDate.isAfter(allowDate)){
+            throw new BadRequestException("You can only book appointments up to 2 months");
         }
+
+        Instant today = Instant.now();
+        if(appointmentDate.isBefore(today)){
+            throw new BadRequestException("You cannot book appointments in the past");
+        }
+
 
         ServiceAppointment appointment = new ServiceAppointment();
         appointment.setCustomer(user.get());
@@ -136,7 +146,7 @@ public class ServiceAppointmentService {
 
 
         Invoice invoice = invoiceServiceI.createInvoice(appointment.getId());
-        notificationProgressService.sendAppointmentBooked(user.get(), appointment);
+        notificationProgressService.sendAppointmentBooked(user.get(), appointment, serviceTypeList);
 
 
 
