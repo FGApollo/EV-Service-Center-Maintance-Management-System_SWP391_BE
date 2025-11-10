@@ -10,6 +10,7 @@ import com.example.Ev.System.service.MaintenanceRecordService;
 import com.example.Ev.System.service.ServiceAppointmentService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,21 +30,24 @@ public class MaintainanceRecordController {
     }
 
     @PostMapping("/{appointmentId}")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     public ResponseEntity<MaintainanceRecordDto> createMaintenanceRecord(
             @PathVariable("appointmentId") Integer appointmentId,
-            @RequestBody MaintainanceRecordDto maintainanceRecordDto) {
+            @RequestBody MaintainanceRecordDto maintainanceRecordDto,
+            Authentication authentication) {
         if(maintenanceRecordService.findMaintainanceRecordByAppointmentId(appointmentId)){
-            maintenanceRecordService.updateMaintainanceRecord(appointmentId, maintainanceRecordDto,0);
+            maintenanceRecordService.updateMaintainanceRecord(appointmentId, maintainanceRecordDto,0,authentication);
             System.out.println("Da chay update");
         }
         else {
-            maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto);
+            maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto,authentication);
         }
         return ResponseEntity.ok(maintainanceRecordDto);
         //Da xong
     }
 
     @GetMapping("/staff/{staffId}")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     public ResponseEntity<List<MaintainanceRecordDto>> getMaintainanceRecordByStaffId(
             @PathVariable("staffId") String staffId) {
         List<MaintainanceRecordDto> recordDtos = maintenanceRecordService.getMaintainanceRecordByStaff_id(staffId);
@@ -57,6 +61,7 @@ public class MaintainanceRecordController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public ResponseEntity<List<MaintenanceRecord>> getAllMaintenanceRecords() {
         List<ServiceAppointment> allAppointments = serviceAppointmentService.findAll(); // you need to have this method
@@ -66,6 +71,7 @@ public class MaintainanceRecordController {
     }
 
     @GetMapping("/all/serviceCenter")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public ResponseEntity<List<MaintenanceRecord>> getAllMaintenanceRecordsByCenterId(Authentication authentication) {
         String username = authentication.getName();

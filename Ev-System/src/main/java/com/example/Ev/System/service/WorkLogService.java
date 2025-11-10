@@ -68,7 +68,7 @@ public class WorkLogService {
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
         List<User> techs = staffAssignmentRepository.findStaffByAppointmentId(appointmentId);
         System.out.println(techs.size());
-        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentId).orElseThrow(() -> new RuntimeException("Maintenance record not found"));
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointmentId).orElseThrow(() -> new RuntimeException("Maintenance record not found"));
         for(User tech : techs) {
             Worklog workLog = new Worklog();
             workLog.setStaff(tech);

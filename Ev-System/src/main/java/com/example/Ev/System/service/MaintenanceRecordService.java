@@ -8,7 +8,10 @@ import com.example.Ev.System.mapper.MaintainanceRecordMapper;
 import com.example.Ev.System.mapper.PartUsageMapper;
 import com.example.Ev.System.repository.*;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.*;
@@ -40,7 +43,27 @@ public class MaintenanceRecordService {
     }
 
     @Transactional
-    public void recordMaintenance(Integer appointmentId, MaintainanceRecordDto maintainanceRecordDto) {
+    public void recordMaintenance(Integer appointmentId, MaintainanceRecordDto maintainanceRecordDto, Authentication authentication) {
+
+//        String email = authentication.getName();
+//        User currentUser = userRepository.findByEmail(email).orElse(null);
+//        Integer centerId = currentUser.getServiceCenter().getId();
+//
+//        ServiceAppointment appointmentCheck = appointmentRepository.findById(appointmentId).orElse(null);
+//
+//        if (appointmentCheck == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+//        }
+//        if (!appointmentCheck.getServiceCenter().getId().equals(centerId)) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+//        }
+//        for(Integer staffId : maintainanceRecordDto.getStaffIds()) {
+//            User user = userRepository.findById(staffId).orElse(null);
+//            if(!user.getServiceCenter().getId().equals(centerId)){
+//                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+//            }
+//        }
+
 
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
@@ -88,7 +111,26 @@ public class MaintenanceRecordService {
     }
 
     @Transactional
-    public void updateMaintainanceRecord(Integer appointmentID, MaintainanceRecordDto maintainanceRecordDto, int status) {
+    public void updateMaintainanceRecord(Integer appointmentID, MaintainanceRecordDto maintainanceRecordDto, int status,Authentication authentication) {
+
+//        String email = authentication.getName();
+//        User currentUser = userRepository.findByEmail(email).orElse(null);
+//        Integer centerId = currentUser.getServiceCenter().getId();
+//
+//        ServiceAppointment appointmentCheck = appointmentRepository.findById(appointmentID).orElse(null);
+//
+//        if (appointmentCheck == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+//        }
+//        if (!appointmentCheck.getServiceCenter().getId().equals(centerId)) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+//        }
+//        for(Integer staffId : maintainanceRecordDto.getStaffIds()) {
+//            User user = userRepository.findById(staffId).orElse(null);
+//            if(!user.getServiceCenter().getId().equals(centerId)){
+//                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+//            }
+//        }
 
         System.out.println("da chay toi day");
         MaintenanceRecord existMaintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentID)

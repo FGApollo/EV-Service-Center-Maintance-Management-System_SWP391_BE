@@ -4,6 +4,7 @@ import com.example.Ev.System.dto.WorkLogDto;
 import com.example.Ev.System.entity.Worklog;
 import com.example.Ev.System.service.WorkLogService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class WorkLogController {
     }
 
     @GetMapping("/center")
+    @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<List<WorkLogDto>> getAllWorkLogsByCenter(Authentication authentication) {
         List<WorkLogDto> workLogs = workLogService.getAllWorkLogsByCenterId(authentication);
         return ResponseEntity.ok(workLogs);
