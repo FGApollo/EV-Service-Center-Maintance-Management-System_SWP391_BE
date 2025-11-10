@@ -16,19 +16,19 @@ import java.util.*;
 
 
 @RestController
-@RequestMapping("/api/customer/payments")
+@RequestMapping
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
-    @PostMapping("/create")
+    @PostMapping("/api/customer/payments/create")
     public ResponseEntity<?> createPayment(@RequestBody PaymentDto paymentDto) {
         PaymentResponse paymentResponse = paymentService.createPaymentUrl(paymentDto);
         return ResponseEntity.status(HttpStatus.OK).body(paymentResponse);
     }
 
-    @GetMapping("/return")
+    @GetMapping("/api/auth/payments/return")
     public ResponseEntity<?> paymentReturn(@RequestParam Map<String,String> allParams) {
         PaymentResponse paymentResponse = paymentService.handlePaymentCallback(allParams);
         return ResponseEntity.status(HttpStatus.OK).body(paymentResponse);
