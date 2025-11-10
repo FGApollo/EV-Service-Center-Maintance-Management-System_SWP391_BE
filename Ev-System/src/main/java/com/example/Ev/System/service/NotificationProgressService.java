@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,13 +57,13 @@ public class NotificationProgressService {
     // MỚI: Email xác nhận đặt lịch thành công
     @Transactional
     public void sendAppointmentBooked(@NonNull User customer,
-                                      @NonNull ServiceAppointment appointment) {
+                                      @NonNull ServiceAppointment appointment, List<ServiceType> serviceTypeList) {
         if (customer.getEmail() == null || customer.getEmail().isBlank()) {
             return;
         }
 
         String subject = String.format("Xác nhận đặt lịch thành công – Mã #%d", appointment.getId());
-        String body = buildBookedBody(customer, appointment);
+        String body = buildBookedBody(customer, appointment, serviceTypeList);
 
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setFrom(from);
@@ -95,15 +96,14 @@ public class NotificationProgressService {
                 + "Trân trọng,\nEV Service Center";
     }
 
-    // MỚI: Nội dung chuyên nghiệp cho xác nhận đặt lịch
     private String buildBookedBody(User customer,
-                                   ServiceAppointment appointment) {
+                                   ServiceAppointment appointment, List<ServiceType> serviceTypeList) {
         String serviceCenterName = appointment.getServiceCenter() != null ? appointment.getServiceCenter().getName() : "Trung tâm dịch vụ";
         String vehicleModel = appointment.getVehicle() != null ? appointment.getVehicle().getModel() : "Xe của bạn";
 
-        String services = (appointment.getServiceTypes() == null || appointment.getServiceTypes().isEmpty())
+        String services = (serviceTypeList == null || serviceTypeList.isEmpty())
                 ? "—"
-                : appointment.getServiceTypes().stream()
+                : serviceTypeList.stream()
                 .map(ServiceType::getName)
                 .collect(Collectors.joining(", "));
 

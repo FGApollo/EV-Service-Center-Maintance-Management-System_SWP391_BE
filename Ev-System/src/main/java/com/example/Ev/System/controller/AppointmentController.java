@@ -40,6 +40,7 @@ public class ServiceAppointmentController {
 */
 @RestController
 @RequestMapping("/api/appointments")
+
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -69,6 +70,7 @@ public class AppointmentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('customer')")
     public ResponseEntity<AppointmentResponse> createAppointment(
             @Valid @RequestBody AppointmentRequest request) {
 
