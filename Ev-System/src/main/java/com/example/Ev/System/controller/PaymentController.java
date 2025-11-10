@@ -31,6 +31,17 @@ public class PaymentController {
     @GetMapping("/api/auth/payments/return")
     public ResponseEntity<?> paymentReturn(@RequestParam Map<String,String> allParams) {
         PaymentResponse paymentResponse = paymentService.handlePaymentCallback(allParams);
-        return ResponseEntity.status(HttpStatus.OK).body(paymentResponse);
+
+        String redirectUrl;
+        if ("00".equals(allParams.get("vnp_ResponseCode"))) { // 00 means success
+            redirectUrl = "http://localhost:5173/?status=success&amount="
+                    + paymentResponse.getAmount();
+        } else {
+            redirectUrl = "http://localhost:5173/?status=failed";
+        }
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", redirectUrl)
+                .build();
     }
 }
