@@ -61,6 +61,9 @@ public class MaintenanceRecordService {
             if(!user.getServiceCenter().getId().equals(centerId)){
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
             }
+            if(user.getRole() != "technician"){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not a technician: " + staffId);
+            }
         }
 
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
