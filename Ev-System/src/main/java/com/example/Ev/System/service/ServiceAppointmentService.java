@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -156,12 +157,25 @@ public class ServiceAppointmentService {
             dto.setEmail(sa.getCustomer().getEmail());
             dto.setPhone(sa.getCustomer().getPhone());
             dto.setFullName(sa.getCustomer().getFullName());
+            dto.setVehicleName(sa.getVehicle().getModel());
+            dto.setVehicleVin(sa.getVehicle().getVin());
+            dto.setVehicleLicensePlate( sa.getVehicle().getLicensePlate());
+
+            BigDecimal cost = BigDecimal.ZERO;
+            for(ServiceType st : sa.getServiceTypes()){
+
+                cost = cost.add(st.getPrice());
+            }
+
+            dto.setCost(cost);
 
             String serviceTypeName = sa.getServiceTypes()
                            .stream()
                            .map(ServiceType::getName)
                            .collect(Collectors.joining(", "));
                  dto.setServiceType(serviceTypeName);
+
+
 
             appointmentAllFieldsDtos.add(dto);
         }
