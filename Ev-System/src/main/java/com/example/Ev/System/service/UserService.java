@@ -15,8 +15,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +33,15 @@ public class UserService {
     private final VehicleRepository vehicleRepository;
     private final AppointmentRepository appointmentRepository;
     private final ServiceCenterRepository serviceCenterRepository;
-    public UserService(UserMapper userMapper, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, VehicleRepository vehicleRepository, AppointmentRepository appointmentRepository, ServiceCenterRepository serviceCenterRepository) {
+    private final UploadService uploadService;
+    public UserService(UserMapper userMapper, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, VehicleRepository vehicleRepository, AppointmentRepository appointmentRepository, ServiceCenterRepository serviceCenterRepository, UploadService uploadService) {
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.vehicleRepository = vehicleRepository;
         this.appointmentRepository = appointmentRepository;
         this.serviceCenterRepository = serviceCenterRepository;
+        this.uploadService = uploadService;
     }
 
 
@@ -104,11 +108,21 @@ public class UserService {
 
 
     @Transactional
-    public UserDto createEmployee(RegisterUserDto userDto,String role,int id){
-        ServiceCenter serviceCenter = serviceCenterRepository.findById(id).orElse(null);
+    public UserDto createEmployee(RegisterUserDto userDto, String role, int id, MultipartFile file) throws IOException {
+        ServiceCenter serviceCenter = serviceCenterRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Service Center not found"));
+
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
+
+        // Upload image if provided
+        String uploadedUrl = null;
+        if (file != null && !file.isEmpty()) {
+            uploadedUrl = uploadService.uploadFile(file, "employee_certificates");
+            userDto.setCertificateLink(uploadedUrl);
+        }
+
         var user = userMapper.toEntity2(userDto);
         user.setRole(role);
         user.setStatus("active");
@@ -116,9 +130,10 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(userDto.getPassword()));
         user.setServiceCenter(serviceCenter);
         userRepository.save(user);
-        var userDTO = userMapper.toDTO(user);
-        return userDTO;
+
+        return userMapper.toDTO(user);
     }
+
 
     @Transactional
     public UserDto deleteAccount(Integer userID)

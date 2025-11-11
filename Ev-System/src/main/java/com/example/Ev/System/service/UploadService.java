@@ -15,9 +15,7 @@ public class UploadService {
     @Autowired
     private Cloudinary cloudinary;
 
-    /**
-     * Upload file to Cloudinary and return the public URL
-     */
+
     public String uploadFile(MultipartFile file, String folderName) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                 ObjectUtils.asMap(
