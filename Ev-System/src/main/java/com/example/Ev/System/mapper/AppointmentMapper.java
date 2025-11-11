@@ -22,7 +22,7 @@ public interface AppointmentMapper {
     // DTO → ENTITY
     @Mapping(target = "vehicle.id", source = "vehicleId")
     @Mapping(target = "serviceCenter.id", source = "serviceCenterId")
-    @Mapping(target = "serviceTypes", ignore = true) // handle manually if needed
+    @Mapping(target = "serviceTypes", ignore = true)
     @Mapping(target = "customer", ignore = true)
     @Mapping(target = "invoices", ignore = true)
     @Mapping(target = "maintenanceRecords", ignore = true)
@@ -57,8 +57,8 @@ public interface AppointmentMapper {
     @Mapping(target = "serviceCenterName", source = "serviceCenter.name")
     @Mapping(target = "appointmentDate", source = "appointmentDate")
     @Mapping(target = "status", source = "status")
+    @Mapping(target = "note", source = "note")
     @Mapping(target = "serviceNames", expression = "java(mapServiceNames(serviceAppointment))")
-
     @Mapping(target = "url", ignore = true)
     @Mapping(target = "techIds", ignore = true)
     @Mapping(target = "users", ignore = true)
@@ -78,6 +78,4 @@ public interface AppointmentMapper {
                 .map(serviceType -> serviceType.getName())
                 .collect(Collectors.toList());
     }
-
-
 }

@@ -24,15 +24,17 @@ public class AppointmentResponse {
     private String status;
     private String email;
     private Vehicle vehicle;
-
+    private String note;
     private String url;
     private String techIds;
     private List<UserDto> users;
     private List<String> checkList;
     private int total;
 
+
+
     public AppointmentResponse(Integer id, String fullName, String model, String serviceCenterName, Instant appointmentDate,
-            List<String> serviceNames, String status, String paymentUrl ) {
+            List<String> serviceNames, String status, String paymentUrl, String note ) {
         this.appointmentId = id;
         this.customerName = fullName;
         this.vehicleModel = model;
@@ -41,5 +43,6 @@ public class AppointmentResponse {
         this.serviceNames = serviceNames;
         this.status = status;
         this.url = paymentUrl;
+        this.note = note;
     }
 }
