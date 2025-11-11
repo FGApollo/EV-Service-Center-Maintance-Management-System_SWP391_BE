@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
@@ -21,4 +22,8 @@ public class AppointmentAllFieldsDto {
     private String email;
     private String phone;
     private String serviceType;
+    private String vehicleName;
+    private String vehicleVin;
+    private String vehicleLicensePlate;
+    private BigDecimal cost;
 }
