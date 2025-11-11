@@ -242,7 +242,6 @@ public class AppointmentController {
         for (ServiceAppointment appointment : appointments) {
             AppointmentResponse response = appointmentMapper.toResponse(appointment);
 
-            // --- Staff / Technician Info ---
             List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(appointment.getId());
             if (staffIdList != null && !staffIdList.isEmpty()) {
                 String sId = staffIdList.stream()
@@ -258,7 +257,6 @@ public class AppointmentController {
                 response.setTechIds("");
             }
 
-            // --- Service Names & Total ---
             if (appointment.getServiceTypes() != null) {
                 List<String> serviceNames = appointment.getServiceTypes().stream()
                         .map(ServiceType::getName)
