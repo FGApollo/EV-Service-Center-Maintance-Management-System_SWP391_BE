@@ -176,6 +176,10 @@ public class UserService {
         }
         return userDtos;
     }
+
+    public List<User> getAllById(Iterable<Integer> id){
+        return userRepository.findAllById(id);
+    }
 }
 
 

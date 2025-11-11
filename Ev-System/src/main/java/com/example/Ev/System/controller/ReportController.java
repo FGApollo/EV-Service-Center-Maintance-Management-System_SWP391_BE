@@ -1,12 +1,16 @@
 package com.example.Ev.System.controller;
 
+import com.example.Ev.System.dto.CenterStats;
 import com.example.Ev.System.dto.PartStockReport;
 import com.example.Ev.System.dto.PaymentMethodStats;
 import com.example.Ev.System.dto.RevenueResponse;
+import com.example.Ev.System.entity.User;
 import com.example.Ev.System.service.PartUsageServiceI;
 import com.example.Ev.System.service.ReportServiceI;
+import com.example.Ev.System.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +26,8 @@ public class ReportController {
     private PartUsageServiceI partUsageService;
     @Autowired
     private ReportServiceI reportService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/trending-parts")
     public Object getTop5PartsUsedInLastMonth() {
@@ -76,6 +82,15 @@ public class ReportController {
     public ResponseEntity<List<PartStockReport>> getPartStockReport() {
         List<PartStockReport> report = reportService.getPartStockReport();
         return ResponseEntity.ok(report);
+    }
+
+    @GetMapping("/center")
+    public ResponseEntity<Map<Integer, CenterStats>> getRevenueByCenter(Authentication authentication) {
+        String email = authentication.getName();
+        User currentUser = userService.getUserByEmail(email);
+        Integer centerId = currentUser.getServiceCenter().getId();
+        Map<Integer, CenterStats> revenueByCenter = reportService.getRevenueByCenter(centerId);
+        return ResponseEntity.ok(revenueByCenter);
     }
 
 }

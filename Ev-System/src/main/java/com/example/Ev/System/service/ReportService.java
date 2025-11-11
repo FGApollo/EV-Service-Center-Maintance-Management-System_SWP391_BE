@@ -1,9 +1,11 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.CenterStats;
 import com.example.Ev.System.dto.PartStockReport;
 import com.example.Ev.System.dto.PaymentMethodStats;
 import com.example.Ev.System.dto.RevenueResponse;
 import com.example.Ev.System.entity.*;
+import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.repository.*;
 
 
@@ -175,6 +177,7 @@ public class ReportService implements ReportServiceI {
         return revenueByService;
     }
 
+    @Transactional
     @Override
     public Map<String, PaymentMethodStats> getRevenueByPaymentMethod() {
         List<Payment> allPayments = paymentRepository.findAll();
@@ -228,6 +231,59 @@ public class ReportService implements ReportServiceI {
                     totalUsage
             );
         }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public Map<Integer, CenterStats> getRevenueByCenter(Integer id) {
+        YearMonth currentMonth = YearMonth.now(ZoneId.systemDefault());
+        YearMonth lastMonth = currentMonth.minusMonths(1);
+
+        List<Invoice> paidInvoices = invoiceRepository.findByStatus("PAID");
+        if (paidInvoices.isEmpty()) {
+            throw new NotFoundException("Not Found Paid Invoice ");
+        }
+        Map<Optional<Integer>, List<Invoice>> groupedCenter = paidInvoices.stream()
+                .collect(Collectors.groupingBy(
+                        invoice -> Optional.ofNullable(invoice.getAppointment().getServiceCenter().getId())
+                ));
+
+
+        Map<Integer, CenterStats> stats = new HashMap<>();
+        for (Map.Entry<Optional<Integer>, List<Invoice>> entry : groupedCenter.entrySet()) {
+            Integer centerId = entry.getKey().get();
+            List<Invoice> invoices = entry.getValue();
+
+            Map<YearMonth, Double> revenueByMonth = invoices.stream()
+                    .collect(Collectors.groupingBy(
+                            invoice -> YearMonth.from(invoice.getPaymentDate()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()),
+                            Collectors.summingDouble(invoice -> invoice.getTotalAmount().doubleValue())
+                    ));
+
+            double thisMonthRevenue = revenueByMonth.getOrDefault(currentMonth, 0.0);
+            double lastMonthRevenue = revenueByMonth.getOrDefault(lastMonth, 0.0);
+
+            int percentChange = 0;
+            if (lastMonthRevenue >0) {
+                percentChange = (int) Math.round(((thisMonthRevenue-lastMonthRevenue)/lastMonthRevenue)*100);
+            }
+
+            String trend;
+            if(lastMonthRevenue < thisMonthRevenue) {
+                trend = "UP";
+            } else {
+                trend = "DOWN";
+            }
+            stats.put(centerId, new CenterStats(centerId, thisMonthRevenue, lastMonthRevenue, percentChange, trend));
+        }
+
+        if (id != null && stats.containsKey(id)) {
+            return Map.of(id, stats.get(id));
+        } else {
+            return stats;
+        }
     }
 
     // Common logic for counting + sorting
