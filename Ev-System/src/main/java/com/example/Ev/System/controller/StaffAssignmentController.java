@@ -1,6 +1,7 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.StaffAssignmentDto;
+import com.example.Ev.System.dto.StaffAssignmentRequest;
 import com.example.Ev.System.entity.StaffAssignment;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.mapper.StaffAssignmentMapper;
@@ -36,10 +37,10 @@ public class StaffAssignmentController {
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<List<StaffAssignmentDto>> assignTechnicians(
             @PathVariable Integer appointmentId,
-            @RequestBody List<Integer> staffIds,Authentication authentication
+            @RequestBody StaffAssignmentRequest request, Authentication authentication
             ) {
         List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(appointmentId, staffIds, "notes",authentication);
+                .assignTechnicians(appointmentId, request.getStaffIds(), request.getNotes(),authentication);
         List<StaffAssignmentDto> assignmentDtos = assignments.stream()
                 .map(a -> {
                     StaffAssignmentDto dto = staffAssignmentMapper.toDtoWithStatus(a.getStaff(), true);
