@@ -200,4 +200,27 @@ public class VehicleService {
         }
         return respones;
     }
+
+    @Transactional
+    public List<VehicleRespone> getAllVehicle(){
+        List<Vehicle> vehicles = vehicleRepository.findAll();
+        List<VehicleRespone> respones = new ArrayList<>();
+
+        for(Vehicle x : vehicles){
+            VehicleRespone vehicleRespone = new VehicleRespone();
+            vehicleRespone.setVehicleId(x.getId());
+            vehicleRespone.setModel(x.getModel());
+            vehicleRespone.setColor(x.getColor());
+            vehicleRespone.setLicensePlate(x.getLicensePlate());
+            vehicleRespone.setYear(x.getYear());
+            vehicleRespone.setVin(x.getVin());
+            if(x.getCustomer() != null){
+                vehicleRespone.setOwnerName(x.getCustomer().getFullName());
+            }
+//            vehicleRespone.setMaintenanceCount(numberOfCareByCar(x));
+            respones.add(vehicleRespone);
+
+        }
+        return respones;
+    }
 }

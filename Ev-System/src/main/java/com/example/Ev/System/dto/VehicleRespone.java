@@ -13,7 +13,7 @@ import java.util.List;
 public class VehicleRespone {
     private Integer vehicleId;
     private String model;
-    private int year;
+    private Integer year;
     private String vin;
     private String licensePlate;
     private String color;
