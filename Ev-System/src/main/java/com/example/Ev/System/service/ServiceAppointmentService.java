@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -87,8 +88,10 @@ public class ServiceAppointmentService {
         List<ServiceAppointment> appointments = appointmentRepository.findAllByStaffAssignments_staff_id(staffId);
         return appointments;
     }
-
-
+    @Transactional
+    public ServiceAppointment findById(Integer appointmentId) {
+        return appointmentRepository.findById(appointmentId).orElse(null);
+    }
 
     @Transactional
     public ServiceAppointment getAppointmentWithAllDetails(Integer id) {
