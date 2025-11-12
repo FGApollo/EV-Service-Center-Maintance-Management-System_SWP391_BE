@@ -68,7 +68,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(Arrays.asList(
-                "https://ev-teal.vercel.app",
+                "https://ev-vercel.vercel.app",
                 "http://localhost:5173",
                 "http://127.0.0.1:5500",
                 "https://ev-service-center-maintance-management-um2j.onrender.com"

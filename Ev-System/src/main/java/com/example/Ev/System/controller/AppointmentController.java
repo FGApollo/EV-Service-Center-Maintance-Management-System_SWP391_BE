@@ -351,7 +351,8 @@ public class AppointmentController {
     }
 
     @GetMapping("/all")
-    public List<AppointmentAllFieldsDto> getAllAppointment(){
-        return serviceAppointmentService.getAllAppointment();
+    @PreAuthorize("hasAuthority('staff')")
+    public List<AppointmentAllFieldsDto> getAllAppointmentWithSpecificDetails(){
+        return serviceAppointmentService.getAllAppointmentWithSpecificDetails();
     }
 }
