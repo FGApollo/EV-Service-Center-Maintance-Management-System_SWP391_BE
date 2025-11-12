@@ -144,7 +144,7 @@ public class ServiceAppointmentService {
 //    }
 
     @Transactional
-    public List<AppointmentAllFieldsDto> getAllAppointment(){
+    public List<AppointmentAllFieldsDto> getAllAppointmentWithSpecificDetails(){
         List<ServiceAppointment> appointments = appointmentRepository.findAll();
         List<AppointmentAllFieldsDto> appointmentAllFieldsDtos = new ArrayList<>();
 
