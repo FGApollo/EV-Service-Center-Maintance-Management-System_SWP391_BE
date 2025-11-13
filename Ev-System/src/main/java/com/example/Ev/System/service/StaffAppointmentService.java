@@ -50,21 +50,27 @@ public class StaffAppointmentService {
         if (appointmentCheck == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
         }
+
         if (!appointmentCheck.getServiceCenter().getId().equals(centerId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
         }
-        for(Integer staffId : staffIds){
-            User user = userRepository.findById(staffId).orElse(null);
-            if(!user.getServiceCenter().getId().equals(centerId)){
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
-            }
-            if(user.getRole() != "technician"){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not a technician: " + staffId);
-            }
-        }
 
         if (staffIds == null || staffIds.isEmpty()) {
-            return List.of();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Staff list cannot be empty");
+        }
+
+        for (Integer staffId : staffIds) {
+            User user = userRepository.findById(staffId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Staff not found: " + staffId));
+
+            // Check service center match
+            if (user.getServiceCenter() == null || !user.getServiceCenter().getId().equals(centerId)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Staff not in your center (" + staffId + ")");
+            }
+
+            if (!"technician".equalsIgnoreCase(user.getRole())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not a technician: " + staffId);
+            }
         }
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
