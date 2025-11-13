@@ -41,11 +41,6 @@ public class VehicleController {
         vehicleService.deleteVehicle(authentication.getName(), id);
     }
 
-//    @GetMapping("/serviced")
-//    public List<VehicleRespone> getServicedVehiclesByCurrentCustomer(Authentication authentication) {
-//        return vehicleService.getVeicleResponeByCurrentCustomer(authentication);
-//    }
-//
     @GetMapping(value = "/{vehicleId}/appointments/latest_time", produces = "text/plain")
     public String getLastestAppointment(@PathVariable @Positive(message = "id phải > 0") Integer vehicleId, Authentication authentication){
         Instant time = vehicleService.getLastestAppointmentDate(authentication.getName(), vehicleId);

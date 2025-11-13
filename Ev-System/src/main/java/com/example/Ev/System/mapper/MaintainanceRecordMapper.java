@@ -3,6 +3,7 @@ package com.example.Ev.System.mapper;
 import com.example.Ev.System.dto.MaintainanceRecordDto;
 import com.example.Ev.System.entity.MaintenanceRecord;
 import org.mapstruct.*;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,12 +20,18 @@ public interface MaintainanceRecordMapper {
     // 🔹 DTO → ENTITY
     @Mappings({
             @Mapping(source = "partsUsed", target = "partUsages"),
-            @Mapping(target = "appointment", ignore = true),  // handled manually
+            @Mapping(target = "appointment", ignore = true), // handled manually
             @Mapping(target = "technicianIds", expression = "java(joinStaffIds(dto.getStaffIds()))"),
             @Mapping(target = "startTime", ignore = true),
             @Mapping(target = "endTime", ignore = true)
     })
     MaintenanceRecord toEntity(MaintainanceRecordDto dto);
+
+    // 🔹 ENTITY LIST → DTO LIST
+    List<MaintainanceRecordDto> toDTOList(List<MaintenanceRecord> records);
+
+    // 🔹 DTO LIST → ENTITY LIST
+    List<MaintenanceRecord> toEntityList(List<MaintainanceRecordDto> dtos);
 
     // 🔹 Convert comma-separated technician IDs → List<Integer>
     default List<Integer> parseStaffIds(String technicianIds) {

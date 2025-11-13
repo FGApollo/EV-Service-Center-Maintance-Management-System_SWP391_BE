@@ -109,15 +109,14 @@ public class UserService {
 
 
     @Transactional
-    public UserDto createEmployee(RegisterUserDto userDto, String role, int id, MultipartFile file) throws IOException {
-        ServiceCenter serviceCenter = serviceCenterRepository.findById(id)
+    public UserDto createEmployee(RegisterUserDto userDto, String role, MultipartFile file) throws IOException {
+        ServiceCenter serviceCenter = serviceCenterRepository.findById(userDto.getServiceCenterId())
                 .orElseThrow(() -> new IllegalArgumentException("Service Center not found"));
 
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        // Upload image if provided
         String uploadedUrl = null;
         if (file != null && !file.isEmpty()) {
             uploadedUrl = uploadService.uploadFile(file, "employee_certificates");
