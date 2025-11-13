@@ -154,7 +154,6 @@ public class AppointmentController {
 
         AppointmentResponse response = serviceAppointmentService.getAppointmentDetailsById(id, authentication);
         return ResponseEntity.ok(response);
-        //adasdada
     }
 
     @GetMapping("/staff/{id}")
