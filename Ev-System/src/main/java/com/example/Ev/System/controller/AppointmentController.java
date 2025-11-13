@@ -155,10 +155,11 @@ public class AppointmentController {
 
         AppointmentResponse response = serviceAppointmentService.getAppointmentDetailsById(id, authentication);
         return ResponseEntity.ok(response);
+        //adasdada
     }
 
     @GetMapping("/staff/{id}")
-    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
+    @PreAuthorize("hasAnyAuthority('staff','technician', 'manager')")
     @Transactional
     public ResponseEntity<List<AppointmentResponse>> findAllByStaffId(@PathVariable Integer id) {
         List<ServiceAppointment> appointments = serviceAppointmentService.getAppointmentsByStaffId(id);
