@@ -96,7 +96,11 @@ public class UserController {
         return ResponseEntity.ok(customers);
     }
 
-
-
+    @GetMapping("/center/staff_and_technician")
+    public ResponseEntity<List<UserDto>> getStaffAndTechnician(Authentication authentication){
+        String email = authentication.getName();
+        List<UserDto> user = userService.getStaffAndTechnicianInSpecificCenter(email);
+        return ResponseEntity.ok(user);
+    }
 
 }
