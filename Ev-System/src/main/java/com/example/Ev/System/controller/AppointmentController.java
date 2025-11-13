@@ -197,8 +197,6 @@ public class AppointmentController {
         if (!appointment.getServiceCenter().getId().equals(centerId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
         }
-
-
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"completed");//nho chuyen thanh done
         boolean recordExists = maintenanceRecordService.findMaintainanceRecordByAppointmentId(id);
         if(recordExists) {
