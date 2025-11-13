@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/assignments")
+@RequestMapping("/api/assignments")
 public class StaffAssignmentController {
     private final StaffAppointmentService staffAppointmentService;
     private final UserService userService;
