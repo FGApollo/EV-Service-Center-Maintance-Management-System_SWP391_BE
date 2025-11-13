@@ -82,6 +82,7 @@ public class AppointmentController {
     }
 
     @GetMapping
+    @PreAuthorize("(hasAuthority('customer'))")
     public List<AppointmentStatusDTO> getUserAppointment(Authentication authentication){
         return appointmentStatusService.getUserAppointment(authentication.getName());
     }

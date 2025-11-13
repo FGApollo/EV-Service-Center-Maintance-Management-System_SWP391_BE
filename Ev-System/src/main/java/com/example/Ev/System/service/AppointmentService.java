@@ -103,6 +103,12 @@ public class ServiceAppointmentService {
             throw new BadRequestException("This vehicle not match your account");
         }
 
+        boolean hasUncompleteAppointment = appointmentRepo.existsByVehicle_IdAndStatusNot(vehicle.getId(), "complete");
+        if(hasUncompleteAppointment){
+            throw new BadRequestException("Xe nãy vẫn còn lịch bảo dưỡng chưa hoàn tất, hãy " +
+                    "hoàn tất bảo dưỡng trước khi đặt lịch mới");
+        }
+
         Optional<ServiceCenter> serviceCenter = serviceCenterRepo.findById(request.getServiceCenterId().intValue());
         if(serviceCenter.isEmpty()){
             throw new BadRequestException("Center not found");

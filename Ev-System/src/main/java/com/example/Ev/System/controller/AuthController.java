@@ -26,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<UserDto> register(@RequestBody RegisterUserDto registerUserDto)
+    public ResponseEntity<UserDto> register(@RequestBody @Valid RegisterUserDto registerUserDto)
     {
         UserDto userDTO = userService.createUser(registerUserDto);
         return ResponseEntity.ok(userDTO);
@@ -35,7 +35,7 @@ public class AuthController {
     @PutMapping("/auth/update/{id}")
     public ResponseEntity<UpdateUserResponse> updateUser(
             @PathVariable Integer id,
-            @RequestBody UpdateUserRequest request) {
+            @RequestBody @Valid UpdateUserRequest request) {
 
         User updatedUser = authService.updateUser(id, request);
 
