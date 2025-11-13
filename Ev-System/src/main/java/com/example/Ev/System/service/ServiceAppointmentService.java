@@ -2,6 +2,7 @@ package com.example.Ev.System.service;
 
 import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.*;
+import com.example.Ev.System.exception.BadRequestException;
 import com.example.Ev.System.mapper.AppointmentMapper;
 import com.example.Ev.System.mapper.UserMapper;
 import com.example.Ev.System.repository.*;
@@ -162,16 +163,22 @@ public class ServiceAppointmentService {
 
     @Transactional
     public AppointmentResponse markAppointmentInProgress(
-            Integer id, StaffAssignmentRequest request, Authentication authentication) {
+            Integer id, Authentication authentication) {
 
-        validateAndGetAppointmentForCenter(authentication, id);
+        ServiceAppointment appointment = validateAndGetAppointmentForCenter(authentication, id);
+
+        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
+        if (staffIdList.isEmpty()) {
+            throw new BadRequestException("Chưa được giao việc cho kỹ thuật viên!");
+        }
+
+        if ("in_progress".equalsIgnoreCase(appointment.getStatus())) {
+            throw new BadRequestException("Lịch hẹn này đã ở trạng thái đang thực hiện!");
+        }
+
 
         ServiceAppointment updatedAppointment = updateAppointment(id, "in_progress");
 
-        List<StaffAssignment> assignments =
-                staffAppointmentService.assignTechnicians(id, request.getStaffIds(), request.getNotes(), authentication);
-
-        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
         String sId = staffIdList.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
@@ -185,6 +192,7 @@ public class ServiceAppointmentService {
 
         return response;
     }
+
 
     @Transactional
     public List<AppointmentResponse> getAppointmentsByStatusForCenter(String status, Authentication authentication) {
