@@ -158,6 +158,7 @@ public class ReportService implements ReportServiceI {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Double> getRevenueByService() {
         List<Invoice> paidInvoices = invoiceRepository.findByStatus("PAID");
 
