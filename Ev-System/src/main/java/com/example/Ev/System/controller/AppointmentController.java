@@ -131,6 +131,7 @@ public class AppointmentController {
             Authentication authentication) {
         AppointmentResponse response =
                 serviceAppointmentService.markAppointmentAsDone(id, maintainanceRecordDto, authentication);
+
         return ResponseEntity.ok(response);
     }
 
@@ -142,7 +143,6 @@ public class AppointmentController {
             Authentication authentication) {
         List<AppointmentResponse> responses =
                 serviceAppointmentService.getAppointmentsByStatusForCenter(status, authentication);
-
         return ResponseEntity.ok(responses);
     }
 
