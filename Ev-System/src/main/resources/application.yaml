@@ -6,3 +6,5 @@ springdoc:
     operationsSorter: method
     tagsSorter: alpha
     defaultModelsExpandDepth: -1
+  packages-to-scan: com.example.Ev.System.controller
+  paths-to-exclude: /ws/**, /error

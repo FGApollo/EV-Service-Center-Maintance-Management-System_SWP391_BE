@@ -194,6 +194,37 @@ public class UserService {
     public List<User> getAllById(Iterable<Integer> id){
         return userRepository.findAllById(id);
     }
+
+    public List<UserDto> getStaffAndTechnicianInSpecificCenter(String email){
+        User currentUser = getUserByEmail(email);
+        ServiceCenter center = currentUser.getServiceCenter();
+
+        if(center == null){
+            throw new RuntimeException("User nay chua co center");
+        }
+
+        List<User> staff = userRepository.findAllByRoleAndServiceCenter("staff", center);
+        List<User> technician = userRepository.findAllByRoleAndServiceCenter("technician", center);
+
+        List<User> all = new ArrayList<>();
+        all.addAll(staff);
+        all.addAll(technician);
+
+        List<UserDto> result = new ArrayList<>();
+        for(User u : all){
+            UserDto dto = new UserDto();
+            dto.setStatus(u.getStatus());
+            dto.setId(u.getId());
+            dto.setRole(u.getRole());
+            dto.setPhone(u.getPhone());
+            dto.setEmail(u.getEmail());
+            dto.setFullName(u.getFullName());
+            dto.setCertificateLink(u.getCertificateLink());
+            result.add(dto);
+        }
+
+        return result;
+    }
 }
 
 

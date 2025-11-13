@@ -10,6 +10,7 @@ import com.example.Ev.System.service.StaffAppointmentService;
 import com.example.Ev.System.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -107,7 +108,12 @@ public class UserController {
         return ResponseEntity.ok(customers);
     }
 
-
-
+    @PreAuthorize("(hasAuthority('manager'))")
+    @GetMapping("/center/staff_and_technician")
+    public ResponseEntity<List<UserDto>> getStaffAndTechnician(Authentication authentication){
+        String email = authentication.getName();
+        List<UserDto> user = userService.getStaffAndTechnicianInSpecificCenter(email);
+        return ResponseEntity.ok(user);
+    }
 
 }
