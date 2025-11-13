@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/worklogs")
+@RequestMapping("/api/worklogs")
 public class WorkLogController {
 
     private final WorkLogService workLogService;
@@ -29,21 +29,21 @@ public class WorkLogController {
 
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<List<WorkLogDto> >createAutoWorkLog( @PathVariable Integer id) {
-        List<WorkLogDto> saved = workLogService.autoCreateWorkLog(id);
-        return ResponseEntity.ok(saved);
-        //Da xong
-        //TODO : WorkLog se dc auto luu khi xong 1 appointment , hoi may thg kia hd nhu the nao
+//    @PostMapping("/{id}")
+//    public ResponseEntity<List<WorkLogDto> >createAutoWorkLog( @PathVariable Integer id) {
+//        List<WorkLogDto> saved = workLogService.autoCreateWorkLog(id);
+//        return ResponseEntity.ok(saved);
+//        //Da xong
+//        //TODO : WorkLog se dc auto luu khi xong 1 appointment , hoi may thg kia hd nhu the nao
+//
+//    }
 
-    }
-
-    @GetMapping("/center")
-    @PreAuthorize("hasAnyAuthority('manager')")
-    public ResponseEntity<List<WorkLogDto>> getAllWorkLogsByCenter(Authentication authentication) {
-        List<WorkLogDto> workLogs = workLogService.getAllWorkLogsByCenterId(authentication);
-        return ResponseEntity.ok(workLogs);
-    }
+//    @GetMapping("/center")
+//    @PreAuthorize("hasAnyAuthority('manager')")
+//    public ResponseEntity<List<WorkLogDto>> getAllWorkLogsByCenter(Authentication authentication) {
+//        List<WorkLogDto> workLogs = workLogService.getAllWorkLogsByCenterId(authentication);
+//        return ResponseEntity.ok(workLogs);
+//    }
 
     @GetMapping("/center/{centerId}")
     @PreAuthorize("hasAnyAuthority('manager')")
