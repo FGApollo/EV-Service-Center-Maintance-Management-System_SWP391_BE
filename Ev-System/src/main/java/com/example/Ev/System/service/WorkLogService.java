@@ -99,4 +99,10 @@ public class WorkLogService {
         return workLogDtos;
     }
 
+    public List<WorkLogDto> getWorkLogsByCenterId(int centerId) {
+        List<Worklog> worklogs = workLogRepository.findWorklogsByAppointment_ServiceCenter_Id(centerId);
+        List<WorkLogDto> workLogDtos = workLogMapper.toDtoList(worklogs);
+        return workLogDtos;
+    }
+
 }

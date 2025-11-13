@@ -45,5 +45,11 @@ public class WorkLogController {
         return ResponseEntity.ok(workLogs);
     }
 
+    @GetMapping("/center/{centerId}")
+    @PreAuthorize("hasAnyAuthority('manager')")
+    public ResponseEntity<List<WorkLogDto>> getAllWorkLogsByCenter(@RequestParam int centerId) {
+        List<WorkLogDto> workLogs = workLogService.getWorkLogsByCenterId(centerId);
+        return ResponseEntity.ok(workLogs);
+    }
 
 }
