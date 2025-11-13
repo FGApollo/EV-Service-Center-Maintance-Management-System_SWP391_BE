@@ -31,12 +31,12 @@ public class AuthService {
     public LoginResponse login(LoginRequest request){
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
         if(userOpt.isEmpty()){
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Không tìm thấy email");
         }
 
         User user = userOpt.get();
         if(!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())){
-            throw new BadRequestException("Invalid password");
+            throw new BadRequestException("Sai mật khẩu");
         }
 
         String token = jwtService.generateToken(user.getEmail(), user.getRole());
@@ -81,7 +81,7 @@ public class AuthService {
         Optional<User> user = userRepository.findByEmail(email);
 
         if(user.isEmpty()){
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("không tìm thấy user");
         }
 
         UserProfileResponse profile = new UserProfileResponse();

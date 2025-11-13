@@ -4,6 +4,7 @@ import com.example.Ev.System.dto.UserDto;
 import com.example.Ev.System.dto.VehicleDto;
 import com.example.Ev.System.dto.VehicleRespone;
 import com.example.Ev.System.entity.*;
+import com.example.Ev.System.exception.BadRequestException;
 import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.mapper.UserMapper;
 import com.example.Ev.System.repository.AppointmentRepository;
@@ -62,49 +63,49 @@ public class UserService {
         return userDto;
     }
 
-    @Transactional
-    public List<UserDto> getAllByRole(String role,int id) {
-        ServiceCenter serviceCenter = serviceCenterRepository.findById(id).get();
-        List<User> userByRole = userRepository.findAllByRoleAndServiceCenter(role,serviceCenter);
-        List<UserDto> userDtos = new ArrayList<>();
-
-        for (User user : userByRole) {
-            UserDto userDto = userMapper.toDTO(user);
-
-            List<Vehicle> vehicles = vehicleRepository.findVehicleByCustomer(user);
-            List<VehicleRespone> vehicleResponses = new ArrayList<>();
-
-            for (Vehicle vehicle : vehicles) {
-                List<ServiceAppointment> appointmentServices = appointmentRepository.findAllByVehicle(vehicle);
-
-                List<String> serviceTypes = new ArrayList<>();
-                for (ServiceAppointment appointment : appointmentServices) {
-                    for (ServiceType serviceType : appointment.getServiceTypes()) {
-                        serviceTypes.add(serviceType.getName());
-                    }
-                }
-
-                VehicleRespone vehicleRespone = new VehicleRespone(
-                        vehicle.getId(),
-                        vehicle.getModel(),
-                        vehicle.getYear(),
-                        vehicle.getVin(),
-                       " vehicle.getLicensePlate()",
-                        "vehicle.getColor()",
-                        user.getFullName(),
-                        appointmentServices.size(),
-                        null,
-                        serviceTypes
-                );
-                vehicleResponses.add(vehicleRespone);
-            }
-
-            userDto.setVehicles(vehicleResponses);
-            userDtos.add(userDto);
-        }
-
-        return userDtos;
-    }
+//    @Transactional
+//    public List<UserDto> getAllByRole(String role,int id) {
+//        ServiceCenter serviceCenter = serviceCenterRepository.findById(id).get();
+//        List<User> userByRole = userRepository.findAllByRoleAndServiceCenter(role,serviceCenter);
+//        List<UserDto> userDtos = new ArrayList<>();
+//
+//        for (User user : userByRole) {
+//            UserDto userDto = userMapper.toDTO(user);
+//
+//            List<Vehicle> vehicles = vehicleRepository.findVehicleByCustomer(user);
+//            List<VehicleRespone> vehicleResponses = new ArrayList<>();
+//
+//            for (Vehicle vehicle : vehicles) {
+//                List<ServiceAppointment> appointmentServices = appointmentRepository.findAllByVehicle(vehicle);
+//
+//                List<String> serviceTypes = new ArrayList<>();
+//                for (ServiceAppointment appointment : appointmentServices) {
+//                    for (ServiceType serviceType : appointment.getServiceTypes()) {
+//                        serviceTypes.add(serviceType.getName());
+//                    }
+//                }
+//
+//                VehicleRespone vehicleRespone = new VehicleRespone(
+//                        vehicle.getId(),
+//                        vehicle.getModel(),
+//                        vehicle.getYear(),
+//                        vehicle.getVin(),
+//                       " vehicle.getLicensePlate()",
+//                        "vehicle.getColor()",
+//                        user.getFullName(),
+//                        appointmentServices.size(),
+//                        null,
+//                        serviceTypes
+//                );
+//                vehicleResponses.add(vehicleRespone);
+//            }
+//
+//            userDto.setVehicles(vehicleResponses);
+//            userDtos.add(userDto);
+//        }
+//
+//        return userDtos;
+//    }
 
 
     @Transactional
@@ -226,6 +227,43 @@ public class UserService {
         }
 
         return result;
+    }
+
+    @Transactional
+    public List<UserDto> getAllUserByRole(String role){
+        List<User> users = userRepository.findAllByRole(role);
+        if(users.isEmpty()){
+            throw new BadRequestException("Không có user với role là:" + role);
+        }
+
+        List<UserDto> userDtos = new ArrayList<>();
+
+        for (User user : users){
+            UserDto dto = new UserDto();
+            dto.setId(user.getId());
+            dto.setRole(user.getRole());
+            dto.setEmail(user.getEmail());
+            dto.setStatus(user.getStatus());
+            dto.setPhone(user.getPhone());
+            dto.setFullName(user.getFullName());
+
+            List<VehicleRespone> vehicleRespones = new ArrayList<>();
+            if(user.getVehicles() != null){
+                for (Vehicle v : user.getVehicles()){
+                    VehicleRespone vr = new VehicleRespone();
+                    vr.setVehicleId(v.getId());
+                    vr.setModel(v.getModel());
+                    vr.setVin(v.getVin());
+                    vr.setYear(v.getYear());
+                    vr.setLicensePlate(v.getLicensePlate());
+                    vr.setColor(v.getColor());
+                    vehicleRespones.add(vr);
+                }
+            }
+            dto.setVehicles(vehicleRespones);
+            userDtos.add(dto);
+        }
+        return userDtos;
     }
 }
 
