@@ -108,15 +108,14 @@ public class UserService {
 
 
     @Transactional
-    public UserDto createEmployee(RegisterUserDto userDto, String role, int id, MultipartFile file) throws IOException {
-        ServiceCenter serviceCenter = serviceCenterRepository.findById(id)
+    public UserDto createEmployee(RegisterUserDto userDto, String role, MultipartFile file) throws IOException {
+        ServiceCenter serviceCenter = serviceCenterRepository.findById(userDto.getServiceCenterId())
                 .orElseThrow(() -> new IllegalArgumentException("Service Center not found"));
 
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        // Upload image if provided
         String uploadedUrl = null;
         if (file != null && !file.isEmpty()) {
             uploadedUrl = uploadService.uploadFile(file, "employee_certificates");
@@ -194,6 +193,38 @@ public class UserService {
 
     public List<User> getAllById(Iterable<Integer> id){
         return userRepository.findAllById(id);
+    }
+
+    public List<UserDto> getStaffAndTechnicianInSpecificCenter(String email){
+        User currentUser = getUserByEmail(email);
+        ServiceCenter center = currentUser.getServiceCenter();
+
+        if(center == null){
+            throw new RuntimeException("User nay chua co center");
+        }
+
+        List<User> staff = userRepository.findAllByRoleAndServiceCenter("staff", center);
+        List<User> technician = userRepository.findAllByRoleAndServiceCenter("technician", center);
+
+        List<User> all = new ArrayList<>();
+        all.addAll(staff);
+        all.addAll(technician);
+
+        List<UserDto> result = new ArrayList<>();
+        for(User u : all){
+            UserDto dto = new UserDto();
+            dto.setStatus(u.getStatus());
+            dto.setId(u.getId());
+            dto.setRole(u.getRole());
+            dto.setPhone(u.getPhone());
+            dto.setEmail(u.getEmail());
+            dto.setFullName(u.getFullName());
+            dto.setCreate_at(Instant.now());
+            dto.setCertificateLink(u.getCertificateLink());
+            result.add(dto);
+        }
+
+        return result;
     }
 }
 

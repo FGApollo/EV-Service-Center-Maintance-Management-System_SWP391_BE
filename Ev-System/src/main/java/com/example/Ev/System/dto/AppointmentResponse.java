@@ -3,6 +3,7 @@ package com.example.Ev.System.dto;
 import com.example.Ev.System.entity.MaintenanceRecord;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.entity.Vehicle;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,8 @@ public class AppointmentResponse {
     private List<String> serviceNames;
     private String status;
     private String email;
-    private Vehicle vehicle;
+
+    private VehicleDto vehicle;
     private String note;
     private String url;
     private String techIds;

@@ -7,15 +7,16 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface WorkLogMapper {
 
     // ✅ Entity → DTO
     @Mapping(target = "staffId", expression = "java(java.util.List.of(workLog.getStaff().getId()))")
+    @Mapping(target = "user", source = "staff") // Uses UserMapper to map User → UserDto
     @Mapping(target = "appointmentId", source = "appointment.id")
     WorkLogDto toDto(Worklog workLog);
 
-    // ✅ DTO → Entity (we ignore these because service sets them manually)
+    // ✅ DTO → Entity (manual relations)
     @Mapping(target = "staff", ignore = true)
     @Mapping(target = "appointment", ignore = true)
     Worklog toEntity(WorkLogDto workLogDto);
@@ -23,7 +24,6 @@ public interface WorkLogMapper {
     // ✅ List<Entity> → List<DTO>
     List<WorkLogDto> toDtoList(List<Worklog> workLogs);
 
-    // (optional) ✅ List<DTO> → List<Entity>
+    // ✅ List<DTO> → List<Entity>
     List<Worklog> toEntityList(List<WorkLogDto> workLogDtos);
-    //Sai la do day
 }

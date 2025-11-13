@@ -143,7 +143,6 @@ public class StaffAppointmentService {
                 }
                 staffAssignmentDtos.add(dto);
             }
-
         }
         return  staffAssignmentDtos;
     }
@@ -160,6 +159,18 @@ public class StaffAppointmentService {
             staffIds.add(staffAssignment.getStaff().getId());
         }
         return  staffIds;
+    }
+
+    @Transactional
+    public List<StaffAssignmentDto> assignTechniciansDto(Integer appointmentId, List<Integer> staffIds, String note, Authentication auth) {
+        List<StaffAssignment> assignments = assignTechnicians(appointmentId, staffIds, note, auth);
+        return assignments.stream()
+                .map(a -> {
+                    StaffAssignmentDto dto = staffAssignmentMapper.toDtoWithStatus(a.getStaff(), true);
+                    dto.setAppointmentId(String.valueOf(appointmentId));
+                    return dto;
+                })
+                .toList();
     }
 
 

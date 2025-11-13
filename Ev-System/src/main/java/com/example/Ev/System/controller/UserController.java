@@ -10,6 +10,7 @@ import com.example.Ev.System.service.StaffAppointmentService;
 import com.example.Ev.System.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -69,18 +70,29 @@ public class UserController {
 //        //tao user theo role va theo thang manager centerId
 //    }
 
+//    @PostMapping(value = "/employees", consumes = {"multipart/form-data"})
+//    public ResponseEntity<UserDto> createEmployee(
+//            @RequestPart("user") RegisterUserDto userDto,
+//            @RequestPart(value = "file", required = false) MultipartFile file,
+//            @RequestParam String role,
+//            Authentication authentication) throws IOException {
+//
+//        String email = authentication.getName();
+//        User manager = userService.getUserByEmail(email);
+//        int centerId = manager.getServiceCenter().getId();
+//
+//        UserDto createdEmployee = userService.createEmployee(userDto, role, centerId, file);
+//        return ResponseEntity.ok(createdEmployee);
+//    }
+
     @PostMapping(value = "/employees", consumes = {"multipart/form-data"})
     public ResponseEntity<UserDto> createEmployee(
             @RequestPart("user") RegisterUserDto userDto,
             @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestParam String role,
-            Authentication authentication) throws IOException {
+            @RequestParam String role) throws IOException {
 
-        String email = authentication.getName();
-        User manager = userService.getUserByEmail(email);
-        int centerId = manager.getServiceCenter().getId();
 
-        UserDto createdEmployee = userService.createEmployee(userDto, role, centerId, file);
+        UserDto createdEmployee = userService.createEmployee(userDto,role,file);
         return ResponseEntity.ok(createdEmployee);
     }
 
@@ -96,7 +108,12 @@ public class UserController {
         return ResponseEntity.ok(customers);
     }
 
-
-
+    @PreAuthorize("(hasAuthority('manager'))")
+    @GetMapping("/center/staff_and_technician")
+    public ResponseEntity<List<UserDto>> getStaffAndTechnician(Authentication authentication){
+        String email = authentication.getName();
+        List<UserDto> user = userService.getStaffAndTechnicianInSpecificCenter(email);
+        return ResponseEntity.ok(user);
+    }
 
 }

@@ -79,8 +79,11 @@ public class WorkLogService {
             Duration duration = Duration.between(maintenanceRecord.getStartTime(), maintenanceRecord.getEndTime());
             BigDecimal minutes = BigDecimal.valueOf(duration.toMinutes());
             BigDecimal hours = minutes.divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
-            workLog.setHoursSpent(hours);
-
+            if (hours.compareTo(BigDecimal.valueOf(999)) > 0) {
+                workLog.setHoursSpent(BigDecimal.valueOf(999.99));
+            } else {
+                workLog.setHoursSpent(hours);
+            }
             workLog.setTasksDone(maintenanceRecord.getChecklist());
             workLog.setCreatedAt(Instant.now());
             workLogRepository.save(workLog);
@@ -94,6 +97,12 @@ public class WorkLogService {
         String email = authentication.getName();
         User user = userService.getUserByEmail(email);
         int centerId = user.getServiceCenter().getId();
+        List<Worklog> worklogs = workLogRepository.findWorklogsByAppointment_ServiceCenter_Id(centerId);
+        List<WorkLogDto> workLogDtos = workLogMapper.toDtoList(worklogs);
+        return workLogDtos;
+    }
+
+    public List<WorkLogDto> getWorkLogsByCenterId(int centerId) {
         List<Worklog> worklogs = workLogRepository.findWorklogsByAppointment_ServiceCenter_Id(centerId);
         List<WorkLogDto> workLogDtos = workLogMapper.toDtoList(worklogs);
         return workLogDtos;
