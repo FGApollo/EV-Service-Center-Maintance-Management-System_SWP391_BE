@@ -2,6 +2,7 @@ package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.UserProfileResponse;
 import com.example.Ev.System.service.AuthService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import java.net.Authenticator;
 
 @RestController
 @RequestMapping("/api/profile")
+@PreAuthorize("hasAuthority('customer')")
 public class ProfileController {
     private final AuthService authService;
 

@@ -13,8 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,17 +56,32 @@ public class UserController {
         //lay user theo role va theo thang manager centerId
     }
 
-    @PostMapping("/employees")
+//    @PostMapping("/employees")
+//    public ResponseEntity<UserDto> createEmployee(
+//            @RequestBody RegisterUserDto userDto,
+//            @RequestParam String role,
+//            Authentication authentication) {
+//        String email = authentication.getName();
+//        User user = userService.getUserByEmail(email);
+//        int id = user.getServiceCenter().getId();
+//        return ResponseEntity.ok(userService.createEmployee(userDto, role,id));
+//        //test xong
+//        //tao user theo role va theo thang manager centerId
+//    }
+
+    @PostMapping(value = "/employees", consumes = {"multipart/form-data"})
     public ResponseEntity<UserDto> createEmployee(
-            @RequestBody RegisterUserDto userDto,
+            @RequestPart("user") RegisterUserDto userDto,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestParam String role,
-            Authentication authentication) {
+            Authentication authentication) throws IOException {
+
         String email = authentication.getName();
-        User user = userService.getUserByEmail(email);
-        int id = user.getServiceCenter().getId();
-        return ResponseEntity.ok(userService.createEmployee(userDto, role,id));
-        //test xong
-        //tao user theo role va theo thang manager centerId
+        User manager = userService.getUserByEmail(email);
+        int centerId = manager.getServiceCenter().getId();
+
+        UserDto createdEmployee = userService.createEmployee(userDto, role, centerId, file);
+        return ResponseEntity.ok(createdEmployee);
     }
 
     @DeleteMapping("/{id}")
