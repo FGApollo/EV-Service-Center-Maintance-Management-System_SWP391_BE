@@ -114,6 +114,10 @@ public class ServiceAppointmentService {
         return  appointmentRepository.findAllByServiceCenter(serviceCenter);
     }
 
+    public List<ServiceAppointment> findAllByServiceCenterId(Integer serviceCenterId) {
+        return appointmentRepository.findAllByServiceCenter_Id(serviceCenterId);
+    }
+
     public ServiceAppointment validateAndGetAppointmentForCenter( Authentication authentication ,Integer appointmentId) {
         String email = authentication.getName();
         User currentUser = userService.getUserByEmail(email);

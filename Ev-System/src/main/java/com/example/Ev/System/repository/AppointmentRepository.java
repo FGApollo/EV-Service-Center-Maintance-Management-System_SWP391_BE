@@ -40,6 +40,8 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
 
     List<ServiceAppointment> findAllByServiceCenter(ServiceCenter serviceCenter);
 
+    List<ServiceAppointment> findAllByServiceCenter_Id(Integer serviceCenterId);
+
 }
 
 
