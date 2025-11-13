@@ -156,10 +156,10 @@ public class AppointmentController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/staff")
+    @GetMapping("/staff/{id}")
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     @Transactional
-    public ResponseEntity<List<AppointmentResponse>> findAllByStaffId(@RequestParam Integer id) {
+    public ResponseEntity<List<AppointmentResponse>> findAllByStaffId(@PathVariable Integer id) {
         List<ServiceAppointment> appointments = serviceAppointmentService.getAppointmentsByStaffId(id);
         return ResponseEntity.ok(appointmentMapper.toResponseList(appointments));
     }
