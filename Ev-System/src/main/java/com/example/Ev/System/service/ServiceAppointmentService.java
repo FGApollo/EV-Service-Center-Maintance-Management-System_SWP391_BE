@@ -176,7 +176,6 @@ public class ServiceAppointmentService {
             throw new BadRequestException("Lịch hẹn này đã ở trạng thái đang thực hiện!");
         }
 
-
         ServiceAppointment updatedAppointment = updateAppointment(id, "in_progress");
 
         String sId = staffIdList.stream()
