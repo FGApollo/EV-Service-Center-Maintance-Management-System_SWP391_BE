@@ -69,18 +69,29 @@ public class UserController {
 //        //tao user theo role va theo thang manager centerId
 //    }
 
+//    @PostMapping(value = "/employees", consumes = {"multipart/form-data"})
+//    public ResponseEntity<UserDto> createEmployee(
+//            @RequestPart("user") RegisterUserDto userDto,
+//            @RequestPart(value = "file", required = false) MultipartFile file,
+//            @RequestParam String role,
+//            Authentication authentication) throws IOException {
+//
+//        String email = authentication.getName();
+//        User manager = userService.getUserByEmail(email);
+//        int centerId = manager.getServiceCenter().getId();
+//
+//        UserDto createdEmployee = userService.createEmployee(userDto, role, centerId, file);
+//        return ResponseEntity.ok(createdEmployee);
+//    }
+
     @PostMapping(value = "/employees", consumes = {"multipart/form-data"})
     public ResponseEntity<UserDto> createEmployee(
             @RequestPart("user") RegisterUserDto userDto,
             @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestParam String role,
-            Authentication authentication) throws IOException {
+            @RequestParam String role) throws IOException {
 
-        String email = authentication.getName();
-        User manager = userService.getUserByEmail(email);
-        int centerId = manager.getServiceCenter().getId();
 
-        UserDto createdEmployee = userService.createEmployee(userDto, role, centerId, file);
+        UserDto createdEmployee = userService.createEmployee(userDto,role,file);
         return ResponseEntity.ok(createdEmployee);
     }
 

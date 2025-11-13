@@ -8,6 +8,7 @@ public class RegisterUserDto {
     private String email;
     private String phone;
     private String password;
+    private int serviceCenterId;
 
     private String certificateLink;
 }

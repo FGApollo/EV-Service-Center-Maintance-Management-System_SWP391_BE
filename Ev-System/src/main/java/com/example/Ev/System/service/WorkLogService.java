@@ -79,8 +79,11 @@ public class WorkLogService {
             Duration duration = Duration.between(maintenanceRecord.getStartTime(), maintenanceRecord.getEndTime());
             BigDecimal minutes = BigDecimal.valueOf(duration.toMinutes());
             BigDecimal hours = minutes.divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
-            workLog.setHoursSpent(hours);
-
+            if (hours.compareTo(BigDecimal.valueOf(999)) > 0) {
+                workLog.setHoursSpent(BigDecimal.valueOf(999.99));
+            } else {
+                workLog.setHoursSpent(hours);
+            }
             workLog.setTasksDone(maintenanceRecord.getChecklist());
             workLog.setCreatedAt(Instant.now());
             workLogRepository.save(workLog);
