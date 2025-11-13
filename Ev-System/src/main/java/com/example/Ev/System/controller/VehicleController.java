@@ -58,4 +58,10 @@ public class VehicleController {
         return vehicleService.getVehicleCompletedMantances("completed");
     }
 
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('admin')")
+    public List<VehicleRespone> getAllVehicle(){
+        return vehicleService.getAllVehicle();
+    }
+
 }
