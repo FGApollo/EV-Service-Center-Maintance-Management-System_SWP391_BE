@@ -40,6 +40,7 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
 
     List<ServiceAppointment> findAllByServiceCenter(ServiceCenter serviceCenter);
 
+    boolean existsByVehicle_IdAndStatusNot(Integer vehicleId, String status);
 }
 
 
