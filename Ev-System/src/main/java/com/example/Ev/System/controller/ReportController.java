@@ -93,4 +93,10 @@ public class ReportController {
         return ResponseEntity.ok(revenueByCenter);
     }
 
+    @GetMapping("/revenue/service/current-month")
+    public ResponseEntity<Map<String, Double>> getRevenueByServiceCurrentMonth() {
+        Map<String, Double> revenueByServiceCurrentMonth = reportService.getRevenueByServiceCurrentMonth();
+        return ResponseEntity.ok(revenueByServiceCurrentMonth);
+    }
+
 }
