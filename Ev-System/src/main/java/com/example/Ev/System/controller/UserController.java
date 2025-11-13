@@ -35,14 +35,21 @@ public class UserController {
         this.staffAppointmentService = staffAppointmentService;
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<UserDto>> getUsersByRole(@RequestParam String role,Authentication authentication) {
-        String email = authentication.getName();
-        User user = userService.getUserByEmail(email);
-        int id = user.getServiceCenter().getId();
-        return ResponseEntity.ok(userService.getAllByRole(role,id));
-        //test xong
-        //lay user theo role va theo thang manager centerId
+//    @GetMapping("")
+//    public ResponseEntity<List<UserDto>> getUsersByRole(@RequestParam String role,Authentication authentication) {
+//        String email = authentication.getName();
+//        User user = userService.getUserByEmail(email);
+//        int id = user.getServiceCenter().getId();
+//        return ResponseEntity.ok(userService.getAllByRole(role,id));
+//        //test xong
+//        //lay user theo role va theo thang manager centerId
+//    }
+
+    @GetMapping("/all/{role}")
+    @PreAuthorize("(hasAuthority('admin'))")
+    public ResponseEntity<List<UserDto>> getAllUsersByRole(@PathVariable String role) {
+        List<UserDto> users = userService.getAllUserByRole(role);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/allTechnicians")
