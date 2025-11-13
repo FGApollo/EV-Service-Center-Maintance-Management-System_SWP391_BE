@@ -144,7 +144,7 @@ public class AppointmentController {
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id,
-            @RequestBody List<Integer> staffIds,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
+            @RequestBody StaffAssignmentRequest request,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
     {
         String email = authentication.getName();
         User currentUser = userService.getUserByEmail(email);
@@ -161,7 +161,7 @@ public class AppointmentController {
 
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
         List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(id, staffIds, "notes",authentication);
+                .assignTechnicians(id, request.getStaffIds(), request.getNotes(),authentication);
         List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
         AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
         String sId = staffIdList.stream()
