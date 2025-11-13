@@ -46,6 +46,9 @@ public class User {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @Column(name = "certificate_link")
+    private String certificateLink;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "center_id", referencedColumnName = "center_id")
     private ServiceCenter serviceCenter;

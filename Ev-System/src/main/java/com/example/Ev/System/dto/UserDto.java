@@ -14,6 +14,7 @@ public class UserDto {
     private String role;
     private Instant create_at;
     private String status;
+    private String certificateLink;
 
     List<VehicleRespone> vehicles;
 }

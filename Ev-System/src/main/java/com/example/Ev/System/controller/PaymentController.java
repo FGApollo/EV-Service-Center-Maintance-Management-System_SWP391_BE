@@ -34,10 +34,10 @@ public class PaymentController {
 
         String redirectUrl;
         if ("00".equals(allParams.get("vnp_ResponseCode"))) { // 00 means success
-            redirectUrl = "http://localhost:5173/?status=success&amount="
+            redirectUrl = "http://localhost:5173/api/auth/payment-return?status=success&amount="
                     + paymentResponse.getAmount();
         } else {
-            redirectUrl = "http://localhost:5173/?status=failed";
+            redirectUrl = "http://localhost:5173/api/auth/payment-return?status=failed";
         }
 
         return ResponseEntity.status(HttpStatus.FOUND)

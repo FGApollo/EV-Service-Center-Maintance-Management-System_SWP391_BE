@@ -1,11 +1,13 @@
 package com.example.Ev.System.service;
 
 import com.example.Ev.System.entity.*;
+import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,11 @@ public class PartUsageService implements PartUsageServiceI{
     @Autowired
     private JavaMailSender mailSender;
     @Autowired
-    private ServiceCenterRepository serviceCenterRepository;
+    private UserRepository userRepository;
+
+    @Value("${app.notifications.from:no-reply@example.com}")
+    private String centerEmail;
+
 
     @Transactional
     public void usePart(Integer partId, Integer quantityUsed, Integer centerId, Integer RecordId) {
@@ -87,6 +93,10 @@ public class PartUsageService implements PartUsageServiceI{
         Instant endTime = startTime.minus(30, ChronoUnit.DAYS);
         List<PartUsage> partUsages = partUsageRepository.findByRecord_StartTimeBetween(endTime, startTime);
 
+        if (partUsages.isEmpty()) {
+            throw new NotFoundException("No parts usage in last month");
+        }
+
         Map<String, Long> partUsageCount = partUsages.stream()
                 .collect(Collectors.groupingBy(
                         pu -> pu.getPart().getName(),
@@ -124,13 +134,16 @@ public class PartUsageService implements PartUsageServiceI{
         String text = "Part " + inventory.getPart().getName()
                 + " has reached minimum stock level. Current: "
                 + inventory.getQuantity();
-
-        sendNotification("manager@example.com", subject, text);
+        List<User> allManager = userRepository.findAllByRoleAndServiceCenter("manager", inventory.getCenter());
+        for (User user : allManager) {
+            sendNotification(user.getEmail(), subject, text);
+        }
+//        sendNotification("thanhbinh642842@gmail.com", subject, text);
     }
 
     public void sendNotification(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("thanhbinh642842@gmail.com"); // must be same as spring.mail.username
+        message.setFrom(centerEmail); // must be same as spring.mail.username
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);

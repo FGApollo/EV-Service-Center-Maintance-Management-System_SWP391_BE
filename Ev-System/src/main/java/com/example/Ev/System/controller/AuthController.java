@@ -4,6 +4,7 @@ import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.service.AuthService;
 import com.example.Ev.System.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public LoginResponse login(@RequestBody LoginRequest request){
+    public LoginResponse login(@RequestBody @Valid LoginRequest request){
         return authService. login(request);
     }
 

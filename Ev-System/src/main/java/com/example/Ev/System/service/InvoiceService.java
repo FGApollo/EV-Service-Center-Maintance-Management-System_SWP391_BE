@@ -3,6 +3,8 @@ package com.example.Ev.System.service;
 import com.example.Ev.System.entity.AppointmentService;
 import com.example.Ev.System.entity.Invoice;
 import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.exception.BadRequestException;
+import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -32,9 +34,16 @@ public class InvoiceService implements InvoiceServiceI {
         }
 
         List<AppointmentService> service = appointmentServiceRepository.findByAppointmentId(appointmentId);
+        if (service.isEmpty()) {
+            throw new NotFoundException("Service not found for this appointment");
+        }
         BigDecimal totalAmount = service.stream()
                 .map(s -> s.getServiceType().getPrice())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Service not found for this appointment");
+        }
 
         ServiceAppointment appointment = serviceAppointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));

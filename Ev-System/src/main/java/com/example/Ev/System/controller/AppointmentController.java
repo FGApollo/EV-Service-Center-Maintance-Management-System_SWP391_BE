@@ -49,23 +49,23 @@ public class AppointmentController {
     private final MaintenanceRecordService maintenanceRecordService;
     private final WorkLogService workLogService;
     private final AppointmentMapper appointmentMapper;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final StaffAppointmentService staffAppointmentService;
     private final MaintenanceReminderCreationService maintenanceReminderCreationService;
-    private final ServiceAppointmentRepository serviceAppointmentRepository;
+
     private final UserMapper userMapper;
 
-    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserRepository userRepository, StaffAppointmentService staffAppointmentService, MaintenanceReminderCreationService maintenanceReminderCreationService, ServiceAppointmentRepository serviceAppointmentRepository, UserMapper userMapper) {
+    public AppointmentController(AppointmentService appointmentService, AppointmentStatusService appointmentStatusService, ServiceAppointmentService serviceAppointmentService, MaintenanceRecordService maintenanceRecordService, WorkLogService workLogService, AppointmentMapper appointmentMapper, UserService userService, StaffAppointmentService staffAppointmentService, MaintenanceReminderCreationService maintenanceReminderCreationService, ServiceAppointmentRepository serviceAppointmentRepository, UserMapper userMapper) {
         this.appointmentService = appointmentService;
         this.appointmentStatusService = appointmentStatusService;
         this.serviceAppointmentService = serviceAppointmentService;
         this.maintenanceRecordService = maintenanceRecordService;
         this.workLogService = workLogService;
         this.appointmentMapper = appointmentMapper;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.staffAppointmentService = staffAppointmentService;
         this.maintenanceReminderCreationService = maintenanceReminderCreationService;
-        this.serviceAppointmentRepository = serviceAppointmentRepository;
+
         this.userMapper = userMapper;
     }
 
@@ -92,10 +92,10 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponse> acceptAppointment(
             @PathVariable Integer id ,Authentication authentication) {
         String email = authentication.getName();
-        User currentUser = userRepository.findByEmail(email).orElse(null);
+        User currentUser = userService.getUserByEmail(email);
         Integer centerId = currentUser.getServiceCenter().getId();
 
-        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+        ServiceAppointment appointment = serviceAppointmentService.findById(id);
 
         if (appointment == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
@@ -121,10 +121,10 @@ public class AppointmentController {
     {
 
         String email = authentication.getName();
-        User currentUser = userRepository.findByEmail(email).orElse(null);
+        User currentUser = userService.getUserByEmail(email);
         Integer centerId = currentUser.getServiceCenter().getId();
 
-        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+        ServiceAppointment appointment = serviceAppointmentService.findById(id);
 
         if (appointment == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
@@ -144,13 +144,13 @@ public class AppointmentController {
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id,
-            @RequestBody List<Integer> staffIds,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
+            @RequestBody StaffAssignmentRequest request,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
     {
         String email = authentication.getName();
-        User currentUser = userRepository.findByEmail(email).orElse(null);
+        User currentUser = userService.getUserByEmail(email);
         Integer centerId = currentUser.getServiceCenter().getId();
 
-        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+        ServiceAppointment appointment = serviceAppointmentService.findById(id);
 
         if (appointment == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
@@ -161,7 +161,7 @@ public class AppointmentController {
 
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
         List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(id, staffIds, "notes",authentication);
+                .assignTechnicians(id, request.getStaffIds(), request.getNotes(),authentication);
         List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
         AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
         String sId = staffIdList.stream()
@@ -169,7 +169,7 @@ public class AppointmentController {
                 .collect(Collectors.joining(","));
         response.setTechIds(sId);
 
-        List<User> techUsers = userRepository.findAllById(staffIdList);
+        List<User> techUsers = userService.getAllById(staffIdList);
         List<UserDto> techDto = userMapper.toDTOList(techUsers);
         response.setUsers(techDto);
 
@@ -186,10 +186,10 @@ public class AppointmentController {
             Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
     {
         String email = authentication.getName();
-        User currentUser = userRepository.findByEmail(email).orElse(null);
+        User currentUser = userService.getUserByEmail(email);
         Integer centerId = currentUser.getServiceCenter().getId();
 
-        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+        ServiceAppointment appointment = serviceAppointmentService.findById(id);
 
         if (appointment == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
@@ -230,7 +230,7 @@ public class AppointmentController {
             @PathVariable String status,
             Authentication authentication) {
         String email = authentication.getName();
-        User currentUser = userRepository.findByEmail(email).orElse(null);
+        User currentUser = userService.getUserByEmail(email);
         Integer centerId = currentUser.getServiceCenter().getId();
 
         // Get all appointments by status + center
@@ -249,7 +249,7 @@ public class AppointmentController {
                         .collect(Collectors.joining(","));
                 response.setTechIds(sId);
 
-                List<User> techUsers = userRepository.findAllById(staffIdList);
+                List<User> techUsers = userService.getAllById(staffIdList);
                 List<UserDto> techDto = userMapper.toDTOList(techUsers);
                 response.setUsers(techDto);
             } else {
@@ -290,10 +290,10 @@ public class AppointmentController {
             @PathVariable Integer id
             ) {
         String email = authentication.getName();
-        User currentUser = userRepository.findByEmail(email).orElse(null);
+        User currentUser = userService.getUserByEmail(email);
         Integer centerId = currentUser.getServiceCenter().getId();
 
-        ServiceAppointment appointment = serviceAppointmentRepository.findById(id).orElse(null);
+        ServiceAppointment appointment = serviceAppointmentService.findById(id);
 
         if (appointment == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
@@ -303,7 +303,7 @@ public class AppointmentController {
         }
 
         List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
-        ServiceAppointment updatedAppointment = serviceAppointmentRepository.findById(id).orElse(null);
+        ServiceAppointment updatedAppointment = serviceAppointmentService.findById(id);
         AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
         String sId = staffIdList.stream()
                 .map(String::valueOf)
@@ -311,7 +311,7 @@ public class AppointmentController {
         response.setTechIds(sId);
 
         if (staffIdList != null && !staffIdList.isEmpty()) {
-            List<User> techUsers = userRepository.findAllById(staffIdList);
+            List<User> techUsers = userService.getAllById(staffIdList);
             List<UserDto> techDto = userMapper.toDTOList(techUsers);
             response.setUsers(techDto);
         } else {
@@ -351,8 +351,8 @@ public class AppointmentController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('customer')")
-    public List<AppointmentAllFieldsDto> getAllAppointment(){
-        return serviceAppointmentService.getAllAppointment();
+    @PreAuthorize("hasAuthority('staff')")
+    public List<AppointmentAllFieldsDto> getAllAppointmentWithSpecificDetails(){
+        return serviceAppointmentService.getAllAppointmentWithSpecificDetails();
     }
 }

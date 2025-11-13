@@ -1,5 +1,6 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.CenterStats;
 import com.example.Ev.System.dto.PartStockReport;
 import com.example.Ev.System.dto.PaymentMethodStats;
 import com.example.Ev.System.dto.RevenueResponse;
@@ -20,4 +21,5 @@ public interface ReportServiceI {
     public Map<String, Double> getRevenueByService();
     Map<String, PaymentMethodStats> getRevenueByPaymentMethod();
     public List<PartStockReport> getPartStockReport();
+    Map<Integer, CenterStats> getRevenueByCenter( Integer id);
 }
