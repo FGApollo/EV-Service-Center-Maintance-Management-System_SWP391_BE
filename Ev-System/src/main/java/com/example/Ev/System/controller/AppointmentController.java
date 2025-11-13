@@ -114,10 +114,9 @@ public class AppointmentController {
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id,
-            @RequestBody StaffAssignmentRequest request,
             Authentication authentication) {
         AppointmentResponse response =
-                serviceAppointmentService.markAppointmentInProgress(id, request, authentication);
+                serviceAppointmentService.markAppointmentInProgress(id, authentication);
         return ResponseEntity.ok(response);
     }
 

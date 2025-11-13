@@ -143,7 +143,6 @@ public class StaffAppointmentService {
                 }
                 staffAssignmentDtos.add(dto);
             }
-
         }
         return  staffAssignmentDtos;
     }
