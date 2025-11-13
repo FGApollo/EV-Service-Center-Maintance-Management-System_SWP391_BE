@@ -37,34 +37,29 @@ public class StaffAssignmentController {
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<List<StaffAssignmentDto>> assignTechnicians(
             @PathVariable Integer appointmentId,
-            @RequestBody StaffAssignmentRequest request, Authentication authentication
-            ) {
-        List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(appointmentId, request.getStaffIds(), request.getNotes(),authentication);
-        List<StaffAssignmentDto> assignmentDtos = assignments.stream()
-                .map(a -> {
-                    StaffAssignmentDto dto = staffAssignmentMapper.toDtoWithStatus(a.getStaff(), true);
-                    dto.setAppointmentId(appointmentId.toString());
-                    return dto;
-                })
-                .toList();
-
+            @RequestBody StaffAssignmentRequest request,
+            Authentication authentication
+    ) {
+        List<StaffAssignmentDto> assignmentDtos = staffAppointmentService.assignTechniciansDto(
+                appointmentId,
+                request.getStaffIds(),
+                request.getNotes(),
+                authentication
+        );
         return ResponseEntity.ok(assignmentDtos);
-        //Da xong
-        //ToDO : Nen tra ve DTO
     }
+
 
     @GetMapping("/free")
-    @Transactional
-    public List<StaffAssignmentDto> findFreeStaff(Authentication authentication) {
-        String email = authentication.getName();
-        User user = userService.getUserByEmail(email);
-        int id = user.getServiceCenter().getId();
-        Integer centerId = user.getServiceCenter().getId();
-        List<User> users = staffAppointmentService.getFreeTechnician(centerId,"in_progress");
-        List<StaffAssignmentDto> staffAssignmentDtos = staffAssignmentMapper.toDtoList(users);
-        return staffAssignmentDtos ;//lay in_progress vi bo no vo de tim busy employeed trc
+    @PreAuthorize("hasAnyAuthority('manager', 'staff')")
+    public ResponseEntity<List<StaffAssignmentDto>> findFreeStaff(Authentication authentication) {
+        User currentUser = userService.getUserByEmail(authentication.getName());
+        Integer centerId = currentUser.getServiceCenter().getId();
+        List<User> freeTechnicians = staffAppointmentService.getFreeTechnician(centerId, "in_progress");
+        List<StaffAssignmentDto> dtos = staffAssignmentMapper.toDtoList(freeTechnicians);
+
+        return ResponseEntity.ok(dtos);
     }
-    //da xong , chi hien free cua thg manager vs center cua no
+
 
 }
