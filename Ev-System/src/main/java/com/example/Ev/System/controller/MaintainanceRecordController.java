@@ -70,17 +70,27 @@ public class MaintainanceRecordController {
         //chua test
     }
 
-    @GetMapping("/all/serviceCenter")
+    @GetMapping("/all/serviceCenter/{centerId}")
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
-    public ResponseEntity<List<MaintenanceRecord>> getAllMaintenanceRecordsByCenterId(Authentication authentication) {
-        String username = authentication.getName();
-        User user = userRepository.findByEmail(username).orElse(null);
-        List<ServiceAppointment> allAppointments = serviceAppointmentService.findAllByServiceCenter(user.getServiceCenter()); // you need to have this method
+    public ResponseEntity<List<MaintenanceRecord>> getAllMaintenanceRecordsByCenterId(@PathVariable Integer centerId) {
+        List<ServiceAppointment> allAppointments = serviceAppointmentService.findAllByServiceCenterId(centerId);
         List<MaintenanceRecord> records = maintenanceRecordService.getAll(allAppointments);
         return ResponseEntity.ok(records);
         //chua test
     }
+
+//    @GetMapping("/all/serviceCenter")
+//    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
+//    @Transactional
+//    public ResponseEntity<List<MaintenanceRecord>> getAllMaintenanceRecordsByCenterId(Authentication authentication) {
+//        String username = authentication.getName();
+//        User user = userRepository.findByEmail(username).orElse(null);
+//        List<ServiceAppointment> allAppointments = serviceAppointmentService.findAllByServiceCenter(user.getServiceCenter()); // you need to have this method
+//        List<MaintenanceRecord> records = maintenanceRecordService.getAll(allAppointments);
+//        return ResponseEntity.ok(records);
+//        //chua test
+//    }
 
 
 
