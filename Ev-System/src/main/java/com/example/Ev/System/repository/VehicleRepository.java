@@ -13,4 +13,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
     List<Vehicle> findVehicleByCustomerAndDeleted(User customer, boolean deleted);
 
     List<Vehicle> findVehicleByCustomer(User customer);
+
+    List<Vehicle> findAll();
 }

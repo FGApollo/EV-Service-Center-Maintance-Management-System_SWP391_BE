@@ -3,13 +3,16 @@ package com.example.Ev.System.dto;
 import lombok.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ChatMessage {
-    private String roomId;     // ví dụ: bookingId, orderId
-    private String senderId;   // id người gửi
-    private String senderRole; // CUSTOMER | STAFF
-    private String content;    // nội dung tin nhắn
-    private long timestamp;    // epoch millis
+    // ID phiên chat (UUID string do FE tạo mỗi lần mở chat)
+    private String sessionId;
+
+    // "CUSTOMER" hoặc "STAFF" (chỉ để hiển thị, không auth)
+    private String sender;
+
+    private String content;
+    private long timestamp;
 }

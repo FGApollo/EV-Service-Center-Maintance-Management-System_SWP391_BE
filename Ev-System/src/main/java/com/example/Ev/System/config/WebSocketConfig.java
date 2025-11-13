@@ -12,15 +12,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
-                .withSockJS(); // Quan trọng: bật SockJS nếu FE dùng SockJS
+                .withSockJS(); // dùng SockJS như sample FE
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // Client gửi vào /app/**
-        registry.setApplicationDestinationPrefixes("/app");
-        // Server broadcast ra /topic/**
-        registry.enableSimpleBroker("/topic");
-        // Nếu scale nhiều instance, cân nhắc dùng RabbitMQ (enableStompBrokerRelay)
+        registry.setApplicationDestinationPrefixes("/app"); // Client SEND -> /app/**
+        registry.enableSimpleBroker("/topic");              // Server broadcast -> /topic/**
     }
 }
