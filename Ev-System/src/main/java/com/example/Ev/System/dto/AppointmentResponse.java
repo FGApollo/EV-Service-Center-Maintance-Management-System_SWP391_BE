@@ -31,6 +31,7 @@ public class AppointmentResponse {
     private String techIds;
     private List<UserDto> users;
     private List<String> checkList;
+    private String description;
     private int total;
 
 

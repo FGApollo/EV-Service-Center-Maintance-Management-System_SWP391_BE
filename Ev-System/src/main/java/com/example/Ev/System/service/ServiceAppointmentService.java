@@ -229,6 +229,12 @@ public class ServiceAppointmentService {
                     .collect(Collectors.toList());
             response.setServiceNames(serviceNames);
 
+            String description = appointment.getServiceTypes().stream()
+                    .map(ServiceType::getDescription)
+                    .filter(desc -> desc != null && !desc.isBlank())
+                    .collect(Collectors.joining(", "));
+            response.setDescription(description);
+
             int total = appointment.getServiceTypes().stream()
                     .mapToInt(serviceType -> serviceType.getPrice().intValue())
                     .sum();

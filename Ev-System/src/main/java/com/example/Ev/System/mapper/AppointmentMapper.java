@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring",uses = {VehicleMapper.class})
+@Mapper(componentModel = "spring", uses = {VehicleMapper.class})
 public interface AppointmentMapper {
 
     // ENTITY → DTO
@@ -36,17 +36,6 @@ public interface AppointmentMapper {
     List<AppointmentDto> toDtoList(List<ServiceAppointment> appointments);
     List<ServiceAppointment> toEntityList(List<AppointmentDto> appointmentDtos);
 
-    // Helper method: map service types to their IDs
-    default Set<Integer> mapServiceTypeIds(ServiceAppointment serviceAppointment) {
-        if (serviceAppointment.getServiceTypes() == null) {
-            return null;
-        }
-        return serviceAppointment.getServiceTypes()
-                .stream()
-                .map(serviceType -> serviceType.getId())
-                .collect(Collectors.toSet());
-    }
-
     // ENTITY → RESPONSE DTO
     @Mapping(target = "appointmentId", source = "id")
     @Mapping(target = "customerName", source = "customer.fullName")
@@ -59,6 +48,7 @@ public interface AppointmentMapper {
     @Mapping(target = "status", source = "status")
     @Mapping(target = "note", source = "note")
     @Mapping(target = "serviceNames", expression = "java(mapServiceNames(serviceAppointment))")
+    @Mapping(target = "description", expression = "java(mapServiceDescriptions(serviceAppointment))")
     @Mapping(target = "url", ignore = true)
     @Mapping(target = "techIds", ignore = true)
     @Mapping(target = "users", ignore = true)
@@ -68,7 +58,18 @@ public interface AppointmentMapper {
 
     List<AppointmentResponse> toResponseList(List<ServiceAppointment> appointments);
 
-    // Helper: extract all service type names
+    // Helper: map service type IDs
+    default Set<Integer> mapServiceTypeIds(ServiceAppointment serviceAppointment) {
+        if (serviceAppointment.getServiceTypes() == null) {
+            return null;
+        }
+        return serviceAppointment.getServiceTypes()
+                .stream()
+                .map(serviceType -> serviceType.getId())
+                .collect(Collectors.toSet());
+    }
+
+    // Helper: extract service names
     default List<String> mapServiceNames(ServiceAppointment serviceAppointment) {
         if (serviceAppointment.getServiceTypes() == null) {
             return null;
@@ -77,5 +78,17 @@ public interface AppointmentMapper {
                 .stream()
                 .map(serviceType -> serviceType.getName())
                 .collect(Collectors.toList());
+    }
+
+    // ✅ New helper: extract service type descriptions (joined into one string)
+    default String mapServiceDescriptions(ServiceAppointment serviceAppointment) {
+        if (serviceAppointment.getServiceTypes() == null || serviceAppointment.getServiceTypes().isEmpty()) {
+            return null;
+        }
+        return serviceAppointment.getServiceTypes()
+                .stream()
+                .map(serviceType -> serviceType.getDescription())
+                .filter(desc -> desc != null && !desc.isBlank())
+                .collect(Collectors.joining(", "));
     }
 }
