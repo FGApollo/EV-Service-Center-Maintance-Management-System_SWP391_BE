@@ -34,6 +34,7 @@ public class RegisterUserDto {
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 5, max = 20, message = "Mật khẩu phải từ 5 đến 20 ký tự")
     private String password;
+    private int serviceCenterId;
 
     private String certificateLink;
 }

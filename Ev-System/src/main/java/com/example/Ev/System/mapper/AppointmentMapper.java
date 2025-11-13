@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses = {VehicleMapper.class})
 public interface AppointmentMapper {
 
     // ENTITY → DTO

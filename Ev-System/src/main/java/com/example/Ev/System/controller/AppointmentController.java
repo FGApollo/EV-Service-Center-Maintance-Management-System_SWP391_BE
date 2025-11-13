@@ -92,25 +92,9 @@ public class AppointmentController {
     @Transactional
     public ResponseEntity<AppointmentResponse> acceptAppointment(
             @PathVariable Integer id ,Authentication authentication) {
-        String email = authentication.getName();
-        User currentUser = userService.getUserByEmail(email);
-        Integer centerId = currentUser.getServiceCenter().getId();
-
-        ServiceAppointment appointment = serviceAppointmentService.findById(id);
-
-        if (appointment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        }
-        if (!appointment.getServiceCenter().getId().equals(centerId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
-        }
-
-
+        serviceAppointmentService.validateAndGetAppointmentForCenter(authentication,id);
         ServiceAppointment updatedAppointment = serviceAppointmentService.acceptAppointment(id);
         return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
-        //Da xong
-        //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
-        //da test dc
     }
 
 
@@ -120,24 +104,10 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponse> cancelAppointment(
             @PathVariable Integer id,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
     {
-
-        String email = authentication.getName();
-        User currentUser = userService.getUserByEmail(email);
-        Integer centerId = currentUser.getServiceCenter().getId();
-
-        ServiceAppointment appointment = serviceAppointmentService.findById(id);
-
-        if (appointment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        }
-        if (!appointment.getServiceCenter().getId().equals(centerId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
-        }
-
+        serviceAppointmentService.validateAndGetAppointmentForCenter(authentication,id);
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"cancelled");
         return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
-        //Da xong
-        //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
+
     }
 
     @PutMapping("/{id}/inProgress")
@@ -145,202 +115,47 @@ public class AppointmentController {
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id,
-            @RequestBody StaffAssignmentRequest request,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
-    {
-        String email = authentication.getName();
-        User currentUser = userService.getUserByEmail(email);
-        Integer centerId = currentUser.getServiceCenter().getId();
-
-        ServiceAppointment appointment = serviceAppointmentService.findById(id);
-
-        if (appointment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        }
-        if (!appointment.getServiceCenter().getId().equals(centerId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
-        }
-
-        ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"in_progress");
-        List<StaffAssignment> assignments = staffAppointmentService
-                .assignTechnicians(id, request.getStaffIds(), request.getNotes(),authentication);
-        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
-        AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
-        String sId = staffIdList.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
-        response.setTechIds(sId);
-
-        List<User> techUsers = userService.getAllById(staffIdList);
-        List<UserDto> techDto = userMapper.toDTOList(techUsers);
-        response.setUsers(techDto);
-
+            @RequestBody StaffAssignmentRequest request,
+            Authentication authentication) {
+        AppointmentResponse response =
+                serviceAppointmentService.markAppointmentInProgress(id, request, authentication);
         return ResponseEntity.ok(response);
-        //Da xong
-        //Todo : Thay vi tra ve full ServiceAppointment => Tra ve DTO
     }
+
 
     @PutMapping("/{id}/done")
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public ResponseEntity<AppointmentResponse> doneAppointment(
-            @PathVariable Integer id , @RequestBody MaintainanceRecordDto maintainanceRecordDto,
-            Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
-    {
-        String email = authentication.getName();
-        User currentUser = userService.getUserByEmail(email);
-        Integer centerId = currentUser.getServiceCenter().getId();
-
-        ServiceAppointment appointment = serviceAppointmentService.findById(id);
-
-        if (appointment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        }
-        if (!appointment.getServiceCenter().getId().equals(centerId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
-        }
-
-
-        ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"completed");//nho chuyen thanh done
-        boolean recordExists = maintenanceRecordService.findMaintainanceRecordByAppointmentId(id);
-        if(recordExists) {
-            maintenanceRecordService.updateMaintainanceRecord(updatedAppointment.getId(), maintainanceRecordDto, 1,authentication); // Phai them record moi dc done
-        //khong ma giao , da hoat dong duoc , chi hoat dong duoc 1 lan dau tien
-        }
-        else {
-            maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto,authentication);
-        }
-
-        maintenanceReminderCreationService.createReminderForAppointmentIfDone(id);
-
-        ServiceAppointment refreshed = serviceAppointmentService.getAppointmentWithAllDetails(id);
-
-        AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
-        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
-        String sId = staffIdList.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
-        response.setTechIds(sId);
-        workLogService.autoCreateWorkLog(id);
+            @PathVariable Integer id,
+            @RequestBody MaintainanceRecordDto maintainanceRecordDto,
+            Authentication authentication) {
+        AppointmentResponse response =
+                serviceAppointmentService.markAppointmentAsDone(id, maintainanceRecordDto, authentication);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/appointments/status/{status}")
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
-    @Transactional
-    public List<AppointmentResponse> getAppointmentsByStatus(
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<AppointmentResponse>> getAppointmentsByStatus(
             @PathVariable String status,
             Authentication authentication) {
-        String email = authentication.getName();
-        User currentUser = userService.getUserByEmail(email);
-        Integer centerId = currentUser.getServiceCenter().getId();
-
-        // Get all appointments by status + center
-        List<ServiceAppointment> appointments =
-                serviceAppointmentService.getStatusAppointments(status, centerId);
-
-        List<AppointmentResponse> responses = new ArrayList<>();
-
-        for (ServiceAppointment appointment : appointments) {
-            AppointmentResponse response = appointmentMapper.toResponse(appointment);
-
-            List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(appointment.getId());
-            if (staffIdList != null && !staffIdList.isEmpty()) {
-                String sId = staffIdList.stream()
-                        .map(String::valueOf)
-                        .collect(Collectors.joining(","));
-                response.setTechIds(sId);
-
-                List<User> techUsers = userService.getAllById(staffIdList);
-                List<UserDto> techDto = userMapper.toDTOList(techUsers);
-                response.setUsers(techDto);
-            } else {
-                response.setUsers(Collections.emptyList());
-                response.setTechIds("");
-            }
-
-            if (appointment.getServiceTypes() != null) {
-                List<String> serviceNames = appointment.getServiceTypes().stream()
-                        .map(ServiceType::getName)
-                        .collect(Collectors.toList());
-                response.setServiceNames(serviceNames);
-
-                int total = appointment.getServiceTypes().stream()
-                        .mapToInt(serviceType -> serviceType.getPrice().intValue())
-                        .sum();
-                response.setTotal(total);
-            }
-
-            MaintenanceRecord maintenanceRecord = maintenanceRecordService.getAllByAppointmentId(appointment.getId());
-            if (maintenanceRecord != null && maintenanceRecord.getChecklist() != null) {
-                List<String> checklist = List.of(maintenanceRecord.getChecklist().split("\\s*,\\s*"));
-                response.setCheckList(checklist);
-            }
-
-            responses.add(response);
-        }
-
-        return responses;
+        List<AppointmentResponse> responses =
+                serviceAppointmentService.getAppointmentsByStatusForCenter(status, authentication);
+        return ResponseEntity.ok(responses);
     }
 
 
     @GetMapping("/status/{id}")
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
-    @Transactional
-    public AppointmentResponse getAppointmentsByDone(
-            Authentication authentication,
-            @PathVariable Integer id
-            ) {
-        String email = authentication.getName();
-        User currentUser = userService.getUserByEmail(email);
-        Integer centerId = currentUser.getServiceCenter().getId();
+    @Transactional(readOnly = true)
+    public ResponseEntity<AppointmentResponse> getAppointmentById(
+            @PathVariable Integer id,
+            Authentication authentication) {
 
-        ServiceAppointment appointment = serviceAppointmentService.findById(id);
-
-        if (appointment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        }
-        if (!appointment.getServiceCenter().getId().equals(centerId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
-        }
-
-        List<Integer> staffIdList = staffAppointmentService.staffIdsByAppointmentId(id);
-        ServiceAppointment updatedAppointment = serviceAppointmentService.findById(id);
-        AppointmentResponse response = appointmentMapper.toResponse(updatedAppointment);
-        String sId = staffIdList.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
-        response.setTechIds(sId);
-
-        if (staffIdList != null && !staffIdList.isEmpty()) {
-            List<User> techUsers = userService.getAllById(staffIdList);
-            List<UserDto> techDto = userMapper.toDTOList(techUsers);
-            response.setUsers(techDto);
-        } else {
-            response.setUsers(Collections.emptyList());
-        }
-        if (updatedAppointment != null && updatedAppointment.getServiceTypes() != null) {
-            List<String> serviceNames = updatedAppointment.getServiceTypes().stream()
-                    .map(serviceType -> serviceType.getName())
-                    .collect(Collectors.toList());
-            response.setServiceNames(serviceNames);
-        }
-
-        int total = 0;
-        Set<ServiceType> serviceTypes = updatedAppointment.getServiceTypes();
-        for (ServiceType serviceType : serviceTypes) {
-            total += serviceType.getPrice().intValue();
-        }
-        response.setTotal(total);
-
-
-        MaintenanceRecord maintenanceRecord = maintenanceRecordService.getAllByAppointmentId(id);
-        if (maintenanceRecord != null && maintenanceRecord.getChecklist() != null) {
-            // Split comma-separated checklist into list (if stored like "Brake, Battery")
-            List<String> checklist = List.of(maintenanceRecord.getChecklist().split("\\s*,\\s*"));
-            response.setCheckList(checklist);
-        }
-        return response;
-        //moi
+        AppointmentResponse response = serviceAppointmentService.getAppointmentDetailsById(id, authentication);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/staff")
