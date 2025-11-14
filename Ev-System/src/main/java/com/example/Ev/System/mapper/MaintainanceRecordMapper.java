@@ -13,7 +13,8 @@ public interface MaintainanceRecordMapper {
     // 🔹 ENTITY → DTO
     @Mappings({
             @Mapping(source = "partUsages", target = "partsUsed"),
-            @Mapping(target = "staffIds", expression = "java(parseStaffIds(record.getTechnicianIds()))")
+            @Mapping(target = "staffIds", expression = "java(parseStaffIds(record.getTechnicianIds()))"),
+            @Mapping(source = "appointment.id", target = "appointmentId")
     })
     MaintainanceRecordDto toDTO(MaintenanceRecord record);
 
