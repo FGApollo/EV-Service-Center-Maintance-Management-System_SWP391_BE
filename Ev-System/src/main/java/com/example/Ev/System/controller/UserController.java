@@ -110,7 +110,7 @@ public class UserController {
     }
 
     @GetMapping("/all_customer")
-    @PreAuthorize("(hasAuthority('admin'))")
+    @PreAuthorize("(hasAnyAuthority('admin', 'manager'))")
     public ResponseEntity<List<UserDto>> getAllCustomer(){
         List<UserDto> customers = userService.getAllCustomer("customer");
         return ResponseEntity.ok(customers);
