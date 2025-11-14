@@ -21,4 +21,5 @@ public class MaintainanceRecordDto {
     private List<Integer> staffIds;
     private Instant startTime;
     private Instant endTime;
+    private Integer appointmentId;
 }
