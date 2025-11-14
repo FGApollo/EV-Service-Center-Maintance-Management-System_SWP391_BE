@@ -53,6 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/allTechnicians")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public ResponseEntity<List<StaffAssignmentDto>> getTechnician(Authentication authentication) {
         String email = authentication.getName();
@@ -60,8 +61,6 @@ public class UserController {
         int id = user.getServiceCenter().getId();
         List<StaffAssignmentDto> staffAssignmentList = staffAppointmentService.getStaffAsignment(authentication);
         return ResponseEntity.ok(staffAssignmentList);
-        //test xong
-        //lay user theo role va theo thang manager centerId
     }
 
 //    @PostMapping("/employees")
@@ -93,6 +92,7 @@ public class UserController {
 //    }
 
     @PostMapping(value = "/employees", consumes = {"multipart/form-data"})
+    @PreAuthorize("hasAnyAuthority('admin', 'manager')")
     public ResponseEntity<UserDto> createEmployee(
             @RequestPart("user") RegisterUserDto userDto,
             @RequestPart(value = "file", required = false) MultipartFile file,
@@ -104,6 +104,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('admin', 'manager')")
     public ResponseEntity<UserDto> deleteEmployee(@PathVariable("id") Integer id) {
         UserDto userDto = userService.deleteAccount(id);
         return ResponseEntity.ok(userDto);
