@@ -105,7 +105,7 @@ public class ServiceAppointmentService {
 
         boolean hasUncompleteAppointment = appointmentRepo.existsByVehicle_IdAndStatusNotIn(
                 vehicle.getId(),
-                List.of("complete", "canceled")
+                List.of("completed", "cancelled")
         );
 
         if (hasUncompleteAppointment) {
