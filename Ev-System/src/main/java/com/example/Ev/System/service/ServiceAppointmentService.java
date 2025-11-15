@@ -64,6 +64,10 @@ public class ServiceAppointmentService {
     public ServiceAppointment acceptAppointment(Integer appointmentId) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
         String oldStatus = appointment.getStatus();//new
+        boolean validStatus = checkStatusChange(oldStatus,"accepted");
+        if(!validStatus){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
+        }
         appointment.setStatus("accepted");
         appointment.setCreatedAt(Instant.now());
         Integer serviceCenterId = appointment.getServiceCenter().getId();
@@ -76,11 +80,41 @@ public class ServiceAppointmentService {
     public ServiceAppointment updateAppointment(Integer appointmentId,String status) {
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId).orElse(null);
         String oldStatus = appointment.getStatus(); //new
+        boolean validStatus = checkStatusChange(oldStatus,status);
+        if(!validStatus){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
+        }
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
-
         notificationProgressService.sendAppointmentStatusChanged(appointment.getCustomer(), appointment, oldStatus, status); //new
         return appointment;
+    }
+
+    public boolean checkStatusChange(String oldStatus, String newStatus) {
+        if (oldStatus == null || newStatus == null) return false;
+
+        oldStatus = oldStatus.toLowerCase();
+        newStatus = newStatus.toLowerCase();
+
+        if (oldStatus.equals("completed")) {
+            return false;
+        }
+
+        if (newStatus.equals("cancelled")) {
+            return true;
+        }
+        if (oldStatus.equals("pending") && newStatus.equals("accepted")) {
+            return true;
+        }
+
+        if (oldStatus.equals("accepted") && newStatus.equals("in_progress")) {
+            return true;
+        }
+
+        if (oldStatus.equals("in_progress") && newStatus.equals("completed")) {
+            return true;
+        }
+        return false;
     }
 
     @Transactional

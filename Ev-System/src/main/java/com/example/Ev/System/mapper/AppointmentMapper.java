@@ -58,7 +58,6 @@ public interface AppointmentMapper {
 
     List<AppointmentResponse> toResponseList(List<ServiceAppointment> appointments);
 
-    // Helper: map service type IDs
     default Set<Integer> mapServiceTypeIds(ServiceAppointment serviceAppointment) {
         if (serviceAppointment.getServiceTypes() == null) {
             return null;
@@ -69,7 +68,6 @@ public interface AppointmentMapper {
                 .collect(Collectors.toSet());
     }
 
-    // Helper: extract service names
     default List<String> mapServiceNames(ServiceAppointment serviceAppointment) {
         if (serviceAppointment.getServiceTypes() == null) {
             return null;
@@ -80,7 +78,6 @@ public interface AppointmentMapper {
                 .collect(Collectors.toList());
     }
 
-    // ✅ New helper: extract service type descriptions (joined into one string)
     default String mapServiceDescriptions(ServiceAppointment serviceAppointment) {
         if (serviceAppointment.getServiceTypes() == null || serviceAppointment.getServiceTypes().isEmpty()) {
             return null;
