@@ -106,7 +106,6 @@ public class MaintenanceRecordService {
                 partUsages.add(partUsage);
             }
         }
-
         record.setPartUsages(partUsages);
         maintenanceRecordRepository.save(record); // Cascade saves all part usages
     }
@@ -134,7 +133,7 @@ public class MaintenanceRecordService {
         }
 
         System.out.println("da chay toi day");
-        MaintenanceRecord existMaintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_Id(appointmentID)
+        MaintenanceRecord existMaintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointmentID)
                 .orElseThrow(() -> new RuntimeException("Maintenance record not found for appointment ID: " + appointmentID));
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord();
         maintenanceRecord.setAppointment(existMaintenanceRecord.getAppointment());
@@ -149,8 +148,24 @@ public class MaintenanceRecordService {
         );
 
         List<Integer> staffIds = maintainanceRecordDto.getStaffIds();
-        String technicianIds = staffIds.stream().map(String::valueOf).collect(Collectors.joining(","));
-        maintenanceRecord.setTechnicianIds(technicianIds);
+
+        Set<Integer> oldStaffSet = new HashSet<>();
+        if (existMaintenanceRecord.getTechnicianIds() != null && !existMaintenanceRecord.getTechnicianIds().isEmpty()) {
+            oldStaffSet = Arrays.stream(existMaintenanceRecord.getTechnicianIds().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toSet());
+        }
+        Set<Integer> newStaffSet = new HashSet<>(staffIds);
+
+        oldStaffSet.addAll(newStaffSet);
+
+        String mergedTechIds = oldStaffSet.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+
+        maintenanceRecord.setTechnicianIds(mergedTechIds);
 
         Set<PartUsage> oldPartUsages = existMaintenanceRecord.getPartUsages();
         List<PartUsageDto> updatedUsageDtos = maintainanceRecordDto.getPartsUsed();
@@ -186,7 +201,7 @@ public class MaintenanceRecordService {
 
             for (PartUsage partUsage : saved.getPartUsages()) {
                 if (partUsage.getPart() == null) {
-                    System.out.println("⚠️ partUsage part is null for usageId: " + partUsage.getPart().getId());
+                    System.out.println("⚠️ partUsage part is null for usageId: ");
                     continue;
                 }
                 partUsageService.usePathNoUsage(
