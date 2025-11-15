@@ -22,4 +22,5 @@ public interface ReportServiceI {
     Map<String, PaymentMethodStats> getRevenueByPaymentMethod();
     public List<PartStockReport> getPartStockReport();
     Map<Integer, CenterStats> getRevenueByCenter( Integer id);
+    Map<String, Double> getRevenueByServiceCurrentMonth();
 }

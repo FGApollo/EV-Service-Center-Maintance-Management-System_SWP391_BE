@@ -21,12 +21,12 @@ public class WorkLogController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('manager')")
     public ResponseEntity<List<Worklog> >createWorkLog(@RequestBody WorkLogDto dto) {
         List<Worklog> saved = workLogService.createWorkLog(dto);
         return ResponseEntity.ok(saved);
         //Da xong
         //TODO : WorkLog se dc auto luu khi xong 1 appointment , hoi may thg kia hd nhu the nao
-
     }
 
 //    @PostMapping("/{id}")
