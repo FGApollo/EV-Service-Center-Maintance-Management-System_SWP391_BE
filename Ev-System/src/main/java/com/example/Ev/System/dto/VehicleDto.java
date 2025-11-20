@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 @Data
 public class VehicleDto {
     private Integer id;
+
+    @NotBlank(message = "Vin không được để trống")
+    @Size(max = 50, message = "Vin tối đa 50 ký tự")
     private String vin;
 
     @NotBlank(message = "Model không được để trống")
