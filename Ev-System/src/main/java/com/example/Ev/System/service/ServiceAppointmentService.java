@@ -371,6 +371,11 @@ public class ServiceAppointmentService {
             appointmentAllFieldsDtos.add(dto);
         }
 
+
+        // sort giam dan theo cai create at
+        appointmentAllFieldsDtos.sort(Comparator.comparing(AppointmentAllFieldsDto::getCreateAt).reversed());
+
+
         return appointmentAllFieldsDtos;
     }
 
