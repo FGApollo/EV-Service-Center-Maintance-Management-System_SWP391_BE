@@ -42,7 +42,7 @@ public class MaintainanceRecordController {
             System.out.println("Da chay update");
         }
         else {
-            maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto,authentication);
+            maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto,authentication,0);
         }
         return ResponseEntity.ok(maintainanceRecordDto);
         //Da xong

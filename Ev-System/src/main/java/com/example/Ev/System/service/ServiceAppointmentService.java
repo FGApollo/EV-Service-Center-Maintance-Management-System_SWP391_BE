@@ -177,7 +177,7 @@ public class ServiceAppointmentService {
             maintenanceRecordService.updateMaintainanceRecord(
                     updatedAppointment.getId(), maintainanceRecordDto, 1, authentication);
         } else {
-            maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto, authentication);
+            maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto, authentication,1);
         }
         maintenanceReminderCreationService.createReminderForAppointmentIfDone(id);
 
@@ -191,9 +191,11 @@ public class ServiceAppointmentService {
         response.setTechIds(sId);
 
         workLogService.autoCreateWorkLog(id);
-
+        maintenanceRecordService.flush();
         return response;
     }
+
+
 
     @Transactional
     public AppointmentResponse markAppointmentInProgress(
