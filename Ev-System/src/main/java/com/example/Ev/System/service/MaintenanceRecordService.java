@@ -85,7 +85,6 @@ public class MaintenanceRecordService {
         record.setChecklist(maintainanceRecordDto.getChecklist());
         record.setRemarks(maintainanceRecordDto.getRemarks());
         record.setStartTime(appointment.getAppointmentDate());
-        record.setEndTime(Instant.now());
 
         String technicianIds = staffIds.stream().map(String::valueOf)
                 .collect(Collectors.joining(","));
