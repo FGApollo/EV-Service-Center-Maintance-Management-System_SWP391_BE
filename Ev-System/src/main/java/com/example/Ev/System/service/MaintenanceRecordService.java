@@ -106,6 +106,18 @@ public class MaintenanceRecordService {
             }
         }
         record.setPartUsages(partUsages);
+        for (PartUsageDto partUsageDto : maintainanceRecordDto.getPartsUsed()) {
+            PartUsage partUsage = partUsageMapper.toEntity(partUsageDto);
+            if (partUsage.getPart() == null) {
+                System.out.println("⚠️ partUsage part is null for usageId: ");
+                continue;
+            }
+            partUsageService.usePathNoUsage(
+                    partUsage.getPart().getId().intValue(),
+                    partUsage.getQuantityUsed(),
+                    appointment.getServiceCenter().getId()
+            );
+        }
         maintenanceRecordRepository.save(record); // Cascade saves all part usages
     }
 
@@ -189,28 +201,23 @@ public class MaintenanceRecordService {
                 newPartUsages.add(newUsage);
             }
         }
-        if(status == 1){
-            maintenanceRecord.setEndTime(Instant.now());
-        }
         maintenanceRecord.setPartUsages(newPartUsages);
         MaintenanceRecord saved = maintenanceRecordRepository.saveAndFlush(maintenanceRecord);
+        for (PartUsageDto partUsageDto : maintainanceRecordDto.getPartsUsed()) {
+            PartUsage partUsage = partUsageMapper.toEntity(partUsageDto);
+            if (partUsage.getPart() == null) {
+                System.out.println("⚠️ partUsage part is null for usageId: ");
+                continue;
+            }
+            partUsageService.usePathNoUsage(
+                    partUsage.getPart().getId().intValue(),
+                    partUsage.getQuantityUsed(),
+                    saved.getAppointment().getServiceCenter().getId()
+            );
+        }
         if (status == 1) {
             saved.setEndTime(Instant.now());
-            maintenanceRecordRepository.save(saved);
-
-            for (PartUsage partUsage : saved.getPartUsages()) {
-                if (partUsage.getPart() == null) {
-                    System.out.println("⚠️ partUsage part is null for usageId: ");
-                    continue;
-                }
-                partUsageService.usePathNoUsage(
-                        partUsage.getPart().getId().intValue(),
-                        partUsage.getQuantityUsed(),
-                        saved.getAppointment().getServiceCenter().getId()
-                );
-            }
         }
-
     }
 
     public void getPartUsageByAppointmentId(ServiceAppointment appointment) {
