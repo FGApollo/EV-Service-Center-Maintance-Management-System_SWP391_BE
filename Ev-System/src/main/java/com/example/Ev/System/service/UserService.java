@@ -116,7 +116,6 @@ public class UserService {
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
-
         String uploadedUrl = null;
         if (file != null && !file.isEmpty()) {
             uploadedUrl = uploadService.uploadFile(file, "employee_certificates");

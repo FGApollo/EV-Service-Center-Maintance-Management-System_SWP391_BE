@@ -128,6 +128,7 @@ public class ServiceAppointmentService {
         List<ServiceAppointment> appointments = appointmentRepository.findAllByStaffAssignments_staff_id(staffId);
         return appointments;
     }
+
     @Transactional
     public ServiceAppointment findById(Integer appointmentId) {
         return appointmentRepository.findById(appointmentId).orElse(null);

@@ -85,7 +85,7 @@ public class MaintenanceRecordService {
         record.setChecklist(maintainanceRecordDto.getChecklist());
         record.setRemarks(maintainanceRecordDto.getRemarks());
         record.setStartTime(appointment.getAppointmentDate());
-        record.setEndTime(Instant.now());
+//        record.setEndTime(Instant.now());
 
         String technicianIds = staffIds.stream().map(String::valueOf)
                 .collect(Collectors.joining(","));
@@ -189,9 +189,6 @@ public class MaintenanceRecordService {
                 newUsage.setRecord(maintenanceRecord);
                 newPartUsages.add(newUsage);
             }
-        }
-        if(status == 1){
-            maintenanceRecord.setEndTime(Instant.now());
         }
         maintenanceRecord.setPartUsages(newPartUsages);
         MaintenanceRecord saved = maintenanceRecordRepository.saveAndFlush(maintenanceRecord);
