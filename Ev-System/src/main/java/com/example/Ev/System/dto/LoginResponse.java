@@ -13,4 +13,5 @@ public class LoginResponse {
     private String fullName;
     private Integer id;
     private Integer centerId;
+    private String phone;
 }
