@@ -36,5 +36,39 @@ public class ServiceTypeService {
         return result;
     }
 
+    public ServiceTypeDto create(ServiceTypeDto dto) {
+        ServiceType entity = new ServiceType();
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setDurationEst(dto.getDurationEst());
+
+        ServiceType saved = serviceTypeRepository.save(entity);
+        dto.setId(saved.getId());
+        return dto;
+    }
+
+    public ServiceTypeDto update(Integer id, ServiceTypeDto dto) {
+        ServiceType entity = serviceTypeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ServiceType not found with id " + id));
+
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setDurationEst(dto.getDurationEst());
+
+        ServiceType updated = serviceTypeRepository.save(entity);
+        dto.setId(updated.getId());
+        return dto;
+    }
+
+
+    public void delete(Integer id) {
+        if (!serviceTypeRepository.existsById(id)) {
+            throw new RuntimeException("ServiceType not found with id " + id);
+        }
+        serviceTypeRepository.deleteById(id);
+    }
+
 
 }
