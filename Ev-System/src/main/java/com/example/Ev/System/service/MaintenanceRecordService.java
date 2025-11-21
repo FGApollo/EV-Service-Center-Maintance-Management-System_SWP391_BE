@@ -43,7 +43,7 @@ public class MaintenanceRecordService {
     }
 
     @Transactional
-    public void recordMaintenance(Integer appointmentId, MaintainanceRecordDto maintainanceRecordDto, Authentication authentication) {
+    public void recordMaintenance(Integer appointmentId, MaintainanceRecordDto maintainanceRecordDto, Authentication authentication,int status) {
         String email = authentication.getName();
         User currentUser = userRepository.findByEmail(email).orElse(null);
         Integer centerId = currentUser.getServiceCenter().getId();
@@ -107,7 +107,7 @@ public class MaintenanceRecordService {
         }
         record.setPartUsages(partUsages);
         for (PartUsageDto partUsageDto : maintainanceRecordDto.getPartsUsed()) {
-            PartUsage partUsage = partUsageMapper.toEntity(partUsageDto);
+            PartUsage partUsage = mapDtoToEntityWithPart(partUsageDto);
             if (partUsage.getPart() == null) {
                 System.out.println("⚠️ partUsage part is null for usageId: ");
                 continue;
@@ -118,6 +118,10 @@ public class MaintenanceRecordService {
                     appointment.getServiceCenter().getId()
             );
         }
+        if(status == 1){
+            record.setEndTime(Instant.now());
+            maintenanceRecordRepository.save(record);
+        }
         maintenanceRecordRepository.save(record); // Cascade saves all part usages
     }
 
@@ -127,6 +131,8 @@ public class MaintenanceRecordService {
         String email = authentication.getName();
         User currentUser = userRepository.findByEmail(email).orElse(null);
         Integer centerId = currentUser.getServiceCenter().getId();
+
+
 
         ServiceAppointment appointmentCheck = appointmentRepository.findById(appointmentID).orElse(null);
 
@@ -178,46 +184,41 @@ public class MaintenanceRecordService {
 
         maintenanceRecord.setTechnicianIds(mergedTechIds);
 
-        Set<PartUsage> oldPartUsages = existMaintenanceRecord.getPartUsages();
-        List<PartUsageDto> updatedUsageDtos = maintainanceRecordDto.getPartsUsed();
-        System.out.println(updatedUsageDtos.size());
+        Map<Integer, Integer> oldPartQuantities = new HashMap<>();
+        if (existMaintenanceRecord != null) {
+            for (PartUsage pu : existMaintenanceRecord.getPartUsages()) {
+                oldPartQuantities.put(pu.getPart().getId(), pu.getQuantityUsed());
+            }
+        }
+
         Set<PartUsage> newPartUsages = new LinkedHashSet<>();
         if (maintainanceRecordDto.getPartsUsed() != null) {
-            for (PartUsageDto partUsageDto : maintainanceRecordDto.getPartsUsed()) {
-                Part part = partRepository.findById(partUsageDto.getPartId())
-                        .orElseThrow(() -> new RuntimeException("Part not found: " + partUsageDto.getPartId()));
-                PartUsage newUsage = new PartUsage();
-                newUsage.setPart(part);
-                PartUsage temp = oldPartUsages.stream().
-                        filter(pu -> pu.getPart().getId().equals(partUsageDto.getPartId().longValue())).findFirst().orElse(null);
-                if(temp != null){
-                    newUsage.setQuantityUsed(partUsageDto.getQuantityUsed() + temp.getQuantityUsed());
-                }
-                else {
-                    newUsage.setQuantityUsed(partUsageDto.getQuantityUsed());
-                }
-                newUsage.setUnitCost(partUsageDto.getUnitCost());
-                newUsage.setRecord(maintenanceRecord);
-                newPartUsages.add(newUsage);
+            for (PartUsageDto dto : maintainanceRecordDto.getPartsUsed()) {
+                Part part = partRepository.findById(dto.getPartId())
+                        .orElseThrow(() -> new RuntimeException("Part not found: " + dto.getPartId()));
+
+                PartUsage pu = new PartUsage();
+                pu.setPart(part);
+                pu.setRecord(maintenanceRecord); // link to new MaintenanceRecord
+                pu.setUnitCost(dto.getUnitCost());
+
+                // Sum with old quantity if exists
+                int oldQty = oldPartQuantities.getOrDefault(part.getId(), 0);
+                pu.setQuantityUsed(oldQty + dto.getQuantityUsed());
+
+                newPartUsages.add(pu);
             }
         }
+
         maintenanceRecord.setPartUsages(newPartUsages);
+        if(status == 1){
+            maintenanceRecord.setEndTime(Instant.now());
+        }
         MaintenanceRecord saved = maintenanceRecordRepository.saveAndFlush(maintenanceRecord);
-        for (PartUsageDto partUsageDto : maintainanceRecordDto.getPartsUsed()) {
-            PartUsage partUsage = partUsageMapper.toEntity(partUsageDto);
-            if (partUsage.getPart() == null) {
-                System.out.println("⚠️ partUsage part is null for usageId: ");
-                continue;
-            }
-            partUsageService.usePathNoUsage(
-                    partUsage.getPart().getId().intValue(),
-                    partUsage.getQuantityUsed(),
-                    saved.getAppointment().getServiceCenter().getId()
-            );
+        for (PartUsageDto dtoUsage : maintainanceRecordDto.getPartsUsed()) {
+            partUsageService.usePathNoUsage( dtoUsage.getPartId(), dtoUsage.getQuantityUsed(), saved.getAppointment().getServiceCenter().getId() );
         }
-        if (status == 1) {
-            saved.setEndTime(Instant.now());
-        }
+
     }
 
     public void getPartUsageByAppointmentId(ServiceAppointment appointment) {
@@ -262,6 +263,23 @@ public class MaintenanceRecordService {
     public MaintenanceRecord getAllByAppointmentId(Integer appointmentId) {
         MaintenanceRecord maintenanceRecords = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointmentId).orElse(null);
         return maintenanceRecords;
+    }
+
+    @Transactional
+    public PartUsage mapDtoToEntityWithPart(PartUsageDto dto) {
+        PartUsage usage = partUsageMapper.toEntity(dto);
+
+        usage.setPart(
+                partRepository.findById(dto.getPartId())
+                        .orElseThrow(() -> new RuntimeException("Part not found: " + dto.getPartId()))
+        );
+
+        return usage;
+    }
+
+    @Transactional
+    public void flush() {
+        maintenanceRecordRepository.flush();
     }
 
 

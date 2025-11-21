@@ -46,12 +46,30 @@ public class WorkLogService {
         List<Worklog> workLogs = new ArrayList<>();
         ServiceAppointment appointment = appointmentRepository.findById(dto.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointment.getId()).orElseThrow(() -> new RuntimeException("Maintenance record not found"));
+        if (maintenanceRecord.getStartTime() == null || maintenanceRecord.getEndTime() == null) {
+            throw new RuntimeException("Start or End time is missing in MaintenanceRecord");
+        }
+        Duration duration = Duration.between(maintenanceRecord.getStartTime(), maintenanceRecord.getEndTime());
+        BigDecimal minutes = BigDecimal.valueOf(duration.toMinutes());
+
+        BigDecimal hours = minutes.divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
+        if (hours.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Working hours must be greater than 0");
+        }
+        BigDecimal hourPerDay = hours.divide(BigDecimal.valueOf(3), 2, RoundingMode.HALF_UP);
+
         for(Integer staffId : dto.getStaffId()) {
             User staff = userRepository.findById(staffId)
                     .orElseThrow(() -> new RuntimeException("Staff not found"));
             Worklog workLog = new Worklog();
             workLog.setStaff(staff);
             workLog.setAppointment(appointment);
+            if (hourPerDay.compareTo(BigDecimal.valueOf(999)) > 0) {
+                workLog.setHoursSpent(BigDecimal.valueOf(999.99));
+            } else {
+                workLog.setHoursSpent(hourPerDay);
+            }
             workLog.setHoursSpent(dto.getHoursSpent());
             workLog.setTasksDone(dto.getTasksDone());
             workLog.setCreatedAt(Instant.now());
@@ -69,6 +87,7 @@ public class WorkLogService {
         List<User> techs = staffAssignmentRepository.findStaffByAppointmentId(appointmentId);
         System.out.println(techs.size());
         MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointmentId).orElseThrow(() -> new RuntimeException("Maintenance record not found"));
+        System.out.println(maintenanceRecord.getEndTime());
         for(User tech : techs) {
             Worklog workLog = new Worklog();
             workLog.setStaff(tech);
