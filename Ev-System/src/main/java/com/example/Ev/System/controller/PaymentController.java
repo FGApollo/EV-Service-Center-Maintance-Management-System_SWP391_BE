@@ -36,7 +36,9 @@ public class PaymentController {
         String redirectUrl;
 
         if ("00".equals(allParams.get("vnp_ResponseCode"))) {
-            redirectUrl = "http://localhost:5173/payment-return?status=success&amount="
+//            redirectUrl = "http://localhost:5173/payment-return?status=success&amount="
+//                    + paymentResponse.getAmount();
+            redirectUrl = "https://ev-vercel.vercel.app/payment-return?status=success&amount="
                     + paymentResponse.getAmount();
         } else {
             redirectUrl = "http://localhost:5173/payment-return?status=failed";
