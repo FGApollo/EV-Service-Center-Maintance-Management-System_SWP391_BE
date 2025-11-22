@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/technician/**").hasAuthority("technician")
                         .requestMatchers("/api/customer/**").hasAuthority("customer")
                         .requestMatchers("/api/management/**").hasAnyAuthority("admin", "manager")
-                        .requestMatchers("/api/management2/**").hasAnyAuthority("admin", "manager", "technician")
+
                         // Còn lại
                         .anyRequest().authenticated()
                 )

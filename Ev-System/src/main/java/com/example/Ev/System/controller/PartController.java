@@ -4,6 +4,7 @@ import com.example.Ev.System.entity.Part;
 import com.example.Ev.System.service.PartServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,30 +16,37 @@ public class PartController {
     private PartServiceI partService;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('manager', 'technician')")
     public ResponseEntity<List<Part>> getAllParts() {
         List<Part> parts = partService.getAll();
         return ResponseEntity.ok(parts);
     }
 
+
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('manager')")
     public ResponseEntity<Part> getPartById(@PathVariable Integer id) {
         Part part = partService.getById(id);
         return ResponseEntity.ok(part);
     }
 
+
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('manager')")
     public ResponseEntity<Part> createPart(@RequestBody Part part) {
         Part createdPart = partService.createPart(part);
         return ResponseEntity.ok(createdPart);
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('manager')")
     public ResponseEntity<Part> updatePart(@PathVariable Integer id, @RequestBody Part part) {
         Part updatedPart = partService.updatePart(id, part);
         return ResponseEntity.ok(updatedPart);
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('manager')")
     public ResponseEntity<Void> deletePart(@PathVariable Integer id) {
         partService.deletePart(id);
         return ResponseEntity.noContent().build();
