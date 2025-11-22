@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -21,7 +20,7 @@ public class Invoice {
     @Column(name = "invoice_id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
@@ -33,6 +32,12 @@ public class Invoice {
 
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
+
+    @Column(name = "service_name", length = 100)
+    private String serviceName;
+
+//    @Column(name = "unit_price_service", precision = 10, scale = 2)
+//    private BigDecimal unitPriceService;
 
     @ColumnDefault("now()")
     @Column(name = "created_at")
