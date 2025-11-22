@@ -9,7 +9,7 @@ import java.util.List;
 public interface PartServiceI {
     public List<Part> getAll();
     public Part getById(Integer id);
-    public Part createPart(Part part);
+    public Part createPart(Integer centerId, Part part);
     public Part updatePart(Integer id, Part part);
     public void deletePart(Integer id);
 }

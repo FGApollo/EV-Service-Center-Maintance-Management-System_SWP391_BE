@@ -1,17 +1,25 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.entity.Inventory;
 import com.example.Ev.System.entity.Part;
+import com.example.Ev.System.repository.InventoryRepository;
 import com.example.Ev.System.repository.PartRepository;
+import com.example.Ev.System.repository.ServiceCenterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class PartService implements PartServiceI{
     @Autowired
     private PartRepository partRepository;
+    @Autowired
+    private InventoryRepository inventoryRepository;
+    @Autowired
+    private ServiceCenterRepository serviceCenterRepository;
 
     @Override
     public List<Part> getAll() {
@@ -24,9 +32,18 @@ public class PartService implements PartServiceI{
     }
 
     @Override
-    public Part createPart(Part part) {
+    public Part createPart(Integer centerId, Part part) {
         part.setCreatedAt(Instant.now());
-        return partRepository.save(part);
+
+        Part savedPart = partRepository.save(part);
+
+        Inventory inventory = new Inventory();
+        inventory.setPart(part);
+        inventory.setCenter(serviceCenterRepository.findById(centerId).get());
+        inventory.setQuantity(part.getMinStockLevel());
+        inventory.setLastUpdated(LocalDateTime.now());
+        inventoryRepository.save(inventory);
+        return savedPart;
     }
 
     @Override
