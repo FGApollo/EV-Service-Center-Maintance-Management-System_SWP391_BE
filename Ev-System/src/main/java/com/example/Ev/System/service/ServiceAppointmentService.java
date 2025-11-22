@@ -71,7 +71,6 @@ public class ServiceAppointmentService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
         }
         appointment.setStatus("accepted");
-        appointment.setCreatedAt(Instant.now());
         Integer serviceCenterId = appointment.getServiceCenter().getId();
         appointmentRepository.save(appointment);
         notificationProgressService.sendAppointmentStatusChanged(appointment.getCustomer(), appointment, oldStatus, "accept"); //new
@@ -191,6 +190,10 @@ public class ServiceAppointmentService {
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
         response.setTechIds(sId);
+        boolean validStatus = checkStatusChange(updatedAppointment.getStatus(),"completed");
+        if(!validStatus){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
+        }
         updateAppointment(id, "completed");
         workLogService.autoCreateWorkLog(id);
         maintenanceRecordService.flush();
@@ -214,6 +217,10 @@ public class ServiceAppointmentService {
             throw new BadRequestException("Lịch hẹn này đã ở trạng thái đang thực hiện!");
         }
 
+        boolean validStatus = checkStatusChange(appointment.getStatus(),"in_progress");
+        if(!validStatus){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
+        }
         ServiceAppointment updatedAppointment = updateAppointment(id, "in_progress");
 
         String sId = staffIdList.stream()
