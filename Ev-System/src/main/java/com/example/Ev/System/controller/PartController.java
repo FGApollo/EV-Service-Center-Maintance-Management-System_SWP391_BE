@@ -4,27 +4,24 @@ import com.example.Ev.System.entity.Part;
 import com.example.Ev.System.service.PartServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/management/parts")
+@RequestMapping("/api/management2/parts")
 
 public class PartController {
     @Autowired
     private PartServiceI partService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('technician')")
     public ResponseEntity<List<Part>> getAllParts() {
         List<Part> parts = partService.getAll();
         return ResponseEntity.ok(parts);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('technician')")
     public ResponseEntity<Part> getPartById(@PathVariable Integer id) {
         Part part = partService.getById(id);
         return ResponseEntity.ok(part);
