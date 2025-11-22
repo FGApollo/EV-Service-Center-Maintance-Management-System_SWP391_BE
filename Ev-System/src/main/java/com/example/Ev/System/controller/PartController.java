@@ -4,12 +4,14 @@ import com.example.Ev.System.entity.Part;
 import com.example.Ev.System.service.PartServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/management/parts")
+@PreAuthorize("hasAnyAuthority('technician')")
 public class PartController {
     @Autowired
     private PartServiceI partService;
