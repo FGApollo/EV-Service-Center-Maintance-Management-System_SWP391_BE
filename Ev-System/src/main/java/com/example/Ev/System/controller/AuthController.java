@@ -32,7 +32,7 @@ public class AuthController {
         return ResponseEntity.ok(userDTO);
     }
 
-    @PutMapping("/auth/update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<UpdateUserResponse> updateUser(
             @PathVariable Integer id,
             @RequestBody @Valid UpdateUserRequest request) {

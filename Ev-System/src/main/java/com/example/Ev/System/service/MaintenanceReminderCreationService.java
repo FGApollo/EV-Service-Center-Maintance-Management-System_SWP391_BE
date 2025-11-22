@@ -44,7 +44,14 @@ public class MaintenanceReminderCreationService {
         MaintenanceReminder reminder = new MaintenanceReminder();
         reminder.setVehicle(record.getAppointment().getVehicle());
         reminder.setReminderDate(reminderAt);
-        reminder.setMessage("Nhắc bảo dưỡng định kỳ (sau 6 tháng kể từ lần bảo dưỡng gần nhất)");
+        reminder.setMessage(
+                "Kính gửi Quý khách,\n\n" +
+                        "EV Service Center thông báo nhắc bảo dưỡng định kỳ cho phương tiện của Quý khách.\n" +
+                        "Vui lòng đến đúng lịch hẹn để đảm bảo phương tiện luôn trong tình trạng tốt và an toàn.\n\n" +
+                        "Trân trọng,\n" +
+                        "EV Service Center"
+        );
+
         reminder.setIsSent(false);
         maintenanceReminderRepository.save(reminder);
     }
