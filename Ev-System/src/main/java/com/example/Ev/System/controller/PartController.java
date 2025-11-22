@@ -24,7 +24,7 @@ public class PartController {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('manager')")
+    @PreAuthorize("hasAnyAuthority('manager', 'admin')")
     public ResponseEntity<Part> getPartById(@PathVariable Integer id) {
         Part part = partService.getById(id);
         return ResponseEntity.ok(part);
@@ -32,21 +32,21 @@ public class PartController {
 
 
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('manager')")
+    @PreAuthorize("hasAnyAuthority('manager', 'admin')")
     public ResponseEntity<Part> createPart(@RequestBody Part part) {
         Part createdPart = partService.createPart(part);
         return ResponseEntity.ok(createdPart);
     }
 
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAuthority('manager')")
+    @PreAuthorize("hasAnyAuthority('manager', 'admin')")
     public ResponseEntity<Part> updatePart(@PathVariable Integer id, @RequestBody Part part) {
         Part updatedPart = partService.updatePart(id, part);
         return ResponseEntity.ok(updatedPart);
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAuthority('manager')")
+    @PreAuthorize("hasAnyAuthority('manager', 'admin')")
     public ResponseEntity<Void> deletePart(@PathVariable Integer id) {
         partService.deletePart(id);
         return ResponseEntity.noContent().build();
