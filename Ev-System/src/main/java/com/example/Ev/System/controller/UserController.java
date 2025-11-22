@@ -61,6 +61,7 @@ public class UserController {
         int id = user.getServiceCenter().getId();
         List<StaffAssignmentDto> staffAssignmentList = staffAppointmentService.getStaffAsignment(authentication);
         return ResponseEntity.ok(staffAssignmentList);
+
     }
 
 //    @PostMapping("/employees")

@@ -34,8 +34,9 @@ public class ServiceAppointmentService {
     private final MaintenanceReminderCreationService maintenanceReminderCreationService;
     private final WorkLogService workLogService;
     private final UserMapper userMapper;
+    private final AppointmentService appointmentService;
 
-    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository, UserService userService, MaintenanceReminderCreationService maintenanceReminderCreationService, WorkLogService workLogService, UserMapper userMapper) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository, UserService userService, MaintenanceReminderCreationService maintenanceReminderCreationService, WorkLogService workLogService, UserMapper userMapper, AppointmentService appointmentService) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -51,6 +52,7 @@ public class ServiceAppointmentService {
         this.maintenanceReminderCreationService = maintenanceReminderCreationService;
         this.workLogService = workLogService;
         this.userMapper = userMapper;
+        this.appointmentService = appointmentService;
     }
 
     @Transactional
@@ -171,7 +173,7 @@ public class ServiceAppointmentService {
     @Transactional
     public AppointmentResponse markAppointmentAsDone(Integer id,MaintainanceRecordDto maintainanceRecordDto,Authentication authentication) {
         validateAndGetAppointmentForCenter(authentication, id);
-        ServiceAppointment updatedAppointment = updateAppointment(id, "completed");
+        ServiceAppointment updatedAppointment = appointmentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
         boolean recordExists = maintenanceRecordService.findMaintainanceRecordByAppointmentId(id);
         if (recordExists) {
             maintenanceRecordService.updateMaintainanceRecord(
@@ -189,7 +191,7 @@ public class ServiceAppointmentService {
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
         response.setTechIds(sId);
-
+        updateAppointment(id, "completed");
         workLogService.autoCreateWorkLog(id);
         maintenanceRecordService.flush();
         return response;

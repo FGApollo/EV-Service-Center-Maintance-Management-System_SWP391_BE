@@ -49,9 +49,11 @@ public class MaintenanceRecordService {
         Integer centerId = currentUser.getServiceCenter().getId();
 
         ServiceAppointment appointmentCheck = appointmentRepository.findById(appointmentId).orElse(null);
-
         if (appointmentCheck == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
+        }
+        if(appointmentCheck.getStatus().equals("completed")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointment is done , cannot be updated");
         }
         if (!appointmentCheck.getServiceCenter().getId().equals(centerId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
@@ -132,10 +134,10 @@ public class MaintenanceRecordService {
         User currentUser = userRepository.findByEmail(email).orElse(null);
         Integer centerId = currentUser.getServiceCenter().getId();
 
-
-
         ServiceAppointment appointmentCheck = appointmentRepository.findById(appointmentID).orElse(null);
-
+        if(appointmentCheck.getStatus().equals("completed")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointment is done , cannot be updated");
+        }
         if (appointmentCheck == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
         }

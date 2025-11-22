@@ -32,7 +32,7 @@ public class MaintainanceRecordController {
     }
 
     @PostMapping("/{appointmentId}")
-    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
+    @PreAuthorize("hasAnyAuthority('technician')")
     public ResponseEntity<MaintainanceRecordDto> createMaintenanceRecord(
             @PathVariable("appointmentId") Integer appointmentId,
             @RequestBody MaintainanceRecordDto maintainanceRecordDto,
@@ -66,7 +66,7 @@ public class MaintainanceRecordController {
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional
     public ResponseEntity<List<MaintainanceRecordDto>> getAllMaintenanceRecords() {
-        List<ServiceAppointment> allAppointments = serviceAppointmentService.findAll(); // you need to have this method
+        List<ServiceAppointment> allAppointments = serviceAppointmentService.findAll();
         List<MaintenanceRecord> records = maintenanceRecordService.getAll(allAppointments);
         List<MaintainanceRecordDto> dtos = maintainanceRecordMapper.toDTOList(records);
         return ResponseEntity.ok(dtos);
