@@ -29,7 +29,7 @@ public class MaintenanceReminderCreationService {
                 .findFirstByAppointment_IdOrderByIdDesc(appointmentId)
                 .orElse(null);
         if (record == null || record.getEndTime() == null || record.getAppointment() == null || record.getAppointment().getVehicle() == null) {
-            return; // Khong đủ dữ liệu để tạo reminder
+            return; // Khong du du lieu de tao reminder
         }
 
         ZoneId zone = ZoneId.of("Asia/Ho_Chi_Minh");

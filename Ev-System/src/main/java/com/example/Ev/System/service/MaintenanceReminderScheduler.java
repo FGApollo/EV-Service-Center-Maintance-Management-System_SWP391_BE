@@ -26,7 +26,7 @@ public class MaintenanceReminderScheduler {
     }
 
 
-    // chạy hàng ngày lúc 09:00 Asia/Ho_Chi_Minh
+    // chạy hàng ngày lúc 09:00
     @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Ho_Chi_Minh")
     public void processDueReminders() {
         Instant now = LocalDateTime.now(ZONE).atZone(ZONE).toInstant();
