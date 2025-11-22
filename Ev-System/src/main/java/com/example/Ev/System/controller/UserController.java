@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/allTechnicians")
-    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     @Transactional
     public ResponseEntity<List<StaffAssignmentDto>> getTechnician(Authentication authentication) {
         String email = authentication.getName();
@@ -61,6 +61,7 @@ public class UserController {
         int id = user.getServiceCenter().getId();
         List<StaffAssignmentDto> staffAssignmentList = staffAppointmentService.getStaffAsignment(authentication);
         return ResponseEntity.ok(staffAssignmentList);
+
     }
 
 //    @PostMapping("/employees")

@@ -5,6 +5,7 @@ import com.example.Ev.System.dto.PartStockReport;
 import com.example.Ev.System.dto.PaymentMethodStats;
 import com.example.Ev.System.dto.RevenueResponse;
 import com.example.Ev.System.entity.User;
+import com.example.Ev.System.service.InvoiceServiceI;
 import com.example.Ev.System.service.PartUsageServiceI;
 import com.example.Ev.System.service.ReportServiceI;
 import com.example.Ev.System.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,8 @@ public class ReportController {
     private ReportServiceI reportService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private InvoiceServiceI invoiceService;
 
     @GetMapping("/trending-parts")
     public Object getTop5PartsUsedInLastMonth() {
@@ -97,6 +101,19 @@ public class ReportController {
     public ResponseEntity<Map<String, Double>> getRevenueByServiceCurrentMonth() {
         Map<String, Double> revenueByServiceCurrentMonth = reportService.getRevenueByServiceCurrentMonth();
         return ResponseEntity.ok(revenueByServiceCurrentMonth);
+    }
+
+    @GetMapping("/invoices")
+    public ResponseEntity<?> getPaidInvoices(Authentication authentication) {
+        String email = authentication.getName();
+        User currentUser = userService.getUserByEmail(email);
+        Integer centerId = currentUser.getServiceCenter().getId();
+        return ResponseEntity.ok(invoiceService.getInvoices(centerId));
+    }
+
+    @GetMapping("/invoices/{invoiceId}")
+    public ResponseEntity<?> getInvoiceDetail(@PathVariable Integer invoiceId) {
+        return ResponseEntity.ok(invoiceService.getInvoice(invoiceId));
     }
 
 }
