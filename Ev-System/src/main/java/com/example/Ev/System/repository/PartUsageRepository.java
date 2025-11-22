@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface PartUsageRepository extends JpaRepository<PartUsage, Integer> {
     List<PartUsage> findByRecord_StartTimeBetween(Instant startTime, Instant endTime);
+
+    List<PartUsage> findAllByRecord_Id(Integer recordId);
 }
