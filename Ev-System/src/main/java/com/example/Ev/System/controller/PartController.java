@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/management2/parts")
-
 public class PartController {
     @Autowired
     private PartServiceI partService;
