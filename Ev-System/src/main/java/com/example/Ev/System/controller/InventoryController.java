@@ -16,7 +16,7 @@ public class InventoryController {
     @Autowired
     private UserService userService;
 
-    @PutMapping("/inventory/{partId}")
+    @PutMapping("/{partId}")
     public ResponseEntity<String> updateQuantity(
             @PathVariable Integer partId,
             @RequestParam Integer quantity,
