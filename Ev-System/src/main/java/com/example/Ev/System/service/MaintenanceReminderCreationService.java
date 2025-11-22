@@ -29,7 +29,7 @@ public class MaintenanceReminderCreationService {
                 .findFirstByAppointment_IdOrderByIdDesc(appointmentId)
                 .orElse(null);
         if (record == null || record.getEndTime() == null || record.getAppointment() == null || record.getAppointment().getVehicle() == null) {
-            return; // Khong đủ dữ liệu để tạo reminder
+            return; // Khong du du lieu de tao reminder
         }
 
         ZoneId zone = ZoneId.of("Asia/Ho_Chi_Minh");
@@ -44,13 +44,8 @@ public class MaintenanceReminderCreationService {
         MaintenanceReminder reminder = new MaintenanceReminder();
         reminder.setVehicle(record.getAppointment().getVehicle());
         reminder.setReminderDate(reminderAt);
-        reminder.setMessage(
-                "Kính gửi Quý khách,\n\n" +
-                        "EV Service Center thông báo nhắc bảo dưỡng định kỳ cho phương tiện của Quý khách.\n" +
-                        "Vui lòng đến đúng lịch hẹn để đảm bảo phương tiện luôn trong tình trạng tốt và an toàn.\n\n" +
-                        "Trân trọng,\n" +
-                        "EV Service Center"
-        );
+        reminder.setMessage("Kính gửi Quý khách, xe của quý khách đã tới hạn bảo dưỡng. Vui lòng thực hiện bảo dưỡng sau 6 tháng kể từ lần bảo dưỡng gần nhất để đảm bảo hiệu suất và an toàn.");
+
 
         reminder.setIsSent(false);
         maintenanceReminderRepository.save(reminder);
