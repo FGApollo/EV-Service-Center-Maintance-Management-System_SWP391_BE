@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ServiceTypeRepository extends JpaRepository<ServiceType, Integer> {
-    public ServiceType findTopByOrderByDurationEst();
+
 }

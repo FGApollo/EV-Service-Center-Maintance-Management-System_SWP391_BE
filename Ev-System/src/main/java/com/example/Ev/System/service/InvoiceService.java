@@ -1,5 +1,7 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.InvoiceDetailDto;
+import com.example.Ev.System.dto.InvoiceSimpleDto;
 import com.example.Ev.System.entity.AppointmentService;
 import com.example.Ev.System.entity.Invoice;
 import com.example.Ev.System.entity.ServiceAppointment;
@@ -23,8 +25,7 @@ public class InvoiceService implements InvoiceServiceI {
     private InvoiceRepository invoiceRepository;
     @Autowired
     private AppointmentServiceRepository appointmentServiceRepository;
-    @Autowired
-    private ServiceTypeRepository serviceTypeRepository;
+
     @Autowired
     private ServiceAppointmentRepository serviceAppointmentRepository;
 
@@ -48,10 +49,17 @@ public class InvoiceService implements InvoiceServiceI {
         ServiceAppointment appointment = serviceAppointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
+//        BigDecimal currentServicePrice = service.stream()
+//                .map(s -> s.getServiceType().getPrice())
+//                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        String serviceName = service.get(0).getServiceType().getName();
+
         Invoice invoice = new Invoice();
         invoice.setAppointment(appointment);
         invoice.setTotalAmount(totalAmount);
         invoice.setStatus("unpaid");
+        invoice.setCreatedAt(LocalDateTime.now());
+        invoice.setServiceName(serviceName);
         return invoiceRepository.save(invoice);
     }
 
@@ -70,5 +78,40 @@ public class InvoiceService implements InvoiceServiceI {
                 .map(Invoice::getTotalAmount)
                 .mapToDouble(BigDecimal::doubleValue)
                 .sum();
+    }
+
+    @Override
+    public List<InvoiceSimpleDto> getInvoices(Integer centerId) {
+        return invoiceRepository.findInvoicesByStatusAndCenter("PAID", centerId).stream()
+                .map(invoice -> new InvoiceSimpleDto(
+                        invoice.getId(),
+                        invoice.getTotalAmount(),
+                        invoice.getServiceName(),
+                        invoice.getCreatedAt()
+
+                ))
+                .toList();
+    }
+
+    @Override
+    public InvoiceDetailDto getInvoice(Integer invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+        var customer = invoice.getAppointment().getCustomer();
+        var vehicle = invoice.getAppointment().getVehicle();
+        var center = invoice.getAppointment().getServiceCenter();
+        return new InvoiceDetailDto(
+                invoice.getId(),
+                customer.getFullName(),
+                customer.getPhone(),
+                customer.getEmail(),
+                vehicle.getVin(),
+                vehicle.getModel(),
+                center.getId(),
+                invoice.getTotalAmount(),
+                invoice.getServiceName(),
+                invoice.getCreatedAt(),
+                invoice.getPaymentDate()
+        );
     }
 }
