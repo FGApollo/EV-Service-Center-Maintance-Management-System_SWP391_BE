@@ -54,9 +54,7 @@ public class WorkLogService {
         BigDecimal minutes = BigDecimal.valueOf(duration.toMinutes());
 
         BigDecimal hours = minutes.divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
-        if (hours.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Working hours must be greater than 0");
-        }
+
         BigDecimal hourPerDay = hours.divide(BigDecimal.valueOf(3), 2, RoundingMode.HALF_UP);
 
         for(Integer staffId : dto.getStaffId()) {

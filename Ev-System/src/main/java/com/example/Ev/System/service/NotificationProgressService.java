@@ -92,7 +92,6 @@ public class NotificationProgressService {
                 + "- Phương tiện: " + vehicleModel + "\n"
                 + "- Ngày hẹn: " + (appointment.getAppointmentDate() != null ? appointment.getAppointmentDate() : "Chưa xác định") + "\n"
                 + "- Trạng thái: " + safe(oldStatus) + " → " + safe(newStatus) + "\n\n"
-                + "Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ bộ phận hỗ trợ.\n"
                 + "Trân trọng,\nEV Service Center";
     }
 
