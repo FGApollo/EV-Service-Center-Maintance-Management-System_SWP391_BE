@@ -290,6 +290,9 @@ public class ServiceAppointmentService {
             List<String> checklist = List.of(maintenanceRecord.getChecklist().split("\\s*,\\s*"));
             response.setCheckList(checklist);
         }
+
+        List<PartUsageDto> partUsageDtos = maintenanceRecordService.getPartUsageByAppointmentId(appointment);
+        response.setPartUsage(partUsageDtos);
         return response;
     }
 
@@ -305,8 +308,11 @@ public class ServiceAppointmentService {
         if (!appointment.getServiceCenter().getId().equals(centerId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
         }
+
         return buildFullAppointmentResponse(appointment);
     }
+
+
 
 
 

@@ -63,6 +63,9 @@ public class WorkLogService {
             Worklog workLog = new Worklog();
             workLog.setStaff(staff);
             workLog.setAppointment(appointment);
+            if (hours.compareTo(BigDecimal.ZERO) <= 0) {
+                workLog.setHoursSpent(BigDecimal.valueOf(1));
+            }
             if (hourPerDay.compareTo(BigDecimal.valueOf(999)) > 0) {
                 workLog.setHoursSpent(BigDecimal.valueOf(999.99));
             } else {

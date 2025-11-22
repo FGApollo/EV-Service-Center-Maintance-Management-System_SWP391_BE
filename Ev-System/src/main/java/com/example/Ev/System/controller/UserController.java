@@ -98,8 +98,6 @@ public class UserController {
             @RequestPart("user") RegisterUserDto userDto,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestParam String role) throws IOException {
-
-
         UserDto createdEmployee = userService.createEmployee(userDto,role,file);
         return ResponseEntity.ok(createdEmployee);
     }

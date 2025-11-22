@@ -3,10 +3,12 @@ package com.example.Ev.System.dto;
 import com.example.Ev.System.entity.MaintenanceRecord;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.entity.Vehicle;
+import com.example.Ev.System.mapper.PartUsageMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.mapstruct.Mapper;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Mapper(componentModel = "spring", uses = {PartUsageMapper.class})
 public class AppointmentResponse {
     private Integer appointmentId;
     private String phone;
@@ -33,6 +36,8 @@ public class AppointmentResponse {
     private List<String> checkList;
     private String description;
     private int total;
+
+    private List<PartUsageDto> partUsage;
 
 
 
