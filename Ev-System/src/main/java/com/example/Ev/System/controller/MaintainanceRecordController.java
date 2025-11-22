@@ -63,7 +63,7 @@ public class MaintainanceRecordController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
+    @PreAuthorize("hasAnyAuthority('manager')")
     @Transactional
     public ResponseEntity<List<MaintainanceRecordDto>> getAllMaintenanceRecords() {
         List<ServiceAppointment> allAppointments = serviceAppointmentService.findAll();
@@ -74,7 +74,7 @@ public class MaintainanceRecordController {
     }
 
     @GetMapping("/all/serviceCenter/{centerId}")
-    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
+    @PreAuthorize("hasAnyAuthority( 'manager')")
     @Transactional
     public ResponseEntity<List<MaintainanceRecordDto>> getAllMaintenanceRecordsByCenterId(@PathVariable Integer centerId) {
         List<ServiceAppointment> allAppointments = serviceAppointmentService.findAllByServiceCenterId(centerId);
