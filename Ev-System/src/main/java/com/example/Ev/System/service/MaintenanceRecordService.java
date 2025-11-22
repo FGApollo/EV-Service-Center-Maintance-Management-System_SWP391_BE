@@ -223,14 +223,23 @@ public class MaintenanceRecordService {
 
     }
 
-    public void getPartUsageByAppointmentId(ServiceAppointment appointment) {
+    public List<PartUsageDto> getPartUsageByAppointmentId(ServiceAppointment appointment) {
+        MaintenanceRecord maintenanceRecord =
+                maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointment.getId())
+                        .orElse(null);
 
-        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointment.getId()).orElse(null);
-        Set<PartUsage> partUsages = maintenanceRecord.getPartUsages();
-        for(PartUsage partUsage : partUsages){
-            partUsageService.usePathNoUsage(partUsage.getPart().getId().intValue(),partUsage.getQuantityUsed(),appointment.getServiceCenter().getId());
+        if (maintenanceRecord == null || maintenanceRecord.getPartUsages() == null) {
+            return List.of();
         }
+
+        List<PartUsageDto> dtoList = maintenanceRecord.getPartUsages()
+                .stream()
+                .map(partUsageMapper::toDto)
+                .toList();
+
+        return dtoList;
     }
+
 
     public List<MaintainanceRecordDto> getMaintainanceRecordByStaff_id(String staffId) {
         List<MaintenanceRecord> maintenanceRecord = maintenanceRecordRepository.findByTechnicianId(staffId).orElse(null);

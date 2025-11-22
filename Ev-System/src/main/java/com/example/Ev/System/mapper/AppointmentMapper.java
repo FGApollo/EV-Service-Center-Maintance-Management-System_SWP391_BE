@@ -88,4 +88,6 @@ public interface AppointmentMapper {
                 .filter(desc -> desc != null && !desc.isBlank())
                 .collect(Collectors.joining(", "));
     }
+
+
 }
