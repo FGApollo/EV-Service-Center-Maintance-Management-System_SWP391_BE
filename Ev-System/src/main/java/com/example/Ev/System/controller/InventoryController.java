@@ -29,4 +29,13 @@ public class InventoryController {
         inventoryService.addQuantityToInventory(centerId, partId, quantity);
         return ResponseEntity.ok("Quantity updated successfully");
     }
+
+    @GetMapping("/parts")
+    public ResponseEntity<?> getPartQuantities(Authentication authentication) {
+        String email = authentication.getName();
+        User currentUser = userService.getUserByEmail(email);
+        Integer centerId = currentUser.getServiceCenter().getId();
+
+        return ResponseEntity.ok(inventoryService.getPartQuantitiesByCenter(centerId));
+    }
 }
