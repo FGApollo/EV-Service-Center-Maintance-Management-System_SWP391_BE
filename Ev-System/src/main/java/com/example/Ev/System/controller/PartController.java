@@ -11,18 +11,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/management/parts")
-@PreAuthorize("hasAnyAuthority('technician')")
+
 public class PartController {
     @Autowired
     private PartServiceI partService;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('technician')")
     public ResponseEntity<List<Part>> getAllParts() {
         List<Part> parts = partService.getAll();
         return ResponseEntity.ok(parts);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('technician')")
     public ResponseEntity<Part> getPartById(@PathVariable Integer id) {
         Part part = partService.getById(id);
         return ResponseEntity.ok(part);
