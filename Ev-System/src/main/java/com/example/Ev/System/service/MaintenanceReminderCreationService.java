@@ -24,7 +24,7 @@ public class MaintenanceReminderCreationService {
 
     @Transactional
     public void createReminderForAppointmentIfDone(Integer appointmentId) {
-        // Lấy MaintenanceRecord mới nhất của appointment
+        // lay maintanancerecord moi nhat cua appointment
         MaintenanceRecord record = maintenanceRecordRepository
                 .findFirstByAppointment_IdOrderByIdDesc(appointmentId)
                 .orElse(null);
