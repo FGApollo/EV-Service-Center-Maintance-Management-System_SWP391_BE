@@ -17,14 +17,14 @@ public class PartController {
     private PartServiceI partService;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('technician')")
+    @PreAuthorize("hasAuthority('technician')")
     public ResponseEntity<List<Part>> getAllParts() {
         List<Part> parts = partService.getAll();
         return ResponseEntity.ok(parts);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('technician')")
+    @PreAuthorize("hasAuthority('technician')")
     public ResponseEntity<Part> getPartById(@PathVariable Integer id) {
         Part part = partService.getById(id);
         return ResponseEntity.ok(part);
