@@ -54,7 +54,7 @@ public class NotificationProgressService {
         }
     }
 
-    // MỚI: Email xác nhận đặt lịch thành công
+    // Email xác nhận đặt lịch thành công
     @Transactional
     public void sendAppointmentBooked(@NonNull User customer,
                                       @NonNull ServiceAppointment appointment, List<ServiceType> serviceTypeList) {
