@@ -83,40 +83,53 @@ public class WorkLogService {
     public List<WorkLogDto> autoCreateWorkLog(Integer appointmentId) {
         System.out.println("da chay o day");
         List<WorkLogDto> workLogDtos = new ArrayList<>();
+
         ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
         List<User> techs = staffAssignmentRepository.findStaffByAppointmentId(appointmentId);
-        System.out.println(techs.size());
-        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointmentId).orElseThrow(() -> new RuntimeException("Maintenance record not found"));
-        System.out.println(maintenanceRecord.getEndTime());
-        for(User tech : techs) {
+        System.out.println("Assigned techs count: " + techs.size());
+
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository
+                .findFirstByAppointment_IdOrderByIdDesc(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Maintenance record not found"));
+
+        if (maintenanceRecord.getStartTime() == null || maintenanceRecord.getEndTime() == null) {
+            throw new RuntimeException("Start or End time is missing in MaintenanceRecord");
+        }
+
+        Duration duration = Duration.between(maintenanceRecord.getStartTime(), maintenanceRecord.getEndTime());
+        long totalMinutes = Math.abs(duration.toMinutes());
+        BigDecimal totalHours = BigDecimal.valueOf(totalMinutes)
+                .divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
+
+        if (totalHours.compareTo(BigDecimal.ZERO) <= 0) {
+            totalHours = BigDecimal.ONE;
+        }
+
+        BigDecimal hourPerTech = totalHours.divide(BigDecimal.valueOf(3), 2, RoundingMode.HALF_UP);
+
+        if (hourPerTech.compareTo(BigDecimal.valueOf(999)) > 0) {
+            hourPerTech = BigDecimal.valueOf(999.99);
+        }
+
+        for (User tech : techs) {
             Worklog workLog = new Worklog();
             workLog.setStaff(tech);
             workLog.setAppointment(appointment);
-            if (maintenanceRecord.getStartTime() == null || maintenanceRecord.getEndTime() == null) {
-                throw new RuntimeException("Start or End time is missing in MaintenanceRecord");
-            }
-            Duration duration = Duration.between(maintenanceRecord.getStartTime(), maintenanceRecord.getEndTime());
-            BigDecimal minutes = BigDecimal.valueOf(duration.toMinutes());
-
-            BigDecimal hours = minutes.divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
-            if (hours.compareTo(BigDecimal.ZERO) <= 0) {
-                workLog.setHoursSpent(BigDecimal.valueOf(1));
-            }
-            BigDecimal hourPerDay = hours.divide(BigDecimal.valueOf(3), 2, RoundingMode.HALF_UP);
-            if (hourPerDay.compareTo(BigDecimal.valueOf(999)) > 0) {
-                workLog.setHoursSpent(BigDecimal.valueOf(999.99));
-            } else {
-                workLog.setHoursSpent(hourPerDay);
-            }
+            workLog.setHoursSpent(hourPerTech);
             workLog.setTasksDone(maintenanceRecord.getChecklist());
             workLog.setCreatedAt(Instant.now());
+
             workLogRepository.save(workLog);
+
             WorkLogDto workLogDto = workLogMapper.toDto(workLog);
             workLogDtos.add(workLogDto);
         }
+
         return workLogDtos;
     }
+
 
     public List<WorkLogDto> getAllWorkLogsByCenterId(Authentication authentication) {
         String email = authentication.getName();
