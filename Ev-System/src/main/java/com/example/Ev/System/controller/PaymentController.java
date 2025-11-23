@@ -28,34 +28,54 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.OK).body(paymentResponse);
     }
 
-    @GetMapping("/api/auth/payments/return")
-    public ResponseEntity<?> paymentReturn(@RequestParam Map<String,String> allParams) {
-
-        PaymentResponse paymentResponse = paymentService.handlePaymentCallback(allParams);
-
-        String redirectUrl;
-
-//        if ("00".equals(allParams.get("vnp_ResponseCode"))) {
-////            redirectUrl = "http://localhost:5173/payment-return?status=success&amount="
-////                    + paymentResponse.getAmount();
-//            redirectUrl = "https://ev-vercel.vercel.app/payment-return";
+//    @GetMapping("/api/auth/payments/return")
+//    public ResponseEntity<?> paymentReturn(@RequestParam Map<String,String> allParams) {
 //
+//        PaymentResponse paymentResponse = paymentService.handlePaymentCallback(allParams);
+//
+//        String redirectUrl;
+//
+////        if ("00".equals(allParams.get("vnp_ResponseCode"))) {
+//////            redirectUrl = "http://localhost:5173/payment-return?status=success&amount="
+//////                    + paymentResponse.getAmount();
+////            redirectUrl = "https://ev-vercel.vercel.app/payment-return";
+////
+////        } else {
+////            redirectUrl = "http://localhost:5173/payment-return?status=failed";
+////        }
+//        String responseCode = allParams.getOrDefault("vnp_ResponseCode",
+//                allParams.get("vnp_TxnResponseCode"));
+//
+//        if ("00".equals(responseCode)) {
+//            redirectUrl = "https://ev-vercel.vercel.app/payment-return?status=success";
 //        } else {
-//            redirectUrl = "http://localhost:5173/payment-return?status=failed";
+//            redirectUrl = "https://ev-vercel.vercel.app/payment-return?status=failed";
 //        }
-        String responseCode = allParams.getOrDefault("vnp_ResponseCode",
-                allParams.get("vnp_TxnResponseCode"));
+//
+//
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .header("Location", redirectUrl)
+//                .build();
+//    }
 
-        if ("00".equals(responseCode)) {
-            redirectUrl = "https://ev-vercel.vercel.app/payment-return?status=success";
-        } else {
-            redirectUrl = "https://ev-vercel.vercel.app/payment-return?status=failed";
+        @GetMapping("/api/auth/payments/return")
+        public ResponseEntity<?> paymentReturn(@RequestParam Map<String,String> allParams) {
+
+            PaymentResponse paymentResponse = paymentService.handlePaymentCallback(allParams);
+
+            String redirectUrl;
+
+            if ("00".equals(allParams.get("vnp_ResponseCode"))) {
+                redirectUrl = "http://localhost:5173/payment-return?status=success&amount="
+                        + paymentResponse.getAmount();
+            } else {
+                redirectUrl = "http://localhost:5173/payment-return?status=failed";
+            }
+
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", redirectUrl)
+                    .build();
         }
 
-
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", redirectUrl)
-                .build();
-    }
 
 }

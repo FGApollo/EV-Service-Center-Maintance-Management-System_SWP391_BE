@@ -111,7 +111,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/inProgress")
-    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager', 'technician')")
     @Transactional
     public ResponseEntity<AppointmentResponse> inProgressAppointment(
             @PathVariable Integer id,
