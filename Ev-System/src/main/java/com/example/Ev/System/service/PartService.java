@@ -7,6 +7,7 @@ import com.example.Ev.System.repository.PartRepository;
 import com.example.Ev.System.repository.ServiceCenterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -60,10 +61,12 @@ public class PartService implements PartServiceI{
     }
 
     @Override
+    @Transactional
     public void deletePart(Integer id) {
         if(!partRepository.existsById(id)) {
             throw new RuntimeException("Part not found with id " + id);
         }
+        inventoryRepository.deleteByPart(partRepository.findById(id).get());
         partRepository.deleteById(id);
     }
 }
