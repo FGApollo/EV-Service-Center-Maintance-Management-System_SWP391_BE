@@ -43,7 +43,7 @@ public class CenterService {
         serviceCenter.setName(dto.getName());
         serviceCenter.setEmail(dto.getEmail());
         serviceCenter.setPhone(dto.getPhone());
-
+        serviceCenter.setStatus("active");
         serviceCenterRepository.save(serviceCenter);
 
 //        CenterDTO centerDTO = new CenterDTO();
