@@ -187,4 +187,10 @@ public class InvoiceService implements InvoiceServiceI {
         return outputStream.toByteArray();
     }
 
+    @Override
+    public Invoice createPartInvoice(Integer appointmentId) {
+
+        return invoiceRepository.save(new Invoice());
+    }
+
 }

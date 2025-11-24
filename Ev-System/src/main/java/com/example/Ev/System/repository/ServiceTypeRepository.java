@@ -10,5 +10,5 @@ import java.util.List;
 
 @Service
 public interface ServiceTypeRepository extends JpaRepository<ServiceType, Integer> {
-    List<ServiceType> findByAppointmentId(Integer appointmentId);
+//    List<ServiceType> findByAppointmentId(Integer appointmentId);
 }

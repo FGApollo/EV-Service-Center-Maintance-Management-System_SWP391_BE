@@ -30,7 +30,7 @@ public class SuggestedPart {
     private Part part;
 
     @NotNull
-    @ColumnDefault("1")
+//    @ColumnDefault("1")
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
@@ -38,7 +38,7 @@ public class SuggestedPart {
     private String technicianNote;
 
     @Size(max = 20)
-    @ColumnDefault("'pending'")
+//    @ColumnDefault("'pending'")
     @Column(name = "status", length = 20)
     private String status;
 

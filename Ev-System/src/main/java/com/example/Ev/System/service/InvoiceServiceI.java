@@ -18,4 +18,5 @@ public interface InvoiceServiceI {
     InvoiceDetailDto getInvoice(Integer invoiceId);
     InvoiceDataDto getInvoiceData(Integer appointmentId);
     byte[] generateInvoicePdf(InvoiceDataDto invoiceDataDto);
+    Invoice createPartInvoice(Integer appointmentId);
 }
