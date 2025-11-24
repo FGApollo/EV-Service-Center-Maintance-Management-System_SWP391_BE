@@ -25,7 +25,7 @@ public class ServiceTypeDto {
     @DecimalMin(value = "0.0", inclusive = false, message = "Giá phải lớn hơn 0")
     private BigDecimal price;
 
-    @NotNull(message = "Thời gian ước tính không được để trống")
-    @Min(value = 1, message = "Thời gian ước tính phải lớn hơn 0")
+//    @NotNull(message = "Thời gian ước tính không được để trống")
+//    @Min(value = 1, message = "Thời gian ước tính phải lớn hơn 0")
     private Integer durationEst;
 }

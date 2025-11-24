@@ -6,7 +6,9 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -41,5 +43,8 @@ public class Part {
 
     @OneToMany(mappedBy = "part")
     private Set<PartUsage> partUsages = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "part")
+    private List<SuggestedPart> suggestedParts = new ArrayList<>();
 
 }

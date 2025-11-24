@@ -321,7 +321,7 @@ public class ServiceAppointmentService {
 
 //    @Transactional
 //    public List<AppointmentAllFieldsDto> getAllAppointment(){
-//        return appointmentRepository.findAll()
+//        return appointmentRepository.getAllSuggestedParts()
 //                .stream()
 //                .map(sa -> {
 //                    AppointmentAllFieldsDto dto = new AppointmentAllFieldsDto();

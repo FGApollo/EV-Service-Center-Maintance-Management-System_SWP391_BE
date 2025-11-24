@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -87,8 +88,10 @@ public class ReportService implements ReportServiceI {
     @Override
     @Transactional(readOnly = true)
     public List<Map.Entry<String, Long>> getTrendingServicesLastMonth() {
-        Instant oneMonthAgo = Instant.now().minus(30, ChronoUnit.DAYS);
-        List<ServiceAppointment> recentAppointments = serviceAppointmentRepository.findByCreatedAtAfter(oneMonthAgo);
+        LocalDate firstDayOfMonth = LocalDate.now().withDayOfMonth(1);
+        Instant startOfMonth = firstDayOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        List<ServiceAppointment> recentAppointments = serviceAppointmentRepository.findByCreatedAtAfter(startOfMonth);
 
         return calculateTrendingServices(recentAppointments);
     }

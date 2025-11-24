@@ -176,22 +176,6 @@ public class PartUsageService implements PartUsageServiceI{
     }
 
 
-
-//    @Override
-//    public Map<ServiceCenter, List<PartUsage>> top5UsedPartsPerCenter() {
-////        List<Inventory> inventories = inventoryRepository.findAll();
-////        Map<ServiceCenter, List<PartUsage>> topParts = new HashMap<>();
-////        for (Inventory inventory : inventories) {
-////            List<PartUsage> top5 = inventory.getCenter().getPartUsages().stream()
-////                    .filter(pu -> pu.getPart().equals(inventory.getPart()))
-////                    .sorted((pu1, pu2) -> Integer.compare(pu2.getQuantityUsed(), pu1.getQuantityUsed()))
-////                    .limit(5)
-////                    .toList();
-////            topParts.put(inventory.getCenter(), top5);
-////        }
-//        return Map.of();
-//}
-
     public void sendStockNotification(Part part, Inventory inventory) {
         // Implement notification logic (e.g., email, SMS)
         System.out.println("Notification: Stock for part " + part.getName() +

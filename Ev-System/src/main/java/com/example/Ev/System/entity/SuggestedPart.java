@@ -1,6 +1,7 @@
 package com.example.Ev.System.entity;
 
 import jakarta.persistence.*;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -14,21 +15,22 @@ import org.hibernate.annotations.ColumnDefault;
 public class SuggestedPart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "suggested_id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "appointment_id", nullable = false)
     private ServiceAppointment appointment;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "part_id", nullable = false)
     private Part part;
 
     @NotNull
-    @ColumnDefault("1")
+//    @ColumnDefault("1")
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
@@ -36,7 +38,7 @@ public class SuggestedPart {
     private String technicianNote;
 
     @Size(max = 20)
-    @ColumnDefault("'pending'")
+//    @ColumnDefault("'pending'")
     @Column(name = "status", length = 20)
     private String status;
 
