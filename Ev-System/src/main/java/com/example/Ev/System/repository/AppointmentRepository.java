@@ -1,13 +1,11 @@
 package com.example.Ev.System.repository;
 
 import com.example.Ev.System.entity.*;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +42,8 @@ public interface AppointmentRepository extends JpaRepository<ServiceAppointment,
     List<ServiceAppointment> findAllByServiceCenter_Id(Integer serviceCenterId);
 
     boolean existsByVehicle_IdAndStatusNotIn(Integer id, List<String> status);
+
+
 }
 
 

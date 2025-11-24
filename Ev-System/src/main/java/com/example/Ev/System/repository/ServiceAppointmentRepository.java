@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ServiceAppointmentRepository extends JpaRepository<ServiceAppointment, Integer> {
-    public ServiceAppointment findById(int id);
+public interface ServiceAppointmentRepository extends JpaRepository<ServiceAppointment, Integer> {    public ServiceAppointment findById(int id);
     List<ServiceAppointment> findByCreatedAtAfter(Instant startDate);
 
     @Query("select a from ServiceAppointment a left join fetch a.serviceTypes where a.id = :id")
