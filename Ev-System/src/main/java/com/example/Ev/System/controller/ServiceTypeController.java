@@ -1,6 +1,7 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.ServiceTypeDto;
+import com.example.Ev.System.dto.ServiceTypeUpdateDto;
 import com.example.Ev.System.service.ServiceTypeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +38,8 @@ public class ServiceTypeController {
 
     @PreAuthorize("hasAuthority('admin')")
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceTypeDto> updateServiceType(@PathVariable Integer id, @RequestBody @Valid ServiceTypeDto dto) {
-        ServiceTypeDto updated = serviceTypeService.update(id, dto);
+    public ResponseEntity<ServiceTypeUpdateDto> updateServiceType(@PathVariable Integer id, @RequestBody @Valid ServiceTypeUpdateDto dto) {
+        ServiceTypeUpdateDto updated = serviceTypeService.update(id, dto);
         return ResponseEntity.ok(updated);
     }
 

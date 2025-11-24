@@ -1,6 +1,7 @@
 package com.example.Ev.System.service;
 
 import com.example.Ev.System.dto.ServiceTypeDto;
+import com.example.Ev.System.dto.ServiceTypeUpdateDto;
 import com.example.Ev.System.entity.ServiceType;
 import com.example.Ev.System.repository.ServiceTypeRepository;
 import org.springframework.stereotype.Service;
@@ -48,17 +49,25 @@ public class ServiceTypeService {
         return dto;
     }
 
-    public ServiceTypeDto update(Integer id, ServiceTypeDto dto) {
+    public ServiceTypeUpdateDto update(Integer id, ServiceTypeUpdateDto dto) {
         ServiceType entity = serviceTypeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ServiceType not found with id " + id));
 
-        entity.setName(dto.getName());
-        entity.setDescription(dto.getDescription());
-        entity.setPrice(dto.getPrice());
-        entity.setDurationEst(dto.getDurationEst());
+        if (dto.getName() != null) {
+            entity.setName(dto.getName());
+        }
+        if (dto.getDescription() != null) {
+            entity.setDescription(dto.getDescription());
+        }
+        if (dto.getPrice() != null) {
+            entity.setPrice(dto.getPrice());
+        }
+        if (dto.getDurationEst() != null) {
+            entity.setDurationEst(dto.getDurationEst());
+        }
 
-        ServiceType updated = serviceTypeRepository.save(entity);
-        dto.setId(updated.getId());
+        serviceTypeRepository.save(entity);
+
         return dto;
     }
 
