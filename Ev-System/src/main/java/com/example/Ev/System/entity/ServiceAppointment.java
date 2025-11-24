@@ -6,7 +6,9 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -67,4 +69,6 @@ public class ServiceAppointment {
     @OneToMany(mappedBy = "appointment")
     private Set<Worklog> worklogs = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SuggestedPart> suggestedParts = new ArrayList<>();
 }
