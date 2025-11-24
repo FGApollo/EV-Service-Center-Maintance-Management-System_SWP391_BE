@@ -1,5 +1,6 @@
 package com.example.Ev.System.controller;
 
+import com.example.Ev.System.dto.InvoiceDataDto;
 import com.example.Ev.System.entity.Invoice;
 import com.example.Ev.System.service.InvoiceServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,4 +32,16 @@ public class InvoiceController {
         );
         return ResponseEntity.ok(revenue);
     }
+
+    @GetMapping("/invoice/{id}/download")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable Integer id) {
+        InvoiceDataDto data = invoiceServiceI.getInvoiceData(id);
+        byte[] pdf = invoiceServiceI.generateInvoicePdf(data);
+
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=invoice_" + id + ".pdf")
+                .body(pdf);
+    }
+
 }
