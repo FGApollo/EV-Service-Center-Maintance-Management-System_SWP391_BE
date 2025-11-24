@@ -1,34 +1,52 @@
 package com.example.Ev.System.service;
 
-import com.example.Ev.System.dto.SuggestedPartDto;
+import com.example.Ev.System.dto.SuggestPartDto;
+import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.entity.SuggestedPart;
+import com.example.Ev.System.entity.User;
+import com.example.Ev.System.exception.BadRequestException;
+import com.example.Ev.System.exception.NotFoundException;
+import com.example.Ev.System.repository.AppointmentRepository;
+import com.example.Ev.System.repository.ServiceAppointmentRepository;
 import com.example.Ev.System.repository.SuggestedPartRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.Ev.System.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class SuggestedPartService implements SuggestedPartServiceI {
-    @Autowired
-    private SuggestedPartRepository suggestedPartRepository;
+public class SuggestedPartService {
+    private final SuggestedPartRepository suggestedPartRepository;
+    private final UserRepository userRepository;
+    private final AppointmentRepository appointmentRepository;
 
-    @Override
-    public List<SuggestedPartDto> getAllSuggestedPartsByAppointmentId(Integer appointmentId) {
-        return suggestedPartRepository.findAllByAppointmentId(appointmentId).stream()
-                .map(suggestedPart -> new SuggestedPartDto(
-                        suggestedPart.getPart().getId(),
-                        suggestedPart.getPart().getName(),
-                        suggestedPart.getPart().getDescription(),
-                        suggestedPart.getPart().getUnitPrice(),
-                        suggestedPart.getQuantity(),
-                        suggestedPart.getPart().getUnitPrice()*suggestedPart.getQuantity()
-                ))
-                .toList();
+    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, UserRepository userRepository, AppointmentRepository appointmentRepository){
+        this.suggestedPartRepository = suggestedPartRepository;
+        this.userRepository = userRepository;
+
+        this.appointmentRepository = appointmentRepository;
     }
 
-    @Override
-    public SuggestedPart getSuggestedPartById(Integer id) {
-        return suggestedPartRepository.findById(id).get();
+    @Transactional
+    public List<SuggestPartDto> getAllSuggestPartForAppointment(Integer appointmentId){
+
+        List<SuggestedPart> suggestedPart = suggestedPartRepository.findAllByAppointment_Id(appointmentId);
+        List<SuggestPartDto> dtos = new ArrayList<>();
+
+        for(SuggestedPart x : suggestedPart){
+            SuggestPartDto dto = new SuggestPartDto();
+            dto.setPart_price(x.getPart().getUnitPrice());
+            dto.setQuantity(x.getQuantity());
+            dto.setTechnician_note(x.getTechnicianNote());
+            dto.setStatus(x.getStatus());
+            dto.setPart_name(x.getPart().getName());
+            dtos.add(dto);
+        }
+
+
+        return dtos;
     }
 }
