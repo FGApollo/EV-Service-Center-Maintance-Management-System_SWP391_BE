@@ -8,4 +8,5 @@ import java.util.List;
 public interface SuggestedPartRepository extends JpaRepository<SuggestedPart, Long> {
     List<SuggestedPart> findAllByAppointment_Id(Integer appointmentId);
 
+    SuggestedPart findById(Integer id);
 }

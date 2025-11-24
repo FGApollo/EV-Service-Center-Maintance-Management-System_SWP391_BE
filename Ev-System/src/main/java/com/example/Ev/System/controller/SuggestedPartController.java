@@ -7,10 +7,7 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,5 +29,21 @@ public class SuggestedPartController {
 
         return ResponseEntity.ok(suggestPartDtos);
     }
+
+
+    @PostMapping("/{id}/accept")
+    @PreAuthorize("hasAnyAuthority('customer', 'staff')")
+    public ResponseEntity<SuggestPartDto> acceptSuggestedPart(@PathVariable @Positive Integer id){
+        SuggestPartDto dto = suggestedPartService.acceptSuggestedPart(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/{id}/deny")
+    @PreAuthorize("hasAnyAuthority('customer', 'staff')")
+    public ResponseEntity<SuggestPartDto> denySuggestedPart(@PathVariable @Positive Integer id){
+        SuggestPartDto dto = suggestedPartService.denySuggestedPart(id);
+        return ResponseEntity.ok(dto);
+    }
+
 
 }
