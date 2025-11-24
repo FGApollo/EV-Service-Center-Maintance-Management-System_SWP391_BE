@@ -38,7 +38,7 @@ public class SuggestedPartService {
 
         for(SuggestedPart x : suggestedPart){
             SuggestPartDto dto = new SuggestPartDto();
-            dto.setPart_price(x.getPart().getUnitPrice());
+            dto.setPart_price(x.getPart().getUnitPrice() * x.getQuantity());
             dto.setQuantity(x.getQuantity());
             dto.setTechnician_note(x.getTechnicianNote());
             dto.setStatus(x.getStatus());
