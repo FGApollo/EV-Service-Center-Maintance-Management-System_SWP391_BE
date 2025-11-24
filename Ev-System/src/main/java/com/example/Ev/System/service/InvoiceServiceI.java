@@ -1,5 +1,6 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.InvoiceDataDto;
 import com.example.Ev.System.dto.InvoiceDetailDto;
 import com.example.Ev.System.dto.InvoiceSimpleDto;
 import com.example.Ev.System.entity.Invoice;
@@ -15,4 +16,7 @@ public interface InvoiceServiceI {
     public double getRevenue(LocalDateTime startDate, LocalDateTime endDate);
     List<InvoiceSimpleDto> getInvoices(Integer centerId);
     InvoiceDetailDto getInvoice(Integer invoiceId);
+    InvoiceDataDto getInvoiceData(Integer appointmentId);
+    byte[] generateInvoicePdf(InvoiceDataDto invoiceDataDto);
+    Invoice createPartInvoice(Integer appointmentId);
 }
