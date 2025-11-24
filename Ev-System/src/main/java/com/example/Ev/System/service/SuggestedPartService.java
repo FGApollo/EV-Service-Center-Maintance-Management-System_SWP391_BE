@@ -38,15 +38,60 @@ public class SuggestedPartService {
 
         for(SuggestedPart x : suggestedPart){
             SuggestPartDto dto = new SuggestPartDto();
-            dto.setPart_price(x.getPart().getUnitPrice() * x.getQuantity());
+            dto.setTotal_price(x.getPart().getUnitPrice() * x.getQuantity());
             dto.setQuantity(x.getQuantity());
             dto.setTechnician_note(x.getTechnicianNote());
             dto.setStatus(x.getStatus());
             dto.setPart_name(x.getPart().getName());
+            dto.setUnit_price(x.getPart().getUnitPrice());
+            dto.setPart_description(x.getPart().getDescription());
             dtos.add(dto);
         }
 
 
         return dtos;
+    }
+
+    @Transactional
+    public SuggestPartDto  acceptSuggestedPart(Integer suggestedPartId) {
+        SuggestedPart part = suggestedPartRepository.findById(suggestedPartId);
+        if(part == null){
+            throw new NotFoundException("Suggest part khong ton tai");
+        }
+
+        part.setStatus("accepted");
+        suggestedPartRepository.save(part);
+
+        SuggestPartDto dto = new SuggestPartDto();
+        dto.setPart_name(part.getPart().getName());
+        dto.setQuantity(part.getQuantity());
+        dto.setUnit_price(part.getPart().getUnitPrice());
+        dto.setTotal_price(part.getPart().getUnitPrice() * part.getQuantity());
+        dto.setPart_description(part.getPart().getDescription());
+        dto.setTechnician_note(part.getTechnicianNote());
+        dto.setStatus(part.getStatus());
+
+        return dto;
+    }
+
+    @Transactional
+    public SuggestPartDto  denySuggestedPart(Integer suggestedPartId) {
+        SuggestedPart part = suggestedPartRepository.findById(suggestedPartId);
+        if(part == null){
+            throw new NotFoundException("Suggest part khong ton tai");
+        }
+        part.setStatus("denied");
+        suggestedPartRepository.save(part);
+
+        SuggestPartDto dto = new SuggestPartDto();
+        dto.setPart_name(part.getPart().getName());
+        dto.setQuantity(part.getQuantity());
+        dto.setUnit_price(part.getPart().getUnitPrice());
+        dto.setTotal_price(part.getPart().getUnitPrice() * part.getQuantity());
+        dto.setPart_description(part.getPart().getDescription());
+        dto.setTechnician_note(part.getTechnicianNote());
+        dto.setStatus(part.getStatus());
+
+        return dto;
     }
 }
