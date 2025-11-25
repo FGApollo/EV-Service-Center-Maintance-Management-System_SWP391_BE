@@ -1,28 +1,56 @@
 package com.example.Ev.System.controller;
 
-import com.example.Ev.System.dto.SuggestedPartDto;
-import com.example.Ev.System.entity.SuggestedPart;
-import com.example.Ev.System.service.SuggestedPartServiceI;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.Ev.System.dto.RequestSuggestPart;
+import com.example.Ev.System.dto.SuggestPartDto;
+import com.example.Ev.System.service.SuggestedPartService;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/suggested-part")
+@RequestMapping("/api/suggested_part")
 public class SuggestedPartController {
-    @Autowired
-    private SuggestedPartServiceI suggestedPartService;
+    private final SuggestedPartService suggestedPartService;
 
-    @PreAuthorize("hasAnyAuthority('staff', 'customer')")
+    public SuggestedPartController(SuggestedPartService suggestedPartService) {
+        this.suggestedPartService = suggestedPartService;
+    }
+
     @GetMapping("/{appointmentId}")
-    public ResponseEntity<List<SuggestedPartDto>> getAllSuggestedPartByAppointmentId(@PathVariable Integer appointmentId) {
-        return ResponseEntity.ok(suggestedPartService.getAllSuggestedPartsByAppointmentId(appointmentId));
+    @PreAuthorize("hasAnyAuthority('customer', 'staff')")
+    public ResponseEntity<List<SuggestPartDto>>
+    getAllSuggestedPartForAppointment(@PathVariable @Positive(message = "id phải > 0") Integer appointmentId){
+
+        List<SuggestPartDto> suggestPartDtos = suggestedPartService.getAllSuggestPartForAppointment(appointmentId);
+
+        return ResponseEntity.ok(suggestPartDtos);
+    }
+
+    @PostMapping("/{id}/accept")
+    @PreAuthorize("hasAnyAuthority('customer', 'staff')")
+    public ResponseEntity<SuggestPartDto> acceptSuggestedPart(@PathVariable @Positive Integer id){
+        SuggestPartDto dto = suggestedPartService.acceptSuggestedPart(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/{id}/deny")
+    @PreAuthorize("hasAnyAuthority('customer', 'staff')")
+    public ResponseEntity<SuggestPartDto> denySuggestedPart(@PathVariable @Positive Integer id){
+        SuggestPartDto dto = suggestedPartService.denySuggestedPart(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('technician')")
+    public ResponseEntity<List<RequestSuggestPart>> createSuggestParts(
+            @RequestBody List<RequestSuggestPart> requestSuggestParts) {
+        List<RequestSuggestPart> createdParts = suggestedPartService.createSuggestParts(requestSuggestParts);
+        return ResponseEntity.ok(createdParts);
+
     }
 
 }

@@ -33,6 +33,6 @@ public class PartUsageController {
     @PreAuthorize("hasAnyAuthority('technician')")
     public void updatePartUsage(@RequestBody UpdatePartUsage updatePartUsage, Authentication authentication) {
         partUsageService.updatePartUsage(updatePartUsage,authentication);
-    }
+    } // can test // da test xong
 
 }
