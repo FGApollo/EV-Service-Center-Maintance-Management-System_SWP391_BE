@@ -35,6 +35,8 @@ public class AppointmentResponse {
     private List<UserDto> users;
     private List<String> checkList;
     private String description;
+    private String remarks;
+    private String vehicleCondition;
     private int total;
 
     private List<PartUsageDto> partUsage;

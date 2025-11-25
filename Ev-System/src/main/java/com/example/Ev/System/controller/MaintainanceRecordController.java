@@ -45,7 +45,8 @@ public class MaintainanceRecordController {
             maintenanceRecordService.recordMaintenance(appointmentId, maintainanceRecordDto,authentication,0);
         }
         return ResponseEntity.ok(maintainanceRecordDto);
-        //Da xong
+       //can test
+        //da test xong
     }
 
     @GetMapping("/staff/{staffId}")

@@ -128,99 +128,102 @@ public class MaintenanceRecordService {
     }
 
     @Transactional
-    public void updateMaintainanceRecord(Integer appointmentID, MaintainanceRecordDto maintainanceRecordDto, int status,Authentication authentication) {
+    public void updateMaintainanceRecord(Integer appointmentID, MaintainanceRecordDto maintainanceRecordDto, int status, Authentication authentication) {
 
         String email = authentication.getName();
-        User currentUser = userRepository.findByEmail(email).orElse(null);
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         Integer centerId = currentUser.getServiceCenter().getId();
 
-        ServiceAppointment appointmentCheck = appointmentRepository.findById(appointmentID).orElse(null);
-        if(appointmentCheck.getStatus().equals("completed")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointment is done , cannot be updated");
+        ServiceAppointment appointmentCheck = appointmentRepository.findById(appointmentID)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
+
+        if (appointmentCheck.getStatus().equals("completed")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointment is done, cannot be updated");
         }
-        if (appointmentCheck == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found");
-        }
+
         if (!appointmentCheck.getServiceCenter().getId().equals(centerId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
         }
-        for(Integer staffId : maintainanceRecordDto.getStaffIds()) {
-            User user = userRepository.findById(staffId).orElse(null);
-            if(!user.getServiceCenter().getId().equals(centerId)){
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Appointment not in your center");
+
+        // Check staff access
+        for (Integer staffId : maintainanceRecordDto.getStaffIds()) {
+            User user = userRepository.findById(staffId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Staff not found: " + staffId));
+            if (!user.getServiceCenter().getId().equals(centerId)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: Staff not in your center");
             }
         }
 
-        System.out.println("da chay toi day");
-        MaintenanceRecord existMaintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointmentID)
+        // Fetch existing maintenance record
+        MaintenanceRecord maintenanceRecord = maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointmentID)
                 .orElseThrow(() -> new RuntimeException("Maintenance record not found for appointment ID: " + appointmentID));
-        MaintenanceRecord maintenanceRecord = new MaintenanceRecord();
-        maintenanceRecord.setAppointment(existMaintenanceRecord.getAppointment());
+
         maintenanceRecord.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
-        maintenanceRecord.setChecklist(
-                existMaintenanceRecord.getChecklist() + " | " + maintainanceRecordDto.getChecklist()
-        );
-        maintenanceRecord.setStartTime(existMaintenanceRecord.getStartTime());
-
-        maintenanceRecord.setRemarks(
-                existMaintenanceRecord.getRemarks() + " | " + maintainanceRecordDto.getRemarks()
-        );
-
-        List<Integer> staffIds = maintainanceRecordDto.getStaffIds();
+        Set<String> oldChecklistSet = new LinkedHashSet<>();
+        if (maintenanceRecord.getChecklist() != null && !maintenanceRecord.getChecklist().isEmpty()) {
+            oldChecklistSet = Arrays.stream(maintenanceRecord.getChecklist().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+        }
+        Set<String> newChecklistSet = new LinkedHashSet<>();
+        if(maintenanceRecord.getChecklist() != null && !maintenanceRecord.getChecklist().isEmpty()) {
+            newChecklistSet = Arrays.stream(maintainanceRecordDto.getChecklist().split(",")).map(String::trim)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+        }
+        newChecklistSet.addAll(oldChecklistSet);
+        String mergeCheckList = newChecklistSet.stream().collect(Collectors.joining(","));
+        maintenanceRecord.setChecklist(mergeCheckList);
+        maintenanceRecord.setRemarks(maintainanceRecordDto.getRemarks());
 
         Set<Integer> oldStaffSet = new HashSet<>();
-        if (existMaintenanceRecord.getTechnicianIds() != null && !existMaintenanceRecord.getTechnicianIds().isEmpty()) {
-            oldStaffSet = Arrays.stream(existMaintenanceRecord.getTechnicianIds().split(","))
+        if (maintenanceRecord.getTechnicianIds() != null && !maintenanceRecord.getTechnicianIds().isEmpty()) {
+            oldStaffSet = Arrays.stream(maintenanceRecord.getTechnicianIds().split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .map(Integer::parseInt)
                     .collect(Collectors.toSet());
         }
-        Set<Integer> newStaffSet = new HashSet<>(staffIds);
-
-        oldStaffSet.addAll(newStaffSet);
-
+        oldStaffSet.addAll(new HashSet<>(maintainanceRecordDto.getStaffIds()));
         String mergedTechIds = oldStaffSet.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
-
         maintenanceRecord.setTechnicianIds(mergedTechIds);
 
-        Map<Integer, Integer> oldPartQuantities = new HashMap<>();
-        if (existMaintenanceRecord != null) {
-            for (PartUsage pu : existMaintenanceRecord.getPartUsages()) {
-                oldPartQuantities.put(pu.getPart().getId(), pu.getQuantityUsed());
-            }
-        }
+        Map<Integer, PartUsage> existingPartsMap = maintenanceRecord.getPartUsages().stream()
+                .collect(Collectors.toMap(pu -> pu.getPart().getId(), pu -> pu));
 
-        Set<PartUsage> newPartUsages = new LinkedHashSet<>();
+        Set<PartUsage> updatedPartUsages = new LinkedHashSet<>();
         if (maintainanceRecordDto.getPartsUsed() != null) {
             for (PartUsageDto dto : maintainanceRecordDto.getPartsUsed()) {
                 Part part = partRepository.findById(dto.getPartId())
                         .orElseThrow(() -> new RuntimeException("Part not found: " + dto.getPartId()));
 
-                PartUsage pu = new PartUsage();
+                PartUsage pu = existingPartsMap.getOrDefault(part.getId(), new PartUsage());
                 pu.setPart(part);
-                pu.setRecord(maintenanceRecord); // link to new MaintenanceRecord
+                pu.setRecord(maintenanceRecord);
                 pu.setUnitCost(dto.getUnitCost());
-
-                // Sum with old quantity if exists
-                int oldQty = oldPartQuantities.getOrDefault(part.getId(), 0);
-                pu.setQuantityUsed(oldQty + dto.getQuantityUsed());
-
-                newPartUsages.add(pu);
+                pu.setQuantityUsed(pu.getQuantityUsed()+ dto.getQuantityUsed());
+                updatedPartUsages.add(pu);
             }
         }
 
-        maintenanceRecord.setPartUsages(newPartUsages);
-        if(status == 1){
+        Set<PartUsage> existingPartUsages = maintenanceRecord.getPartUsages();
+        existingPartUsages.clear();
+        existingPartUsages.addAll(updatedPartUsages);
+
+        if (status == 1) {
             maintenanceRecord.setEndTime(Instant.now());
         }
-        MaintenanceRecord saved = maintenanceRecordRepository.saveAndFlush(maintenanceRecord);
-        for (PartUsageDto dtoUsage : maintainanceRecordDto.getPartsUsed()) {
-            partUsageService.usePathNoUsage( dtoUsage.getPartId(), dtoUsage.getQuantityUsed(), saved.getAppointment().getServiceCenter().getId() );
-        }
 
+        maintenanceRecordRepository.saveAndFlush(maintenanceRecord);
+
+        for (PartUsageDto dtoUsage : maintainanceRecordDto.getPartsUsed()) {
+            partUsageService.usePathNoUsage(dtoUsage.getPartId(), dtoUsage.getQuantityUsed(),
+                    maintenanceRecord.getAppointment().getServiceCenter().getId());
+        }
+        //da xong
     }
 
     public List<PartUsageDto> getPartUsageByAppointmentId(ServiceAppointment appointment) {

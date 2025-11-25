@@ -1,15 +1,14 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.RequestSuggestPart;
 import com.example.Ev.System.dto.SuggestPartDto;
-import com.example.Ev.System.entity.ServiceAppointment;
-import com.example.Ev.System.entity.SuggestedPart;
-import com.example.Ev.System.entity.User;
+import com.example.Ev.System.entity.*;
+import com.example.Ev.System.entity.AppointmentService;
 import com.example.Ev.System.exception.BadRequestException;
 import com.example.Ev.System.exception.NotFoundException;
-import com.example.Ev.System.repository.AppointmentRepository;
-import com.example.Ev.System.repository.ServiceAppointmentRepository;
-import com.example.Ev.System.repository.SuggestedPartRepository;
-import com.example.Ev.System.repository.UserRepository;
+import com.example.Ev.System.mapper.SuggestPartMapper;
+import com.example.Ev.System.repository.*;
+import org.apache.coyote.Request;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +21,20 @@ public class SuggestedPartService {
     private final SuggestedPartRepository suggestedPartRepository;
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
+    private final SuggestPartMapper suggestPartMapper;
+    private final ServiceAppointmentService serviceAppointmentService;
+    private final PartService partService;
+    private final PartRepository partRepository;
 
-    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, UserRepository userRepository, AppointmentRepository appointmentRepository){
+    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, UserRepository userRepository, AppointmentRepository appointmentRepository, SuggestPartMapper suggestPartMapper, ServiceAppointmentService serviceAppointmentService, PartService partService, PartRepository partRepository){
         this.suggestedPartRepository = suggestedPartRepository;
         this.userRepository = userRepository;
 
         this.appointmentRepository = appointmentRepository;
+        this.suggestPartMapper = suggestPartMapper;
+        this.serviceAppointmentService = serviceAppointmentService;
+        this.partService = partService;
+        this.partRepository = partRepository;
     }
 
     @Transactional
@@ -93,5 +100,32 @@ public class SuggestedPartService {
         dto.setStatus(part.getStatus());
 
         return dto;
+    }
+
+    @Transactional
+    public RequestSuggestPart createSuggestPart(RequestSuggestPart dto){
+        ServiceAppointment serviceAppointment = serviceAppointmentService.findById(dto.getAppointmentId());
+        if(serviceAppointment == null){
+            throw new NotFoundException("Appointment khong ton tai");
+        }
+        Part part = partRepository.findById(dto.getPartId()).orElseThrow(null);
+        if(part == null){
+            throw new NotFoundException("Part khong ton tai");
+        }
+        SuggestedPart suggestedPart = suggestPartMapper.toEntity(dto);
+        suggestedPart.setAppointment(serviceAppointment);
+        suggestedPart.setPart(part);
+        suggestedPart.setStatus("pending");
+        suggestedPartRepository.save(suggestedPart);
+        return suggestPartMapper.toDto(suggestedPart);
+    }
+
+    @Transactional
+    public List<RequestSuggestPart> createSuggestParts(List<RequestSuggestPart> requestSuggestParts) {
+        List<RequestSuggestPart> created = new ArrayList<>();
+        for (RequestSuggestPart dto : requestSuggestParts) {
+            created.add(createSuggestPart(dto));
+        }
+        return created;
     }
 }

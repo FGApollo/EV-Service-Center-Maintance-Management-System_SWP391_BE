@@ -112,7 +112,10 @@ public class ServiceAppointmentService {
             return true;
         }
 
-        if (oldStatus.equals("in_progress") && newStatus.equals("completed")) {
+        if (oldStatus.equals("in_progress") && newStatus.equals("awaiting_pickup")) {
+            return true;
+        }
+        if (oldStatus.equals("awaiting_pickup") && newStatus.equals("completed")) {
             return true;
         }
         return false;
@@ -175,10 +178,8 @@ public class ServiceAppointmentService {
         ServiceAppointment updatedAppointment = appointmentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment not found"));
         boolean recordExists = maintenanceRecordService.findMaintainanceRecordByAppointmentId(id);
         if (recordExists) {
-            maintenanceRecordService.updateMaintainanceRecord(
-                    updatedAppointment.getId(), maintainanceRecordDto, 1, authentication);
-        } else {
-            maintenanceRecordService.recordMaintenance(id, maintainanceRecordDto, authentication,1);
+            MaintenanceRecord maintenanceRecord = maintenanceRecordService.getAllByAppointmentId(updatedAppointment.getId());
+            maintenanceRecord.setEndTime(Instant.now());
         }
         maintenanceReminderCreationService.createReminderForAppointmentIfDone(id);
 
@@ -194,6 +195,7 @@ public class ServiceAppointmentService {
         if(!validStatus){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
         }
+
         updateAppointment(id, "completed");
         workLogService.autoCreateWorkLog(id);
         maintenanceRecordService.flush();
@@ -293,6 +295,8 @@ public class ServiceAppointmentService {
 
         List<PartUsageDto> partUsageDtos = maintenanceRecordService.getPartUsageByAppointmentId(appointment);
         response.setPartUsage(partUsageDtos);
+        response.setRemarks(maintenanceRecord.getRemarks());
+        response.setVehicleCondition(maintenanceRecord.getVehicleCondition());
         return response;
     }
 
