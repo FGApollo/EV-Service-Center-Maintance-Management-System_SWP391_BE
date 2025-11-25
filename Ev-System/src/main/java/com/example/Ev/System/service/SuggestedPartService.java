@@ -19,18 +19,13 @@ import java.util.Optional;
 @Service
 public class SuggestedPartService {
     private final SuggestedPartRepository suggestedPartRepository;
-    private final UserRepository userRepository;
-    private final AppointmentRepository appointmentRepository;
     private final SuggestPartMapper suggestPartMapper;
     private final ServiceAppointmentService serviceAppointmentService;
     private final PartService partService;
     private final PartRepository partRepository;
 
-    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, UserRepository userRepository, AppointmentRepository appointmentRepository, SuggestPartMapper suggestPartMapper, ServiceAppointmentService serviceAppointmentService, PartService partService, PartRepository partRepository){
+    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, SuggestPartMapper suggestPartMapper, ServiceAppointmentService serviceAppointmentService, PartService partService, PartRepository partRepository){
         this.suggestedPartRepository = suggestedPartRepository;
-        this.userRepository = userRepository;
-
-        this.appointmentRepository = appointmentRepository;
         this.suggestPartMapper = suggestPartMapper;
         this.serviceAppointmentService = serviceAppointmentService;
         this.partService = partService;

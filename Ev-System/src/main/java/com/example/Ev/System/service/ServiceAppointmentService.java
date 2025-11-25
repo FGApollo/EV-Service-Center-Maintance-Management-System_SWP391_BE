@@ -3,6 +3,7 @@ package com.example.Ev.System.service;
 import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.exception.BadRequestException;
+import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.mapper.AppointmentMapper;
 import com.example.Ev.System.mapper.UserMapper;
 import com.example.Ev.System.repository.*;
@@ -400,5 +401,20 @@ public class ServiceAppointmentService {
         return appointmentAllFieldsDtos;
     }
 
+    @Transactional
+    public AppointmentResponse handoverVehicleOfAppointment(Integer appointmentId, Authentication authentication) {
+
+        ServiceAppointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy đơn"));
+
+        if (!"awaiting_pickup".equals(appointment.getStatus())) {
+            throw new BadRequestException("Đơn này chưa sẵn sàng để bàn giao");
+        }
+
+        appointment.setHandover(true);
+
+
+        return markAppointmentAsDone(appointmentId, null, authentication);
+    }
     
 }
