@@ -150,7 +150,7 @@ public class InvoiceService implements InvoiceServiceI {
         Document document = new Document(pdfDocument);
 
         document.add(new Paragraph("Invoice"));
-        document.add(new Paragraph("Appointment Id" + invoiceDataDto.getAppointment().getId()));
+        document.add(new Paragraph("Appointment Id: " + invoiceDataDto.getAppointment().getId()));
         document.add(new Paragraph("\n"));
 
         //service
@@ -188,9 +188,27 @@ public class InvoiceService implements InvoiceServiceI {
     }
 
     @Override
+    @Transactional
     public Invoice createPartInvoice(Integer appointmentId) {
+        ServiceAppointment appointment = serviceAppointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        return invoiceRepository.save(new Invoice());
+        MaintenanceRecord record = appointment.getMaintenanceRecords().stream()
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new RuntimeException("No maintenance record found for this appointment"));
+
+        BigDecimal totalAmount = partUsageRepository.findByRecord(record).stream()
+                .map(partUsage ->
+                        BigDecimal.valueOf(partUsage.getUnitCost() * partUsage.getQuantityUsed()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Invoice invoice = new Invoice();
+        invoice.setAppointment(appointment);
+        invoice.setTotalAmount(totalAmount);
+        invoice.setStatus("unpaid");
+        invoice.setCreatedAt(LocalDateTime.now());
+
+        return invoiceRepository.save(invoice);
     }
 
 }

@@ -15,7 +15,6 @@ import org.hibernate.annotations.ColumnDefault;
 public class SuggestedPart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Column(name = "suggested_id", nullable = false)
     private Integer id;
 

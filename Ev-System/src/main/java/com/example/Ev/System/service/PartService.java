@@ -55,6 +55,7 @@ public class PartService implements PartServiceI{
                     existingPart.setDescription(part.getDescription());
                     existingPart.setUnitPrice(part.getUnitPrice());
                     existingPart.setMinStockLevel(part.getMinStockLevel());
+                    existingPart.setImportPrice(part.getImportPrice());
             return partRepository.save(existingPart);
         })
                 .orElseThrow(() -> new RuntimeException("Part not found with id " + id));

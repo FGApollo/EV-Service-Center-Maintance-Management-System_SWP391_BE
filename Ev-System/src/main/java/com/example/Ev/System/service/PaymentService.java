@@ -3,7 +3,9 @@ package com.example.Ev.System.service;
 import com.example.Ev.System.config.PaymentConfig;
 import com.example.Ev.System.config.VNpayConfig;
 import com.example.Ev.System.dto.PaymentDto;
+import com.example.Ev.System.dto.PaymentHistory;
 import com.example.Ev.System.dto.PaymentResponse;
+import com.example.Ev.System.dto.RefundRequestDto;
 import com.example.Ev.System.entity.Invoice;
 import com.example.Ev.System.entity.Payment;
 import com.example.Ev.System.repository.InvoiceRepository;
@@ -11,11 +13,11 @@ import com.example.Ev.System.repository.PaymentRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -73,8 +75,8 @@ public class PaymentService implements  PaymentServiceI {
         vnp_ParamsMap.put("vnp_ReturnUrl", PaymentConfig.vnp_returnurl);
 
         String queryUrl = PaymentConfig.getPaymentUrl(vnp_ParamsMap, true);
-        String hashdata = PaymentConfig.getPaymentUrl(vnp_ParamsMap, false);
-        String vnp_SecureHash = PaymentConfig.hmacSHA512(vnp_SecretKey, hashdata);
+        String hashData = PaymentConfig.getPaymentUrl(vnp_ParamsMap, false);
+        String vnp_SecureHash = PaymentConfig.hmacSHA512(vnp_SecretKey, hashData);
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = payUrl + "?" + queryUrl;
 
@@ -113,4 +115,65 @@ public class PaymentService implements  PaymentServiceI {
                 .paymentType("VNPAY")
                 .build();
     }
+
+    @Override
+    public List<PaymentHistory> getPaymentHistoryByUser(Integer customerId) {
+        return paymentRepository.findByInvoice_Appointment_CustomerId(customerId)
+                .stream()
+                .map(p -> new PaymentHistory(
+                        p.getId(),
+                        p.getInvoice().getId(),
+                        p.getAmount(),
+                        p.getMethod()
+                )).toList();
+    }
+
+    @Override
+    public PaymentResponse createRefundUrl(RefundRequestDto dto) {
+        Payment payment = paymentRepository.findById(dto.getPaymentId())
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        Map<String, String> vnp_ParamsMap = vnpayConfig.getVnPayConfig();
+        vnp_ParamsMap.put("vnp_Amount", dto.getAmount().multiply(BigDecimal.valueOf(100)).toString());
+        vnp_ParamsMap.put("vnp_IpAddr", "127.0.0.1");
+        vnp_ParamsMap.put("vnp_TxnRef", payment.getId().toString());
+        vnp_ParamsMap.put("vnp_OrderInfo", dto.getReason());
+        vnp_ParamsMap.put("vnp_OrderType", "refund");
+        vnp_ParamsMap.put("vnp_Locale", "vn");
+        vnp_ParamsMap.put("vnp_ReturnUrl", PaymentConfig.vnp_returnurl);
+
+        String queryUrl = PaymentConfig.getPaymentUrl(vnp_ParamsMap, true);
+        String hashData = PaymentConfig.getPaymentUrl(vnp_ParamsMap, false);
+        String vnp_SecureHash = PaymentConfig.hmacSHA512(vnp_SecretKey, hashData);
+        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+        String paymentUrl = payUrl + "?" + queryUrl;
+
+        return PaymentResponse.builder()
+                .paymentId(payment.getId())
+                .invoiceId(payment.getInvoice().getId())
+                .amount(dto.getAmount())
+                .method(payment.getMethod())
+                .message("create Refund Url successfully")
+                .paymentUrl(paymentUrl)
+                .paymentType("VNPAY")
+                .build();
+    }
+
+    @Override
+    public void handleRefundCallback(Map<String, String> allParams) {
+        String responseCode = allParams.get("vnp_ResponseCode");
+        String invoiceId = allParams.get("vnp_OrderInfo").replaceAll("\\D+", "");
+
+        if(responseCode.equals("00")) {
+            Invoice invoice = invoiceRepository.findById(Integer.parseInt(invoiceId))
+                    .orElseThrow(() -> new RuntimeException("Invoice not found"));
+
+            invoice.setStatus("REFUNDED");
+            invoice.setPaymentDate(LocalDateTime.now());
+            invoiceRepository.save(invoice);
+        }else {
+            System.out.println("Refund failed with response code: " + responseCode);
+        }
+    }
+
 }

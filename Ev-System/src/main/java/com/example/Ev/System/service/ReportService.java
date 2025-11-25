@@ -66,7 +66,7 @@ public class ReportService implements ReportServiceI {
                         partUsage -> YearMonth.from(partUsage.getRecord().getEndTime()
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDate()),
-                        Collectors.summingDouble(partUsage -> partUsage.getUnitCost() * partUsage.getQuantityUsed())
+                        Collectors.summingDouble(partUsage -> partUsage.getPart().getImportPrice() * partUsage.getQuantityUsed())
                 ));
 
         Set<YearMonth> allMonths = new HashSet<>();
@@ -156,7 +156,7 @@ public class ReportService implements ReportServiceI {
                     return usageMonth.equals(currentMonth);
                 })
                 .mapToDouble(usage ->
-                        usage.getUnitCost()*usage.getQuantityUsed()
+                        usage.getPart().getImportPrice()*usage.getQuantityUsed()
                 ).sum();
     }
 
