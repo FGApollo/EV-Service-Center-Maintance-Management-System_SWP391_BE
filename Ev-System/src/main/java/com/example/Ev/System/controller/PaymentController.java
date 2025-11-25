@@ -5,11 +5,16 @@ import com.example.Ev.System.dto.PaymentDto;
 
 import com.example.Ev.System.dto.PaymentResponse;
 
+import com.example.Ev.System.dto.RefundRequestDto;
+import com.example.Ev.System.entity.User;
 import com.example.Ev.System.service.PaymentService;
+import com.example.Ev.System.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -21,6 +26,8 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/api/customer/payments/create")
     public ResponseEntity<?> createPayment(@RequestBody PaymentDto paymentDto) {
@@ -77,5 +84,35 @@ public class PaymentController {
                     .build();
         }
 
+    @GetMapping("/api/customer/payments/history")
+    public ResponseEntity<?> history(Authentication authentication) {
+        String email = authentication.getName();
+        User currentUser = userService.getUserByEmail(email);
+        return ResponseEntity.ok(paymentService.getPaymentHistoryByUser(currentUser.getId()));
+    }
 
+    @PostMapping("/api/refund/create")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
+    public ResponseEntity<?> createRefund(@RequestBody RefundRequestDto refundRequestDto) {
+        PaymentResponse paymentResponse = paymentService.createRefundUrl(refundRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(paymentResponse);
+    }
+
+    @GetMapping("/api/auth/refund/return")
+    public ResponseEntity<?> refundReturn(@RequestParam Map<String,String> allParams) {
+
+        paymentService.handleRefundCallback(allParams);
+
+        String redirectUrl;
+
+        if ("00".equals(allParams.get("vnp_ResponseCode"))) {
+            redirectUrl = "http://localhost:5173/refund-return?status=success";
+        } else {
+            redirectUrl = "http://localhost:5173/refund-return?status=failed";
+        }
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", redirectUrl)
+                .build();
+    }
 }

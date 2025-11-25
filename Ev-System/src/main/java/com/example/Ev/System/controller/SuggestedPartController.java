@@ -1,11 +1,13 @@
 package com.example.Ev.System.controller;
 
 
+import com.example.Ev.System.dto.RequestSuggestPart;
 import com.example.Ev.System.dto.SuggestPartDto;
 import com.example.Ev.System.service.SuggestedPartService;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +31,6 @@ public class SuggestedPartController {
         return ResponseEntity.ok(suggestPartDtos);
     }
 
-
     @PostMapping("/{id}/accept")
     @PreAuthorize("hasAnyAuthority('customer', 'staff')")
     public ResponseEntity<SuggestPartDto> acceptSuggestedPart(@PathVariable @Positive Integer id){
@@ -44,5 +45,13 @@ public class SuggestedPartController {
         return ResponseEntity.ok(dto);
     }
 
+    @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('technician')")
+    public ResponseEntity<List<RequestSuggestPart>> createSuggestParts(
+            @RequestBody List<RequestSuggestPart> requestSuggestParts) {
+        List<RequestSuggestPart> createdParts = suggestedPartService.createSuggestParts(requestSuggestParts);
+        return ResponseEntity.ok(createdParts);
+
+    }
 
 }

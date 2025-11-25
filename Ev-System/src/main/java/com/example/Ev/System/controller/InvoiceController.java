@@ -33,7 +33,7 @@ public class InvoiceController {
         return ResponseEntity.ok(revenue);
     }
 
-    @GetMapping("/invoice/{id}/download")
+    @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadInvoice(@PathVariable Integer id) {
         InvoiceDataDto data = invoiceServiceI.getInvoiceData(id);
         byte[] pdf = invoiceServiceI.generateInvoicePdf(data);
@@ -44,4 +44,9 @@ public class InvoiceController {
                 .body(pdf);
     }
 
+    @PostMapping("/part/{appointmentId}")
+    public ResponseEntity<Invoice> createPartInvoice(@PathVariable Integer appointmentId) {
+        Invoice invoice = invoiceServiceI.createPartInvoice(appointmentId);
+        return ResponseEntity.ok(invoice);
+    }
 }

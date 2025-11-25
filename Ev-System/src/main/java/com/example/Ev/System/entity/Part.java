@@ -30,6 +30,9 @@ public class Part {
     @Column(name = "unit_price")
     private Double unitPrice;
 
+    @Column(name = "import_price")
+    private Double importPrice;
+
     @ColumnDefault("0")
     @Column(name = "min_stock_level")
     private Integer minStockLevel;
