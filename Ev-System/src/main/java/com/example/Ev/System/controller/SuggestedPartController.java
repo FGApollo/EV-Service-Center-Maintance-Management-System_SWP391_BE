@@ -25,8 +25,4 @@ public class SuggestedPartController {
         return ResponseEntity.ok(suggestedPartService.getAllSuggestedPartsByAppointmentId(appointmentId));
     }
 
-    @GetMapping("/one/{id}")
-    public SuggestedPart getSuggestedPartById(@PathVariable Integer id) {
-        return suggestedPartService.getSuggestedPartById(id);
-    }
 }
