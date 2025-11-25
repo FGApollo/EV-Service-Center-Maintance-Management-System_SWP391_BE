@@ -8,9 +8,13 @@ import com.example.Ev.System.entity.AppointmentService;
 import com.example.Ev.System.exception.BadRequestException;
 import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.repository.*;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import lombok.AllArgsConstructor;
@@ -145,45 +149,60 @@ public class InvoiceService implements InvoiceServiceI {
     public byte[] generateInvoicePdf(InvoiceDataDto invoiceDataDto) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        PdfWriter writer = new PdfWriter(outputStream);
-        PdfDocument pdfDocument = new PdfDocument(writer);
-        Document document = new Document(pdfDocument);
+        try {
+            PdfFont unicode = PdfFontFactory.createFont("font/Roboto-Regular.ttf", PdfEncodings.IDENTITY_H,
+                    PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
 
-        document.add(new Paragraph("Invoice"));
-        document.add(new Paragraph("Appointment Id: " + invoiceDataDto.getAppointment().getId()));
-        document.add(new Paragraph("\n"));
 
-        //service
-        Table serviceTable = new Table(2);
-        serviceTable.addCell("Service Name");
-        serviceTable.addCell("Price");
+            PdfWriter writer = new PdfWriter(outputStream);
+            PdfDocument pdfDocument = new PdfDocument(writer);
+            Document document = new Document(pdfDocument);
 
-        invoiceDataDto.getServices().forEach(service -> {
-            serviceTable.addCell(service.getName());
-            serviceTable.addCell(service.getPrice().toString());
-        });
-        document.add(new Paragraph("Services Used:"));
-        document.add(serviceTable);
-        document.add(new Paragraph("\n"));
 
-        //part usage
-        Table partTable = new Table(4);
-        partTable.addCell("Part Name");
-        partTable.addCell("Quantity");
-        partTable.addCell("Unit Cost");
-        partTable.addCell("Total");
+            document.add(new Paragraph("Invoice").setFont(unicode).setFontSize(16));
+            document.add(new Paragraph("Appointment Id: " + invoiceDataDto.getAppointment().getId())
+                    .setFont(unicode));
+            document.add(new Paragraph("\n"));
 
-        invoiceDataDto.getParts().forEach(part -> {
-            partTable.addCell(part.getPart().getName());
-            partTable.addCell(String.valueOf(part.getQuantityUsed()));
-            partTable.addCell(String.valueOf(part.getUnitCost()));
-            double totalCost = part.getUnitCost() * part.getQuantityUsed();
-            partTable.addCell(Double.toString(totalCost));
-        });
-        document.add(new Paragraph("Parts Used:"));
-        document.add(partTable);
+            //service
+            Table serviceTable = new Table(2);
+            serviceTable.addCell(new Cell().add(new Paragraph("Service Name").setFont(unicode)));
+            serviceTable.addCell(new Cell().add(new Paragraph("Price").setFont(unicode)));
 
-        document.close();
+            invoiceDataDto.getServices().forEach(service -> {
+                serviceTable.addCell(new Cell().add(new Paragraph(service.getName()).setFont(unicode)));
+                serviceTable.addCell(new Cell().add(new Paragraph(service.getPrice().toString()).setFont(unicode)));
+            });
+
+            document.add(new Paragraph("Services Used:").setFont(unicode));
+            document.add(serviceTable);
+            document.add(new Paragraph("\n"));
+
+            //parts
+            Table partTable = new Table(4);
+            partTable.addCell(new Cell().add(new Paragraph("Part Name").setFont(unicode)));
+            partTable.addCell(new Cell().add(new Paragraph("Quantity").setFont(unicode)));
+            partTable.addCell(new Cell().add(new Paragraph("Unit Cost").setFont(unicode)));
+            partTable.addCell(new Cell().add(new Paragraph("Total").setFont(unicode)));
+
+            invoiceDataDto.getParts().forEach(part -> {
+                double totalCost = part.getUnitCost() * part.getQuantityUsed();
+
+                partTable.addCell(new Cell().add(new Paragraph(part.getPart().getName()).setFont(unicode)));
+                partTable.addCell(new Cell().add(new Paragraph(String.valueOf(part.getQuantityUsed())).setFont(unicode)));
+                partTable.addCell(new Cell().add(new Paragraph(String.valueOf(part.getUnitCost())).setFont(unicode)));
+                partTable.addCell(new Cell().add(new Paragraph(String.valueOf(totalCost)).setFont(unicode)));
+            });
+
+            document.add(new Paragraph("Parts Used:").setFont(unicode));
+            document.add(partTable);
+
+            document.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return outputStream.toByteArray();
     }
 
