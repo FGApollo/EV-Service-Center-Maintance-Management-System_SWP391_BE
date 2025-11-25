@@ -1,6 +1,7 @@
 package com.example.Ev.System.controller;
 
 import com.example.Ev.System.dto.CenterDTO;
+import com.example.Ev.System.dto.RequestSuggestPart;
 import com.example.Ev.System.dto.SuggestPartDto;
 import com.example.Ev.System.service.SuggestedPartService;
 import jakarta.validation.constraints.Positive;
@@ -43,6 +44,15 @@ public class SuggestedPartController {
     public ResponseEntity<SuggestPartDto> denySuggestedPart(@PathVariable @Positive Integer id){
         SuggestPartDto dto = suggestedPartService.denySuggestedPart(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('technician')")
+    public ResponseEntity<List<RequestSuggestPart>> createSuggestParts(
+            @RequestBody List<RequestSuggestPart> requestSuggestParts) {
+        List<RequestSuggestPart> createdParts = suggestedPartService.createSuggestParts(requestSuggestParts);
+        return ResponseEntity.ok(createdParts);
+
     }
 
 

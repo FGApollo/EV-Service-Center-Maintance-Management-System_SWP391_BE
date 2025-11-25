@@ -110,6 +110,19 @@ public class AppointmentController {
 
     }
 
+    @PutMapping("/{id}/waiting")
+    @Transactional
+    @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
+    public ResponseEntity<AppointmentResponse> waitingAppointment(
+            @PathVariable Integer id,Authentication authentication)
+    {
+        serviceAppointmentService.validateAndGetAppointmentForCenter(authentication,id);
+        ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"awaiting_pickup");
+        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
+        //chua test
+        //da xong
+    }
+
     @PutMapping("/{id}/inProgress")
     @PreAuthorize("hasAnyAuthority('staff', 'manager', 'technician')")
     @Transactional
