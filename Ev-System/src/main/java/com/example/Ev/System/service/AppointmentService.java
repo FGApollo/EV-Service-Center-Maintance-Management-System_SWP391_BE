@@ -9,6 +9,7 @@ import com.example.Ev.System.exception.BadRequestException;
 import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.mapper.AppointmentMapper;
 import com.example.Ev.System.repository.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -184,6 +185,9 @@ public class ServiceAppointmentService {
                 appointment.getNote()
         );
     }
+
+
+
 
 
 }
