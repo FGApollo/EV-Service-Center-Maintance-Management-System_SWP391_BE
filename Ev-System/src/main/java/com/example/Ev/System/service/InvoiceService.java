@@ -94,7 +94,7 @@ public class InvoiceService implements InvoiceServiceI {
 
     @Override
     public List<InvoiceSimpleDto> getInvoices(Integer centerId) {
-        return invoiceRepository.findInvoicesByStatusAndCenter("PAID", centerId).stream()
+        return invoiceRepository.findInvoicesByAppointment_ServiceCenter_Id(centerId).stream()
                 .map(invoice -> new InvoiceSimpleDto(
                         invoice.getId(),
                         invoice.getAppointment().getCustomer().getFullName(),
