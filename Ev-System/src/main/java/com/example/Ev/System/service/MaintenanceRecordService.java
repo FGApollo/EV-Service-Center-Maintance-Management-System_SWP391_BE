@@ -199,6 +199,8 @@ public class MaintenanceRecordService {
                         .orElseThrow(() -> new RuntimeException("Part not found: " + dto.getPartId()));
 
                 PartUsage pu = existingPartsMap.getOrDefault(part.getId(), new PartUsage());
+                Integer currentQty = pu.getQuantityUsed() != null ? pu.getQuantityUsed() : 0;
+                pu.setQuantityUsed(currentQty + dto.getQuantityUsed());
                 pu.setPart(part);
                 pu.setRecord(maintenanceRecord);
                 pu.setUnitCost(dto.getUnitCost());
@@ -237,7 +239,6 @@ public class MaintenanceRecordService {
                 .stream()
                 .map(partUsageMapper::toDto)
                 .toList();
-
         return dtoList;
     }
 
