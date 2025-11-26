@@ -226,6 +226,7 @@ public class MaintenanceRecordService {
         //da xong
     }
 
+    @Transactional
     public List<PartUsageDto> getPartUsageByAppointmentId(ServiceAppointment appointment) {
         MaintenanceRecord maintenanceRecord =
                 maintenanceRecordRepository.findFirstByAppointment_IdOrderByIdDesc(appointment.getId())

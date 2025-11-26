@@ -1,15 +1,18 @@
 package com.example.Ev.System.controller;
 
+import com.example.Ev.System.dto.PartUsageDto;
 import com.example.Ev.System.dto.PartUsageRequest;
 import com.example.Ev.System.dto.UpdatePartUsage;
-import com.example.Ev.System.service.PartService;
-import com.example.Ev.System.service.PartUsageService;
-import com.example.Ev.System.service.PartUsageServiceI;
+import com.example.Ev.System.entity.ServiceAppointment;
+import com.example.Ev.System.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/technician")
@@ -19,6 +22,10 @@ public class PartUsageController {
     private PartUsageServiceI partUsageServiceI;
     @Autowired
     private PartUsageService partUsageService;
+    @Autowired
+    private MaintenanceRecordService maintenanceRecordService;
+    @Autowired
+    private ServiceAppointmentService serviceAppointmentService;
 
     @PostMapping("/part_usage")
     public String usePart(@RequestBody PartUsageRequest partUsageRequest) {
@@ -34,5 +41,12 @@ public class PartUsageController {
     public void updatePartUsage(@RequestBody UpdatePartUsage updatePartUsage, Authentication authentication) {
         partUsageService.updatePartUsage(updatePartUsage,authentication);
     } // can test // da test xong
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('technician')")
+    public ResponseEntity<List<PartUsageDto>> getPartUsageByAppointmentId(@PathVariable int id) {
+        ServiceAppointment appointment = serviceAppointmentService.findById(id);
+        return ResponseEntity.ok(maintenanceRecordService.getPartUsageByAppointmentId(appointment));
+    }
 
 }
