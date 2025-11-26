@@ -204,7 +204,6 @@ public class MaintenanceRecordService {
                 pu.setPart(part);
                 pu.setRecord(maintenanceRecord);
                 pu.setUnitCost(dto.getUnitCost());
-                pu.setQuantityUsed(pu.getQuantityUsed()+ dto.getQuantityUsed());
                 updatedPartUsages.add(pu);
             }
         }
