@@ -97,6 +97,7 @@ public class InvoiceService implements InvoiceServiceI {
         return invoiceRepository.findInvoicesByStatusAndCenter("PAID", centerId).stream()
                 .map(invoice -> new InvoiceSimpleDto(
                         invoice.getId(),
+                        invoice.getAppointment().getCustomer().getFullName(),
                         invoice.getTotalAmount(),
                         invoice.getServiceName(),
                         invoice.getCreatedAt()
