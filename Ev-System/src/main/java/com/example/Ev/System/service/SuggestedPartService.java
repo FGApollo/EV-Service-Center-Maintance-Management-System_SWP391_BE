@@ -47,6 +47,8 @@ public class SuggestedPartService {
             dto.setPart_name(x.getPart().getName());
             dto.setUnit_price(x.getPart().getUnitPrice());
             dto.setPart_description(x.getPart().getDescription());
+            dto.setPartId(x.getPart().getId());
+            dto.setAppointmentId(x.getAppointment().getId());
             dtos.add(dto);
         }
 
@@ -72,6 +74,8 @@ public class SuggestedPartService {
         dto.setPart_description(part.getPart().getDescription());
         dto.setTechnician_note(part.getTechnicianNote());
         dto.setStatus(part.getStatus());
+        dto.setPartId(part.getPart().getId());
+        dto.setAppointmentId(part.getAppointment().getId());
 
         return dto;
     }
@@ -93,7 +97,7 @@ public class SuggestedPartService {
         dto.setPart_description(part.getPart().getDescription());
         dto.setTechnician_note(part.getTechnicianNote());
         dto.setStatus(part.getStatus());
-        dto.setPart_Id(part.getPart().getId());
+        dto.setPartId(part.getPart().getId());
         dto.setAppointmentId(part.getAppointment().getId());
         return dto;
     }
