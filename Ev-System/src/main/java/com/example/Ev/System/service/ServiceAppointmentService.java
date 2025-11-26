@@ -357,6 +357,16 @@ public class ServiceAppointmentService {
         return buildFullAppointmentResponse(appointment);
     }
 
+    public boolean checkInvoiceValid(ServiceAppointment appointment) {
+        Set<Invoice> invoices = appointment.getInvoices();
+        if(invoices.size() >= 2) {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
 
 
 
