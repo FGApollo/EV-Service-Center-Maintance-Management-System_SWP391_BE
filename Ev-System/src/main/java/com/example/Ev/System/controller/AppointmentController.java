@@ -65,7 +65,6 @@ public class AppointmentController {
         this.userService = userService;
         this.staffAppointmentService = staffAppointmentService;
         this.maintenanceReminderCreationService = maintenanceReminderCreationService;
-
         this.userMapper = userMapper;
     }
 
