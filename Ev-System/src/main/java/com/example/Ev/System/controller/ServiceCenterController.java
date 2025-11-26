@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/center")
-@PreAuthorize("hasAuthority('admin')")
+
 @Validated
 public class ServiceCenterController {
 
@@ -27,6 +27,7 @@ public class ServiceCenterController {
 
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('admin', 'customer')")
     public ResponseEntity<List<CenterDTO>> getAllCenters() {
         List<CenterDTO> centers = centerService.GetAllCenter();
         return ResponseEntity.ok(centers);
@@ -34,6 +35,7 @@ public class ServiceCenterController {
 
 
     @PostMapping
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<CenterDTO> createCenter(@RequestBody @Validated(Create.class) CenterDTO centerDTO) {
         CenterDTO createdCenter = centerService.CreateCenter(centerDTO);
         return ResponseEntity.ok(createdCenter);
@@ -41,6 +43,7 @@ public class ServiceCenterController {
 
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<CenterDTO> updateCenter(@PathVariable @Positive(message = "id phải > 0") Integer id,
                                                   @RequestBody @Validated(Update.class) CenterDTO centerDTO) {
         CenterDTO updatedCenter = centerService.UpdateCenter(centerDTO, id);
@@ -49,6 +52,7 @@ public class ServiceCenterController {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<String> deleteCenter(@PathVariable Integer id) {
         centerService.DeleteCenter(id);
         return ResponseEntity.ok("Center with id " + id + " has been deactivated successfully.");
