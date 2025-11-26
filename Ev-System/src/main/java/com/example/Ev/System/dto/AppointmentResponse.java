@@ -39,6 +39,8 @@ public class AppointmentResponse {
     private String vehicleCondition;
     private int total;
 
+    private List<InvoiceResponseDto> invoices;
+
     private List<PartUsageDto> partUsage;
 
 

@@ -49,6 +49,7 @@ public class PartUsageController {
         return ResponseEntity.ok(maintenanceRecordService.getPartUsageByAppointmentId(appointment));
     }
 
+
     @PostMapping("/return-parts/{appointmentId}")
     @PreAuthorize("hasAnyAuthority('staff', 'technician')")
     public String returnUnusedParts(@PathVariable Integer appointmentId) {
