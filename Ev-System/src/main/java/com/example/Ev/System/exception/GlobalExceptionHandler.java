@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
-    // api sai method, mã 405
+    // api sai method, mã 405(không chạy được, khi có lỗi thì trả về lỗi 401 sai token)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<?> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed");
