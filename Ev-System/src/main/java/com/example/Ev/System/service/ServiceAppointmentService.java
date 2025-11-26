@@ -36,8 +36,9 @@ public class ServiceAppointmentService {
     private final WorkLogService workLogService;
     private final UserMapper userMapper;
     private final AppointmentService appointmentService;
+    private final InvoiceRepository invoiceRepository;
 
-    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository, UserService userService, MaintenanceReminderCreationService maintenanceReminderCreationService, WorkLogService workLogService, UserMapper userMapper, AppointmentService appointmentService) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository, UserService userService, MaintenanceReminderCreationService maintenanceReminderCreationService, WorkLogService workLogService, UserMapper userMapper, AppointmentService appointmentService, InvoiceRepository invoiceRepository) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -54,6 +55,7 @@ public class ServiceAppointmentService {
         this.workLogService = workLogService;
         this.userMapper = userMapper;
         this.appointmentService = appointmentService;
+        this.invoiceRepository = invoiceRepository;
     }
 
     @Transactional
@@ -435,6 +437,15 @@ public class ServiceAppointmentService {
 
         if (!"awaiting_pickup".equals(appointment.getStatus())) {
             throw new BadRequestException("Đơn này chưa sẵn sàng để bàn giao");
+        }
+
+        List<Invoice> invoices = invoiceRepository.findAllByAppointment_Id(appointmentId);
+
+        boolean hasUnpaid = invoices.stream()
+                .anyMatch(inv -> !"PAID".equalsIgnoreCase(inv.getStatus()));
+
+        if (hasUnpaid) {
+            throw new BadRequestException("Vẫn còn hóa đơn chưa thanh toán. Không thể bàn giao xe.");
         }
 
         appointment.setHandover(true);
