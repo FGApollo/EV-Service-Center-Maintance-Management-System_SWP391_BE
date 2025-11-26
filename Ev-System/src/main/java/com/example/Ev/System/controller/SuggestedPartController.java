@@ -23,7 +23,7 @@ public class SuggestedPartController {
     }
 
     @GetMapping("/{appointmentId}")
-    @PreAuthorize("hasAnyAuthority('customer', 'staff')")
+    @PreAuthorize("hasAnyAuthority('customer', 'staff', 'technician')")
     public ResponseEntity<List<SuggestPartDto>>
     getAllSuggestedPartForAppointment(@PathVariable @Positive(message = "id phải > 0") Integer appointmentId){
 
