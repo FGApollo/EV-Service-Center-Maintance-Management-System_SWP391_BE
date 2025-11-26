@@ -115,6 +115,11 @@ public class ServiceAppointmentService {
         if (oldStatus.equals("in_progress") && newStatus.equals("awaiting_pickup")) {
             return true;
         }
+
+        if (oldStatus.equals("awaiting_pickup") && newStatus.equals("in_progress")) {
+            return true;
+        }
+
         if (oldStatus.equals("awaiting_pickup") && newStatus.equals("completed")) {
             return true;
         }
