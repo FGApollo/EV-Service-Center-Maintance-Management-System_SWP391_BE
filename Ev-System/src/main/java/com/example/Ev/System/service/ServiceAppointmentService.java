@@ -359,20 +359,17 @@ public class ServiceAppointmentService {
 
     public boolean checkInvoiceValid(ServiceAppointment appointment) {
         Set<Invoice> invoices = appointment.getInvoices();
+
         for (Invoice invoice : invoices) {
-            String name = invoice.getServiceName();
-            if ((name == null || name.isBlank())
-                    && "PAID".equalsIgnoreCase(invoice.getStatus())) {
-                return false;
+            // Nếu serviceName == null => Đây là invoice phụ tùng
+            if (invoice.getServiceName() == null || invoice.getServiceName().isBlank()) {
+                return false; // Không hợp lệ, vì có billing phụ tùng
             }
         }
-        if(invoices.size() >= 2) {
-            return false;
-        }
-        else{
-            return true;
-        }
+
+        return true; // Tất cả đều là invoice service type
     }
+
 
 
 
