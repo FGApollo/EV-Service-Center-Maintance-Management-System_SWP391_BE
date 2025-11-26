@@ -103,7 +103,7 @@ public class SuggestedPartService {
         if(serviceAppointment == null){
             throw new NotFoundException("Appointment khong ton tai");
         }
-        Part part = partRepository.findById(dto.getPartId()).orElseThrow(null);
+        Part part = partRepository.findById(dto.getPartId()).orElseThrow(() -> new NotFoundException("Part khong ton tai"));;
         if(part == null){
             throw new NotFoundException("Part khong ton tai");
         }
@@ -117,6 +117,14 @@ public class SuggestedPartService {
 
     @Transactional
     public List<RequestSuggestPart> createSuggestParts(List<RequestSuggestPart> requestSuggestParts) {
+        RequestSuggestPart requestSuggestPart = requestSuggestParts.get(0);
+        if(requestSuggestPart == null){
+            throw new NotFoundException("Suggest part khong ton tai");
+        }
+        List<SuggestedPart> suggestedParts = suggestedPartRepository.findAllByAppointment_Id(requestSuggestPart.getAppointmentId());
+        if(!suggestedParts.isEmpty()){
+            suggestedPartRepository.deleteAll(suggestedParts);
+        }
         List<RequestSuggestPart> created = new ArrayList<>();
         for (RequestSuggestPart dto : requestSuggestParts) {
             created.add(createSuggestPart(dto));
