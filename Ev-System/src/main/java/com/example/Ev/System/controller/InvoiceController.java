@@ -49,4 +49,11 @@ public class InvoiceController {
         Invoice invoice = invoiceServiceI.createPartInvoice(appointmentId);
         return ResponseEntity.ok(invoice);
     }
+
+    @GetMapping("/customer/{appointmentId}")
+    public ResponseEntity<?> getCustomerInvoice(@PathVariable Integer appointmentId) {
+        InvoiceDataDto invoiceDataDto = invoiceServiceI.getInvoiceData(appointmentId);
+        var customerInvoiceDto = invoiceServiceI.getCustomerInvoice(invoiceDataDto);
+        return ResponseEntity.ok(customerInvoiceDto);
+    }
 }

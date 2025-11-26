@@ -19,4 +19,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
             @Param("centerId") Integer centerId);
 
     boolean existsByAppointment_Id(Integer appointmentId);
+    Invoice findByAppointment_IdAndStatus(Integer appointmentId, String status);
+    List<Invoice> findInvoicesByAppointment_ServiceCenter_Id(Integer centerId);
 }

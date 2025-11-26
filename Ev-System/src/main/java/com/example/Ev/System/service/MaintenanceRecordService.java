@@ -97,8 +97,6 @@ public class MaintenanceRecordService {
 
         if (partUsageDtos != null && !partUsageDtos.isEmpty()) {
             for (PartUsageDto partDto : partUsageDtos) {
-                Part part = partRepository.findById(partDto.getPartId())
-                        .orElseThrow(() -> new RuntimeException("Part not found: " + partDto.getPartId()));
                 PartUsage partUsage = partUsageMapper.toEntity(partDto);
                 // Set relationships manually
                 partUsage.setRecord(record);
@@ -124,7 +122,7 @@ public class MaintenanceRecordService {
             record.setEndTime(Instant.now());
             maintenanceRecordRepository.save(record);
         }
-        maintenanceRecordRepository.save(record); // Cascade saves all part usages
+        maintenanceRecordRepository.save(record);
     }
 
     @Transactional
@@ -162,24 +160,24 @@ public class MaintenanceRecordService {
         maintenanceRecord.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
         Set<String> oldChecklistSet = new LinkedHashSet<>();
         if (maintenanceRecord.getChecklist() != null && !maintenanceRecord.getChecklist().isEmpty()) {
-            oldChecklistSet = Arrays.stream(maintenanceRecord.getChecklist().split(":"))
+            oldChecklistSet = Arrays.stream(maintenanceRecord.getChecklist().split("\\|"))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
         Set<String> newChecklistSet = new LinkedHashSet<>();
-        if(maintenanceRecord.getChecklist() != null && !maintenanceRecord.getChecklist().isEmpty()) {
-            newChecklistSet = Arrays.stream(maintainanceRecordDto.getChecklist().split(":")).map(String::trim)
+        if(maintainanceRecordDto.getChecklist() != null && !maintainanceRecordDto.getChecklist().isEmpty()) {
+            newChecklistSet = Arrays.stream(maintainanceRecordDto.getChecklist().split("\\|")).map(String::trim)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
         newChecklistSet.addAll(oldChecklistSet);
-        String mergeCheckList = newChecklistSet.stream().collect(Collectors.joining(":"));
+        String mergeCheckList = newChecklistSet.stream().collect(Collectors.joining("|"));
         maintenanceRecord.setChecklist(mergeCheckList);
         maintenanceRecord.setRemarks(maintainanceRecordDto.getRemarks());
 
         Set<Integer> oldStaffSet = new HashSet<>();
         if (maintenanceRecord.getTechnicianIds() != null && !maintenanceRecord.getTechnicianIds().isEmpty()) {
-            oldStaffSet = Arrays.stream(maintenanceRecord.getTechnicianIds().split(":"))
+            oldStaffSet = Arrays.stream(maintenanceRecord.getTechnicianIds().split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .map(Integer::parseInt)
@@ -239,7 +237,6 @@ public class MaintenanceRecordService {
                 .stream()
                 .map(partUsageMapper::toDto)
                 .toList();
-
         return dtoList;
     }
 

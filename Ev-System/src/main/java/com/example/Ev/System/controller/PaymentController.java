@@ -91,7 +91,7 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.getPaymentHistoryByUser(currentUser.getId()));
     }
 
-    @PostMapping("/api/refund/create")
+    @PostMapping("/api/refunds")
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<?> createRefund(@RequestBody RefundRequestDto refundRequestDto) {
         PaymentResponse paymentResponse = paymentService.createRefundUrl(refundRequestDto);
@@ -114,5 +114,18 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", redirectUrl)
                 .build();
+    }
+
+    @PostMapping("/api/cash-payment/{invoiceId}")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
+    public ResponseEntity<?> createCashPayment(@PathVariable Integer invoiceId ) {
+        return ResponseEntity.ok(paymentService.createCashPayment(invoiceId));
+    }
+
+    @PostMapping("/api/part-payments/{appointmentId}")
+    @PreAuthorize("hasAnyAuthority('staff')")
+    public ResponseEntity<?> createPartPayment(@PathVariable Integer appointmentId) {
+        PaymentResponse paymentResponse = paymentService.createPartPaymentUrl(appointmentId);
+        return ResponseEntity.status(HttpStatus.OK).body(paymentResponse);
     }
 }

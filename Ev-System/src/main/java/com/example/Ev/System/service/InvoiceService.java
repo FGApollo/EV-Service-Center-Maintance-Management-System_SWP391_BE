@@ -1,5 +1,6 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.CustomerInvoiceDto;
 import com.example.Ev.System.dto.InvoiceDataDto;
 import com.example.Ev.System.dto.InvoiceDetailDto;
 import com.example.Ev.System.dto.InvoiceSimpleDto;
@@ -57,16 +58,12 @@ public class InvoiceService implements InvoiceServiceI {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BadRequestException("Service not found for this appointment");
+            throw new BadRequestException("Total amount must be greater than zero");
         }
 
         ServiceAppointment appointment = serviceAppointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-
-//        BigDecimal currentServicePrice = service.stream()
-//                .map(s -> s.getServiceType().getPrice())
-//                .reduce(BigDecimal.ZERO, BigDecimal::add);
         String serviceName = service.get(0).getServiceType().getName();
 
         Invoice invoice = new Invoice();
@@ -97,9 +94,10 @@ public class InvoiceService implements InvoiceServiceI {
 
     @Override
     public List<InvoiceSimpleDto> getInvoices(Integer centerId) {
-        return invoiceRepository.findInvoicesByStatusAndCenter("PAID", centerId).stream()
+        return invoiceRepository.findInvoicesByAppointment_ServiceCenter_Id(centerId).stream()
                 .map(invoice -> new InvoiceSimpleDto(
                         invoice.getId(),
+                        invoice.getAppointment().getCustomer().getFullName(),
                         invoice.getTotalAmount(),
                         invoice.getServiceName(),
                         invoice.getCreatedAt()
@@ -163,6 +161,10 @@ public class InvoiceService implements InvoiceServiceI {
             document.add(new Paragraph("Appointment Id: " + invoiceDataDto.getAppointment().getId())
                     .setFont(unicode));
             document.add(new Paragraph("\n"));
+            document.add(new Paragraph("Customer Name: "
+                    + invoiceDataDto.getAppointment().getCustomer().getFullName()).setFont(unicode));
+            document.add(new Paragraph("Vehicle: "
+                    + invoiceDataDto.getAppointment().getVehicle().getModel()).setFont(unicode));
 
             //service
             Table serviceTable = new Table(2);
@@ -228,6 +230,17 @@ public class InvoiceService implements InvoiceServiceI {
         invoice.setCreatedAt(LocalDateTime.now());
 
         return invoiceRepository.save(invoice);
+    }
+
+    @Override
+    public CustomerInvoiceDto getCustomerInvoice(InvoiceDataDto invoiceDataDto) {
+        return new CustomerInvoiceDto(
+                invoiceDataDto.getAppointment().getId(),
+                invoiceDataDto.getAppointment().getCustomer().getFullName(),
+                invoiceDataDto.getAppointment().getVehicle().getModel(),
+                invoiceDataDto.getServices(),
+                invoiceDataDto.getParts()
+        );
     }
 
 }

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class InvoiceSimpleDto {
     private Integer invoiceId;
+    private String customerName;
     private BigDecimal totalAmount;
     private String ServiceName;
     private LocalDateTime createdAt;
