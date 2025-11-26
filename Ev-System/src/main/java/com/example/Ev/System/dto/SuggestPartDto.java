@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SuggestPartDto {
+    private Integer suggestPart_Id;
     private Integer quantity;
     private Integer appointmentId;
     private String technician_note;
