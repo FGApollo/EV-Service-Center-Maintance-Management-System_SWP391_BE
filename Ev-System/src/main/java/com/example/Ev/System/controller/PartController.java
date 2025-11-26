@@ -22,7 +22,7 @@ public class PartController {
     private UserService userService;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin')")
+    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'staff')")
     public ResponseEntity<List<PartDto>> getAllParts() {
         List<PartDto> parts = partService.getAll();
         return ResponseEntity.ok(parts);
