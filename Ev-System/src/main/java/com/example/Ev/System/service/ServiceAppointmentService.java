@@ -303,6 +303,27 @@ public class ServiceAppointmentService {
 
         List<PartUsageDto> partUsageDtos = maintenanceRecordService.getPartUsageByAppointmentId(appointment);
         response.setPartUsage(partUsageDtos);
+
+        // mới thêm vô để hiển thị mấy cái invoice cho đơn
+        if (appointment.getInvoices() != null && !appointment.getInvoices().isEmpty()) {
+            List<InvoiceResponseDto> invoiceDtos = appointment.getInvoices()
+                    .stream()
+                    .map(inv -> new InvoiceResponseDto(
+                            inv.getId(),
+                            inv.getTotalAmount(),
+                            inv.getStatus(),
+                            inv.getPaymentDate(),
+                            inv.getServiceName(),
+                            inv.getCreatedAt()
+                    ))
+                    .toList();
+
+            response.setInvoices(invoiceDtos);
+        } else {
+            response.setInvoices(Collections.emptyList());
+        }
+
+
         return response;
     }
 

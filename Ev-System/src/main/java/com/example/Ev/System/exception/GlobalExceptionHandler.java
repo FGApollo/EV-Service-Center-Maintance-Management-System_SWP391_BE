@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
-    // bắt lỗi gọi api không tồn tại, mã 404
+    // bắt lỗi gọi api không tồn tại, mã 404( khong chay duoc loi 404, ma nay se tra ve 401)
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<?> handleNoHandlerFound(NoHandlerFoundException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.NOT_FOUND, "API Not Found");
