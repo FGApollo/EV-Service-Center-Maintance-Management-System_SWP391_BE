@@ -291,12 +291,12 @@ public class ServiceAppointmentService {
         if (maintenanceRecord != null && maintenanceRecord.getChecklist() != null) {
             List<String> checklist = List.of(maintenanceRecord.getChecklist().split("\\s*,\\s*"));
             response.setCheckList(checklist);
+            response.setRemarks(maintenanceRecord.getRemarks());
+            response.setVehicleCondition(maintenanceRecord.getVehicleCondition());
         }
 
         List<PartUsageDto> partUsageDtos = maintenanceRecordService.getPartUsageByAppointmentId(appointment);
         response.setPartUsage(partUsageDtos);
-        response.setRemarks(maintenanceRecord.getRemarks());
-        response.setVehicleCondition(maintenanceRecord.getVehicleCondition());
         return response;
     }
 
