@@ -99,7 +99,9 @@ public class AppointmentController {
     {
         serviceAppointmentService.validateAndGetAppointmentForCenter(authentication,id);
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"awaiting_pickup");
-        invoiceService.createPartInvoice(id);
+        if(serviceAppointmentService.checkInvoiceValid(updatedAppointment)) {
+            invoiceService.createPartInvoice(id);
+        }
         return ResponseEntity.noContent().build();
         //chua test
         //da xong
