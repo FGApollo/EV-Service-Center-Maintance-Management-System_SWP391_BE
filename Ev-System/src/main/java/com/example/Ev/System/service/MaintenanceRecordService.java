@@ -166,7 +166,7 @@ public class MaintenanceRecordService {
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
         Set<String> newChecklistSet = new LinkedHashSet<>();
-        if(maintainanceRecordDto.getChecklist() != null && !maintenanceRecord.getChecklist().isEmpty()) {
+        if(maintainanceRecordDto.getChecklist() != null && !maintainanceRecordDto.getChecklist().isEmpty()) {
             newChecklistSet = Arrays.stream(maintainanceRecordDto.getChecklist().split("\\|")).map(String::trim)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
