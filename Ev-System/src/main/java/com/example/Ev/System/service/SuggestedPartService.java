@@ -115,7 +115,7 @@ public class SuggestedPartService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         List<SuggestedPart> suggestedParts =
-                suggestedPartRepository.findAllByAppointment_Customer_Id(user.getId());
+                suggestedPartRepository.findAllByAppointment_Customer_IdOrderByIdDesc(user.getId());
 
         List<SuggestPartDto> dtos = new ArrayList<>();
 
