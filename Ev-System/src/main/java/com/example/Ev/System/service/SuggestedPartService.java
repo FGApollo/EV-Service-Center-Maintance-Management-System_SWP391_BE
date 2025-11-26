@@ -9,6 +9,7 @@ import com.example.Ev.System.exception.NotFoundException;
 import com.example.Ev.System.mapper.SuggestPartMapper;
 import com.example.Ev.System.repository.*;
 import org.apache.coyote.Request;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +24,15 @@ public class SuggestedPartService {
     private final ServiceAppointmentService serviceAppointmentService;
     private final PartService partService;
     private final PartRepository partRepository;
+    private final UserRepository userRepository;
 
-    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, SuggestPartMapper suggestPartMapper, ServiceAppointmentService serviceAppointmentService, PartService partService, PartRepository partRepository){
+    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, SuggestPartMapper suggestPartMapper, ServiceAppointmentService serviceAppointmentService, PartService partService, PartRepository partRepository, UserRepository userRepository){
         this.suggestedPartRepository = suggestedPartRepository;
         this.suggestPartMapper = suggestPartMapper;
         this.serviceAppointmentService = serviceAppointmentService;
         this.partService = partService;
         this.partRepository = partRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -102,6 +105,39 @@ public class SuggestedPartService {
         dto.setAppointmentId(part.getAppointment().getId());
         return dto;
     }
+
+    @Transactional
+    public List<SuggestPartDto> getAllSuggestPartForCurrentCustomer(Authentication authentication) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        List<SuggestedPart> suggestedParts =
+                suggestedPartRepository.findAllByAppointment_Customer_Id(user.getId());
+
+        List<SuggestPartDto> dtos = new ArrayList<>();
+
+        for (SuggestedPart x : suggestedParts) {
+            SuggestPartDto dto = new SuggestPartDto();
+            dto.setTotal_price(x.getPart().getUnitPrice() * x.getQuantity());
+            dto.setQuantity(x.getQuantity());
+            dto.setTechnician_note(x.getTechnicianNote());
+            dto.setStatus(x.getStatus());
+            dto.setPart_name(x.getPart().getName());
+            dto.setUnit_price(x.getPart().getUnitPrice());
+            dto.setPart_description(x.getPart().getDescription());
+            dto.setPartId(x.getPart().getId());
+            dto.setAppointmentId(x.getAppointment().getId());
+            dto.setSuggestPart_Id(x.getId());
+            dto.setAppointmentDate(x.getAppointment().getAppointmentDate());
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
 
     @Transactional
     public RequestSuggestPart createSuggestPart(RequestSuggestPart dto){

@@ -9,4 +9,6 @@ public interface SuggestedPartRepository extends JpaRepository<SuggestedPart, Lo
     List<SuggestedPart> findAllByAppointment_Id(Integer appointmentId);
 
     SuggestedPart findById(Integer id);
+
+    List<SuggestedPart> findAllByAppointment_Customer_Id(Integer customerId);
 }
