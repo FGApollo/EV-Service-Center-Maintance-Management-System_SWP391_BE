@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 
 @Data
 @AllArgsConstructor
@@ -19,5 +21,5 @@ public class SuggestPartDto {
     private String part_name;
     private Double unit_price;
     private String part_description;
-
+    private Instant appointmentDate;
 }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,19 +32,26 @@ public class SuggestedPartController {
         return ResponseEntity.ok(suggestPartDtos);
     }
 
-    @PostMapping("/{id}/accept")
+    @PutMapping("/{id}/accept")
     @PreAuthorize("hasAnyAuthority('customer', 'staff')")
     public ResponseEntity<SuggestPartDto> acceptSuggestedPart(@PathVariable @Positive Integer id){
         SuggestPartDto dto = suggestedPartService.acceptSuggestedPart(id);
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping("/{id}/deny")
+    @PutMapping("/{id}/deny")
     @PreAuthorize("hasAnyAuthority('customer', 'staff')")
     public ResponseEntity<SuggestPartDto> denySuggestedPart(@PathVariable @Positive Integer id){
         SuggestPartDto dto = suggestedPartService.denySuggestedPart(id);
         return ResponseEntity.ok(dto);
     }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('customer')")
+    public ResponseEntity<List<SuggestPartDto>> getAllSuggestPartForCurrentCustomer(Authentication authentication) {
+        return ResponseEntity.ok(suggestedPartService.getAllSuggestPartForCurrentCustomer(authentication));
+    }
+
 
     @PostMapping("")
     @PreAuthorize("hasAnyAuthority('technician')")
