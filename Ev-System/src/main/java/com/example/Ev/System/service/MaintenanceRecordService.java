@@ -160,14 +160,14 @@ public class MaintenanceRecordService {
         maintenanceRecord.setVehicleCondition(maintainanceRecordDto.getVehicleCondition());
         Set<String> oldChecklistSet = new LinkedHashSet<>();
         if (maintenanceRecord.getChecklist() != null && !maintenanceRecord.getChecklist().isEmpty()) {
-            oldChecklistSet = Arrays.stream(maintenanceRecord.getChecklist().split("|"))
+            oldChecklistSet = Arrays.stream(maintenanceRecord.getChecklist().split("\\|"))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
         Set<String> newChecklistSet = new LinkedHashSet<>();
-        if(maintenanceRecord.getChecklist() != null && !maintenanceRecord.getChecklist().isEmpty()) {
-            newChecklistSet = Arrays.stream(maintainanceRecordDto.getChecklist().split("|")).map(String::trim)
+        if(maintainanceRecordDto.getChecklist() != null && !maintenanceRecord.getChecklist().isEmpty()) {
+            newChecklistSet = Arrays.stream(maintainanceRecordDto.getChecklist().split("\\|")).map(String::trim)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
         newChecklistSet.addAll(oldChecklistSet);
