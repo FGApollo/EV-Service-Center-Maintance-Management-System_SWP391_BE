@@ -122,4 +122,10 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.createCashPayment(invoiceId));
     }
 
+    @PostMapping("/api/part-payments/{appointmentId}")
+    @PreAuthorize("hasAnyAuthority('staff')")
+    public ResponseEntity<?> createPartPayment(@PathVariable Integer appointmentId) {
+        PaymentResponse paymentResponse = paymentService.createPartPaymentUrl(appointmentId);
+        return ResponseEntity.status(HttpStatus.OK).body(paymentResponse);
+    }
 }

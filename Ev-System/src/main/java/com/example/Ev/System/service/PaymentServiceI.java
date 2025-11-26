@@ -18,4 +18,5 @@ public interface PaymentServiceI {
     PaymentResponse createRefundUrl(RefundRequestDto dto);
     void handleRefundCallback(Map<String, String> allParams);
     Payment createCashPayment(Integer invoiceId);
+    PaymentResponse createPartPaymentUrl(Integer appointmentId);
 }

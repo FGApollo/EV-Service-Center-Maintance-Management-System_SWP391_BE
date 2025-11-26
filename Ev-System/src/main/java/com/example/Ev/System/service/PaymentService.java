@@ -8,8 +8,10 @@ import com.example.Ev.System.dto.PaymentResponse;
 import com.example.Ev.System.dto.RefundRequestDto;
 import com.example.Ev.System.entity.Invoice;
 import com.example.Ev.System.entity.Payment;
+import com.example.Ev.System.entity.ServiceAppointment;
 import com.example.Ev.System.repository.InvoiceRepository;
 import com.example.Ev.System.repository.PaymentRepository;
+import com.example.Ev.System.repository.ServiceAppointmentRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,8 @@ public class PaymentService implements  PaymentServiceI {
     private VNpayConfig vnpayConfig;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private ServiceAppointmentRepository serviceAppointmentRepository;
 
 
     public void savePayment(Integer invoiceId, BigDecimal amount, String referenceNo) {
@@ -190,6 +194,18 @@ public class PaymentService implements  PaymentServiceI {
         invoiceService.MarkInvoiceAsPaid(invoiceId);
 
         return savedPayment;
+    }
+
+    @Override
+    public PaymentResponse createPartPaymentUrl(Integer appointmentId) {
+        Invoice invoice = invoiceRepository.findByAppointment_IdAndStatus(appointmentId, "unpaid");
+
+        PaymentDto paymentDto = new PaymentDto();
+        paymentDto.setInvoiceId(invoice.getId());
+        paymentDto.setClientIp("127.0.0.1");
+        paymentDto.setMethod("online");
+
+        return createPaymentUrl(paymentDto);
     }
 
 }
