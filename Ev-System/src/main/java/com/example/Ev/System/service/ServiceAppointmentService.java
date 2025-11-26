@@ -363,11 +363,11 @@ public class ServiceAppointmentService {
         for (Invoice invoice : invoices) {
             // Nếu serviceName == null => Đây là invoice phụ tùng
             if (invoice.getServiceName() == null || invoice.getServiceName().isBlank()) {
-                return false; // Không hợp lệ, vì có billing phụ tùng
+                return false;
             }
         }
 
-        return true; // Tất cả đều là invoice service type
+        return true;
     }
 
 
