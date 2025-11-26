@@ -140,7 +140,6 @@ public class AppointmentController {
         return ResponseEntity.ok(responses);
     }
 
-
     @GetMapping("/status/{id}")
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
     @Transactional(readOnly = true)

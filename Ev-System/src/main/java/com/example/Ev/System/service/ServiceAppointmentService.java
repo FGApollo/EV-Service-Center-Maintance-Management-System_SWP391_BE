@@ -36,8 +36,9 @@ public class ServiceAppointmentService {
     private final WorkLogService workLogService;
     private final UserMapper userMapper;
     private final AppointmentService appointmentService;
+    private final InvoiceService invoiceService;
 
-    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository, UserService userService, MaintenanceReminderCreationService maintenanceReminderCreationService, WorkLogService workLogService, UserMapper userMapper, AppointmentService appointmentService) {
+    public ServiceAppointmentService(AppointmentMapper appointmentMapper, AppointmentRepository appointmentRepository, UserRepository userRepository, ServiceCenterRepository serviceCenterRepository, VehicleRepository vehicleRepository, ServiceTypeRepository serviceTypeRepository, AppointmentServiceRepository appointmentServiceRepository, StaffAppointmentService staffAppointmentService, MaintenanceRecordService maintenanceRecordService, NotificationProgressService notificationProgressService, MaintenanceRecordRepository maintenanceRecordRepository, UserService userService, MaintenanceReminderCreationService maintenanceReminderCreationService, WorkLogService workLogService, UserMapper userMapper, AppointmentService appointmentService, InvoiceService invoiceService) {
         this.appointmentMapper = appointmentMapper;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -54,6 +55,7 @@ public class ServiceAppointmentService {
         this.workLogService = workLogService;
         this.userMapper = userMapper;
         this.appointmentService = appointmentService;
+        this.invoiceService = invoiceService;
     }
 
     @Transactional
@@ -229,6 +231,7 @@ public class ServiceAppointmentService {
         if(!validStatus){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
         }
+
         ServiceAppointment updatedAppointment = updateAppointment(id, "in_progress");
 
         String sId = staffIdList.stream()
@@ -321,12 +324,6 @@ public class ServiceAppointmentService {
 
         return buildFullAppointmentResponse(appointment);
     }
-
-
-
-
-
-
 
 
 //    @Transactional
