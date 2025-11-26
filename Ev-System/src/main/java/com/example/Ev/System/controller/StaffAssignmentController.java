@@ -23,13 +23,11 @@ import java.util.List;
 public class StaffAssignmentController {
     private final StaffAppointmentService staffAppointmentService;
     private final UserService userService;
-    private final UserRepository userRepository;
     private final StaffAssignmentMapper staffAssignmentMapper;
 
     public StaffAssignmentController(StaffAppointmentService staffAppointmentService, UserService userService, UserRepository userRepository, StaffAssignmentRepository staffAssignmentRepository, StaffAssignmentMapper staffAssignmentMapper) {
         this.staffAppointmentService = staffAppointmentService;
         this.userService = userService;
-        this.userRepository = userRepository;
         this.staffAssignmentMapper = staffAssignmentMapper;
     }
 
