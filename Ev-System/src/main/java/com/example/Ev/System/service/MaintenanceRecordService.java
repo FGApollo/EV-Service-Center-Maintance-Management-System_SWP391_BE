@@ -237,7 +237,6 @@ public class MaintenanceRecordService {
                 .stream()
                 .map(partUsageMapper::toDto)
                 .toList();
-
         return dtoList;
     }
 

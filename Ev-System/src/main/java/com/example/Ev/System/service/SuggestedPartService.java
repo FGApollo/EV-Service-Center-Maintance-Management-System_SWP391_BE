@@ -149,6 +149,20 @@ public class SuggestedPartService {
         if(part == null){
             throw new NotFoundException("Part khong ton tai");
         }
+        List<SuggestedPart> suggestedParts = suggestedPartRepository.findAllByAppointment_Id(dto.getAppointmentId());
+        if(suggestedParts != null && !suggestedParts.isEmpty()){
+            for(SuggestedPart x : suggestedParts){
+                if(x.getPart().getId().equals(part.getId())){
+                    if (x != null) {
+                        x.setQuantity(dto.getQuantity());
+                        x.setTechnicianNote(dto.getTechnicianNote());
+                        suggestedPartRepository.save(x);
+                        return suggestPartMapper.toDto(x);
+                    }
+                }
+            }
+        }
+
         SuggestedPart suggestedPart = suggestPartMapper.toEntity(dto);
         suggestedPart.setAppointment(serviceAppointment);
         suggestedPart.setPart(part);
@@ -162,10 +176,6 @@ public class SuggestedPartService {
         RequestSuggestPart requestSuggestPart = requestSuggestParts.get(0);
         if(requestSuggestPart == null){
             throw new NotFoundException("Suggest part khong ton tai");
-        }
-        List<SuggestedPart> suggestedParts = suggestedPartRepository.findAllByAppointment_Id(requestSuggestPart.getAppointmentId());
-        if(!suggestedParts.isEmpty()){
-            suggestedPartRepository.deleteAll(suggestedParts);
         }
         List<RequestSuggestPart> created = new ArrayList<>();
         for (RequestSuggestPart dto : requestSuggestParts) {
