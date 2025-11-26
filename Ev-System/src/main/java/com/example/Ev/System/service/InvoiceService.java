@@ -1,9 +1,6 @@
 package com.example.Ev.System.service;
 
-import com.example.Ev.System.dto.CustomerInvoiceDto;
-import com.example.Ev.System.dto.InvoiceDataDto;
-import com.example.Ev.System.dto.InvoiceDetailDto;
-import com.example.Ev.System.dto.InvoiceSimpleDto;
+import com.example.Ev.System.dto.*;
 import com.example.Ev.System.entity.*;
 import com.example.Ev.System.entity.AppointmentService;
 import com.example.Ev.System.exception.BadRequestException;
@@ -29,6 +26,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -234,12 +232,24 @@ public class InvoiceService implements InvoiceServiceI {
 
     @Override
     public CustomerInvoiceDto getCustomerInvoice(InvoiceDataDto invoiceDataDto) {
+        List<PartUsageSimpleDto> partDto = invoiceDataDto.getParts()
+                .stream()
+                .map(partUsage -> {
+                    PartUsageSimpleDto dto = new PartUsageSimpleDto();
+                    dto.setPartId(partUsage.getPart().getId());
+                    dto.setPartName(partUsage.getPart().getName());
+                    dto.setQuantity(partUsage.getQuantityUsed());
+                    dto.setPrice(partUsage.getUnitCost());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
         return new CustomerInvoiceDto(
                 invoiceDataDto.getAppointment().getId(),
                 invoiceDataDto.getAppointment().getCustomer().getFullName(),
                 invoiceDataDto.getAppointment().getVehicle().getModel(),
                 invoiceDataDto.getServices(),
-                invoiceDataDto.getParts()
+                partDto
         );
     }
 

@@ -14,5 +14,5 @@ public class CustomerInvoiceDto {
     private String customerName;
     private String vehicleModel;
     private List<ServiceType> services;
-    private List<PartUsage> parts;
+    private List<PartUsageSimpleDto> parts;
 }
