@@ -87,7 +87,7 @@ public class SuggestedPartService {
         if(part == null){
             throw new NotFoundException("Suggest part khong ton tai");
         }
-        part.setStatus("denied");
+        part.setStatus("rejected");
         suggestedPartRepository.save(part);
 
         SuggestPartDto dto = new SuggestPartDto();
