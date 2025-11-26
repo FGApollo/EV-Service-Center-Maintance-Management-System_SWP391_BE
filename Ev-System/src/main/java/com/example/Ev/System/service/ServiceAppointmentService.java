@@ -359,6 +359,13 @@ public class ServiceAppointmentService {
 
     public boolean checkInvoiceValid(ServiceAppointment appointment) {
         Set<Invoice> invoices = appointment.getInvoices();
+        for (Invoice invoice : invoices) {
+            String name = invoice.getServiceName();
+            if ((name == null || name.isBlank())
+                    && "PAID".equalsIgnoreCase(invoice.getStatus())) {
+                return false;
+            }
+        }
         if(invoices.size() >= 2) {
             return false;
         }
