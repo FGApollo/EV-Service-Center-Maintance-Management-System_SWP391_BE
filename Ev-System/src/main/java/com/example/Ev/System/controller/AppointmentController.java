@@ -47,7 +47,6 @@ public class AppointmentController {
         this.invoiceService = invoiceService;
         this.staffAppointmentService = staffAppointmentService;
         this.maintenanceReminderCreationService = maintenanceReminderCreationService;
-
         this.userMapper = userMapper;
     }
 

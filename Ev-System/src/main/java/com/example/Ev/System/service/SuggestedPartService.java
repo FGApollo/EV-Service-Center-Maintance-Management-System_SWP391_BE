@@ -47,6 +47,9 @@ public class SuggestedPartService {
             dto.setPart_name(x.getPart().getName());
             dto.setUnit_price(x.getPart().getUnitPrice());
             dto.setPart_description(x.getPart().getDescription());
+            dto.setPartId(x.getPart().getId());
+            dto.setAppointmentId(x.getAppointment().getId());
+            dto.setSuggestPart_Id(x.getId());
             dtos.add(dto);
         }
 
@@ -72,6 +75,8 @@ public class SuggestedPartService {
         dto.setPart_description(part.getPart().getDescription());
         dto.setTechnician_note(part.getTechnicianNote());
         dto.setStatus(part.getStatus());
+        dto.setPartId(part.getPart().getId());
+        dto.setAppointmentId(part.getAppointment().getId());
 
         return dto;
     }
@@ -82,7 +87,7 @@ public class SuggestedPartService {
         if(part == null){
             throw new NotFoundException("Suggest part khong ton tai");
         }
-        part.setStatus("denied");
+        part.setStatus("rejected");
         suggestedPartRepository.save(part);
 
         SuggestPartDto dto = new SuggestPartDto();
@@ -93,7 +98,7 @@ public class SuggestedPartService {
         dto.setPart_description(part.getPart().getDescription());
         dto.setTechnician_note(part.getTechnicianNote());
         dto.setStatus(part.getStatus());
-        dto.setPart_Id(part.getPart().getId());
+        dto.setPartId(part.getPart().getId());
         dto.setAppointmentId(part.getAppointment().getId());
         return dto;
     }

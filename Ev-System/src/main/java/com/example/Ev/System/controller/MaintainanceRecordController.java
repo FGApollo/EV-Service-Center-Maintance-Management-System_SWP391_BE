@@ -21,13 +21,11 @@ import java.util.List;
 public class MaintainanceRecordController {
     private final MaintenanceRecordService maintenanceRecordService;
     private final ServiceAppointmentService serviceAppointmentService;
-    private final UserRepository userRepository;
     private final MaintainanceRecordMapper maintainanceRecordMapper;
 
     public MaintainanceRecordController(MaintenanceRecordService maintenanceRecordService, ServiceAppointmentService serviceAppointmentService, UserRepository userRepository, MaintainanceRecordMapper maintainanceRecordMapper) {
         this.maintenanceRecordService = maintenanceRecordService;
         this.serviceAppointmentService = serviceAppointmentService;
-        this.userRepository = userRepository;
         this.maintainanceRecordMapper = maintainanceRecordMapper;
     }
 
