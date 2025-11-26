@@ -130,7 +130,6 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(userDto.getPassword()));
         user.setServiceCenter(serviceCenter);
         userRepository.save(user);
-
         return userMapper.toDTO(user);
     }
 
