@@ -32,6 +32,8 @@ public class GlobalExceptionHandler {
         return body;
     }
 
+
+    // dùng để bắt lỗi validation trong dto, mã 400
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.BAD_REQUEST, "Validation failed");
@@ -43,6 +45,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+
+    // dùng để bắt lỗi validation ở @PathVariable, @RequestParam, mã 400
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.BAD_REQUEST, "Constraint violation");
@@ -54,6 +58,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+    // dùng để bắt mấy cái tìm không thấy, mã 404
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleNotFound(NotFoundException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.NOT_FOUND, "Not Found");
@@ -61,6 +66,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    // bắt lỗi sai dữ liệu nghiệp vụ, mã 400
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<?> handleBadRequest(BadRequestException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.BAD_REQUEST, "Bad Request");
@@ -68,6 +74,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+    // bắt mấy cái lỗi không có config, mã 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneric(Exception ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
@@ -75,7 +82,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 
-
+    // bắt lỗi chặn quyền truy cập, mã 403
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.FORBIDDEN, "Access Denied");
@@ -83,6 +90,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
+    // bắt lỗi xác thực(token sai), mã 401
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.UNAUTHORIZED, "Unauthorized");
@@ -90,6 +98,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
+    // bắt lỗi gọi api không tồn tại, mã 404
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<?> handleNoHandlerFound(NoHandlerFoundException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.NOT_FOUND, "API Not Found");
@@ -97,6 +106,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    // api sai method, mã 405
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<?> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest req) {
         Map<String, Object> body = baseBody(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed");
