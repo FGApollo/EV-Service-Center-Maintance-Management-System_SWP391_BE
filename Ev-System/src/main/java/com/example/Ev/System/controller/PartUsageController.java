@@ -42,7 +42,6 @@ public class PartUsageController {
         partUsageService.updatePartUsage(updatePartUsage,authentication);
     } // can test // da test xong
 
-
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('technician')")
     public ResponseEntity<List<PartUsageDto>> getPartUsageByAppointmentId(@PathVariable int id) {
