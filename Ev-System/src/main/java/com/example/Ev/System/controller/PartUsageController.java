@@ -50,7 +50,7 @@ public class PartUsageController {
     }
 
 
-    @PostMapping("/return-parts/{appointmentId}")
+    @PutMapping("/return-parts/{appointmentId}")
     @PreAuthorize("hasAnyAuthority('staff', 'technician')")
     public String returnUnusedParts(@PathVariable Integer appointmentId) {
         partUsageService.returnUsedParts(appointmentId);
