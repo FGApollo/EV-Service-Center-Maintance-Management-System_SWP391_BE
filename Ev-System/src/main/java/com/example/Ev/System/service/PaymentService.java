@@ -137,10 +137,10 @@ public class PaymentService implements  PaymentServiceI {
         vnp_ParamsMap.put("vnp_Amount", dto.getAmount().multiply(BigDecimal.valueOf(100)).toString());
         vnp_ParamsMap.put("vnp_IpAddr", "127.0.0.1");
         vnp_ParamsMap.put("vnp_TxnRef", payment.getId().toString());
-        vnp_ParamsMap.put("vnp_OrderInfo", dto.getReason());
+        vnp_ParamsMap.put("vnp_OrderInfo", "REFUND_INVOICE: " + payment.getInvoice().getId() + " - REASON: " +dto.getReason());
         vnp_ParamsMap.put("vnp_OrderType", "refund");
         vnp_ParamsMap.put("vnp_Locale", "vn");
-        vnp_ParamsMap.put("vnp_ReturnUrl", PaymentConfig.vnp_returnurl);
+        vnp_ParamsMap.put("vnp_ReturnUrl", PaymentConfig.vnp_refundReturnurl);
 
         String queryUrl = PaymentConfig.getPaymentUrl(vnp_ParamsMap, true);
         String hashData = PaymentConfig.getPaymentUrl(vnp_ParamsMap, false);
@@ -174,6 +174,22 @@ public class PaymentService implements  PaymentServiceI {
         }else {
             System.out.println("Refund failed with response code: " + responseCode);
         }
+    }
+
+    @Override
+    public Payment createCashPayment(Integer invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+
+        Payment payment = Payment.builder()
+                .invoice(invoice)
+                .amount(invoice.getTotalAmount())
+                .method("offline")
+                .build();
+        Payment savedPayment = paymentRepository.save(payment);
+        invoiceService.MarkInvoiceAsPaid(invoiceId);
+
+        return savedPayment;
     }
 
 }

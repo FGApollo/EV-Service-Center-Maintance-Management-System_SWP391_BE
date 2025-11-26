@@ -91,7 +91,7 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.getPaymentHistoryByUser(currentUser.getId()));
     }
 
-    @PostMapping("/api/refund/create")
+    @PostMapping("/api/refunds")
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<?> createRefund(@RequestBody RefundRequestDto refundRequestDto) {
         PaymentResponse paymentResponse = paymentService.createRefundUrl(refundRequestDto);
@@ -115,4 +115,11 @@ public class PaymentController {
                 .header("Location", redirectUrl)
                 .build();
     }
+
+    @PostMapping("/api/cash-payment/{invoiceId}")
+    @PreAuthorize("hasAnyAuthority('staff', 'manager')")
+    public ResponseEntity<?> createCashPayment(@PathVariable Integer invoiceId ) {
+        return ResponseEntity.ok(paymentService.createCashPayment(invoiceId));
+    }
+
 }

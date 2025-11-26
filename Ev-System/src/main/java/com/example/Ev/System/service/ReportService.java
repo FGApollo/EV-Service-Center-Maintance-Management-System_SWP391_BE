@@ -208,7 +208,7 @@ public class ReportService implements ReportServiceI {
                         payment -> Optional.ofNullable(payment.getMethod()).orElse("UNKNOWN")
                 ));
 
-        double totalAmount = validPayments.stream()
+        double totalAmount = filteredPayments.stream()
                 .mapToDouble(payment -> payment.getAmount().doubleValue())
                 .sum();
 
@@ -303,88 +303,49 @@ public class ReportService implements ReportServiceI {
         }
     }
 
-//    @Override
-//    @Transactional
-//    public Map<String, Double> getRevenueByServiceCurrentMonth() {
-//        YearMonth currentMonth = YearMonth.now(ZoneId.systemDefault());
-//
-//        // Get all paid invoices
-//        List<Invoice> paidInvoices = invoiceRepository.findByStatus("PAID");
-//
-//        // Filter only invoices whose payment date is in the current month
-//        List<Invoice> currentMonthInvoices = paidInvoices.stream()
-//                .filter(invoice -> {
-//                    YearMonth invoiceMonth = YearMonth.from(
-//                            invoice.getPaymentDate()
-//                                    .atZone(ZoneId.systemDefault())
-//                                    .toLocalDate()
-//                    );
-//                    return invoiceMonth.equals(currentMonth);
-//                })
-//                .toList();
-//
-//        // Map invoices → appointments → services → sum prices
-//        List<ServiceAppointment> appointments = currentMonthInvoices.stream()
-//                .map(Invoice::getAppointment)
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-//
-//        return appointments.stream()
-//                .flatMap(appointment -> appointment.getServiceTypes().stream())
-//                .collect(Collectors.groupingBy(
-//                        ServiceType::getName,
-//                        Collectors.summingDouble(serviceType ->
-//                                serviceType.getPrice() != null ? serviceType.getPrice().doubleValue() : 0.0)
-//                ));
-//    }
-@Override
-@Transactional
-public Map<String, Double> getRevenueByServiceCurrentMonth() {
-    YearMonth currentMonth = YearMonth.now(ZoneId.systemDefault());
+    @Override
+    @Transactional
+    public Map<String, Double> getRevenueByServiceCurrentMonth() {
+        YearMonth currentMonth = YearMonth.now(ZoneId.systemDefault());
 
-    // Get all paid invoices
-    List<Invoice> paidInvoices = invoiceRepository.findByStatus("PAID");
+        // Get all paid invoices
+        List<Invoice> paidInvoices = invoiceRepository.findByStatus("PAID");
 
-    // Filter only invoices whose payment date is in the current month
-    List<Invoice> currentMonthInvoices = paidInvoices.stream()
-            .filter(invoice -> {
-                YearMonth invoiceMonth = YearMonth.from(
-                        invoice.getPaymentDate()
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                );
-                return invoiceMonth.equals(currentMonth);
-            })
-            .toList();
+        // Filter only invoices whose payment date is in the current month
+        List<Invoice> currentMonthInvoices = paidInvoices.stream()
+                .filter(invoice -> {
+                    YearMonth invoiceMonth = YearMonth.from(
+                            invoice.getPaymentDate()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                    );
+                    return invoiceMonth.equals(currentMonth);
+                })
+                .toList();
 
-    // Map invoices → appointments → services → sum prices
-//    List<ServiceAppointment> appointments = currentMonthInvoices.stream()
-//            .map(Invoice::getAppointment)
-//            .filter(Objects::nonNull)
-//            .collect(Collectors.toList());
 
-    return currentMonthInvoices.stream()
-            .collect(Collectors.groupingBy(
-                    Invoice::getServiceName,
-                    Collectors.summingDouble(invoice ->
-                            invoice.getTotalAmount() != null ? invoice.getTotalAmount().doubleValue() : 0.0)
-            ));
-}
-
-    // Common logic for counting + sorting
-    private List<Map.Entry<String, Long>> calculateTrendingServices(List<ServiceAppointment> appointments) {
-        Map<String, Long> serviceCount = appointments.stream()
-                .flatMap(appointment -> appointment.getServiceTypes().stream())
-                .map(as -> as.getName())
+        return currentMonthInvoices.stream()
                 .collect(Collectors.groupingBy(
-                        serviceName -> serviceName,
-                        Collectors.counting()
+                        Invoice::getServiceName,
+                        Collectors.summingDouble(invoice ->
+                                invoice.getTotalAmount() != null ? invoice.getTotalAmount().doubleValue() : 0.0)
                 ));
-
-        return serviceCount.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .limit(3)
-                .collect(Collectors.toList());
     }
 
-}
+        // Common logic for counting + sorting
+        private List<Map.Entry<String, Long>> calculateTrendingServices(List<ServiceAppointment> appointments) {
+            Map<String, Long> serviceCount = appointments.stream()
+                    .flatMap(appointment -> appointment.getServiceTypes().stream())
+                    .map(ServiceType::getName)
+                    .collect(Collectors.groupingBy(
+                            serviceName -> serviceName,
+                            Collectors.counting()
+                    ));
+
+            return serviceCount.entrySet().stream()
+                    .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                    .limit(3)
+                    .collect(Collectors.toList());
+        }
+
+    }

@@ -17,6 +17,7 @@ public class PaymentConfig {
     public static String secretKey = "XEE13TZ9HH3Y1455OBKCDJ2QYKB5RWZ8";
     public static String vnp_payurl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_returnurl = "http://localhost:8080/api/auth/payments/return";
+    public static String vnp_refundReturnurl = "http://localhost:8080/api/auth/refund/return";
 
     public static String getPaymentUrl(Map<String, String> vnp_Params, boolean type) {
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
