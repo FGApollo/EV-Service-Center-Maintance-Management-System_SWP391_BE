@@ -11,12 +11,12 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PartDto {
-    private Integer PartId;
-    private String PartName;
+    private Integer id;
+    private String name;
     private Double unitPrice;
     private Double importPrice;
-    private String Description;
+    private String description;
     private Integer minStockLevel;
     private Instant createdAt;
-    private Integer Quantity;
+    private Integer quantity;
 }
