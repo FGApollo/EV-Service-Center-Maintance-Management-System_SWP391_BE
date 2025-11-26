@@ -49,6 +49,7 @@ public class SuggestedPartService {
             dto.setPart_description(x.getPart().getDescription());
             dto.setPartId(x.getPart().getId());
             dto.setAppointmentId(x.getAppointment().getId());
+            dto.setSuggestPart_Id(x.getId());
             dtos.add(dto);
         }
 
