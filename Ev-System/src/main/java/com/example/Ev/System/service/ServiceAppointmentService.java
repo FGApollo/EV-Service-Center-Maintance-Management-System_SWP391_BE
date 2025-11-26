@@ -383,6 +383,7 @@ public class ServiceAppointmentService {
 
 
 
+
 //    @Transactional
 //    public List<AppointmentAllFieldsDto> getAllAppointment(){
 //        return appointmentRepository.getAllSuggestedParts()
