@@ -216,10 +216,13 @@ public class InvoiceService implements InvoiceServiceI {
                 .reduce((first, second) -> second)
                 .orElseThrow(() -> new RuntimeException("No maintenance record found for this appointment"));
 
-        BigDecimal totalAmount = partUsageRepository.findByRecord(record).stream()
-                .map(partUsage ->
-                        BigDecimal.valueOf(partUsage.getUnitCost() * partUsage.getQuantityUsed()))
+        List<PartUsage> usages = partUsageRepository.findByRecord(record);
+
+        BigDecimal totalAmount = usages.stream()
+                .map(u -> (BigDecimal.valueOf(u.getQuantityUsed()*u.getUnitCost())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        System.out.println("TOTAL CALCULATED = " + totalAmount);
 
         Invoice invoice = new Invoice();
         invoice.setAppointment(appointment);
@@ -229,6 +232,7 @@ public class InvoiceService implements InvoiceServiceI {
 
         return invoiceRepository.save(invoice);
     }
+
 
     @Override
     public CustomerInvoiceDto getCustomerInvoice(InvoiceDataDto invoiceDataDto) {

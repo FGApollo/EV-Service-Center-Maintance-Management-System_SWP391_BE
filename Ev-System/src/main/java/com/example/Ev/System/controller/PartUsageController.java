@@ -42,7 +42,6 @@ public class PartUsageController {
         partUsageService.updatePartUsage(updatePartUsage,authentication);
     } // can test // da test xong
 
-<<<<<<< HEAD
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('technician')")
     public ResponseEntity<List<PartUsageDto>> getPartUsageByAppointmentId(@PathVariable int id) {
@@ -50,12 +49,11 @@ public class PartUsageController {
         return ResponseEntity.ok(maintenanceRecordService.getPartUsageByAppointmentId(appointment));
     }
 
-=======
     @PostMapping("/return-parts/{appointmentId}")
     @PreAuthorize("hasAnyAuthority('staff', 'technician')")
     public String returnUnusedParts(@PathVariable Integer appointmentId) {
         partUsageService.returnUsedParts(appointmentId);
         return "Unused parts returned successfully";
     }
->>>>>>> origin/main
+
 }
