@@ -21,4 +21,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     boolean existsByAppointment_Id(Integer appointmentId);
     Invoice findByAppointment_IdAndStatus(Integer appointmentId, String status);
     List<Invoice> findInvoicesByAppointment_ServiceCenter_Id(Integer centerId);
+
+    List<Invoice> findAllByAppointment_Id(Integer appointmentId);
 }
