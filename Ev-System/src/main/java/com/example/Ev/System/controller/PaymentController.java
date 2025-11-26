@@ -116,7 +116,7 @@ public class PaymentController {
                 .build();
     }
 
-    @PostMapping("/api/cash-payment/{invoiceId}")
+    @PutMapping("/api/cash-payment/{invoiceId}")
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     public ResponseEntity<?> createCashPayment(@PathVariable Integer invoiceId ) {
         return ResponseEntity.ok(paymentService.createCashPayment(invoiceId));

@@ -189,6 +189,7 @@ public class PaymentService implements  PaymentServiceI {
                 .invoice(invoice)
                 .amount(invoice.getTotalAmount())
                 .method("offline")
+                .paymentDate(LocalDateTime.now())
                 .build();
         Payment savedPayment = paymentRepository.save(payment);
         invoiceService.MarkInvoiceAsPaid(invoiceId);
