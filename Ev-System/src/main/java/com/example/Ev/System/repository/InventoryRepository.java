@@ -14,4 +14,5 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Optional<Inventory> findByCenterIdAndPart(Integer centerId, Part part);
     List<Inventory> findByCenterId(Integer centerId);
     void deleteByPart(Part part);
+    Inventory findByCenterIdAndPart_Id(Integer centerId, Integer partId);
 }

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/technician")
+@RequestMapping("/api")
 @AllArgsConstructor
 public class PartUsageController {
     @Autowired
@@ -36,12 +36,13 @@ public class PartUsageController {
         return "Part usage recorded successfully";
     }
 
-    @PutMapping("/part_usage/update")
+    @PutMapping("/technician/part_usage/update")
     @PreAuthorize("hasAnyAuthority('technician')")
     public void updatePartUsage(@RequestBody UpdatePartUsage updatePartUsage, Authentication authentication) {
         partUsageService.updatePartUsage(updatePartUsage,authentication);
     } // can test // da test xong
 
+<<<<<<< HEAD
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('technician')")
     public ResponseEntity<List<PartUsageDto>> getPartUsageByAppointmentId(@PathVariable int id) {
@@ -49,4 +50,12 @@ public class PartUsageController {
         return ResponseEntity.ok(maintenanceRecordService.getPartUsageByAppointmentId(appointment));
     }
 
+=======
+    @PostMapping("/return-parts/{appointmentId}")
+    @PreAuthorize("hasAnyAuthority('staff', 'technician')")
+    public String returnUnusedParts(@PathVariable Integer appointmentId) {
+        partUsageService.returnUsedParts(appointmentId);
+        return "Unused parts returned successfully";
+    }
+>>>>>>> origin/main
 }

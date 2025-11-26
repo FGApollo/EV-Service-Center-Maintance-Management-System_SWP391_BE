@@ -1,5 +1,6 @@
 package com.example.Ev.System.controller;
 
+import com.example.Ev.System.dto.PartDto;
 import com.example.Ev.System.entity.Part;
 import com.example.Ev.System.entity.User;
 import com.example.Ev.System.service.PartServiceI;
@@ -22,8 +23,8 @@ public class PartController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin')")
-    public ResponseEntity<List<Part>> getAllParts() {
-        List<Part> parts = partService.getAll();
+    public ResponseEntity<List<PartDto>> getAllParts() {
+        List<PartDto> parts = partService.getAll();
         return ResponseEntity.ok(parts);
     }
 

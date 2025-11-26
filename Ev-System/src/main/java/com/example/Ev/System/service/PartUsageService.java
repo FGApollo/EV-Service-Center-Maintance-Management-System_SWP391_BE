@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,13 +41,9 @@ public class PartUsageService implements PartUsageServiceI{
     private JavaMailSender mailSender;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private ServiceAppointmentRepository serviceAppointmentRepository;
 
-    @Autowired
-    @Lazy
-    private ServiceAppointmentService serviceAppointmentService;
 
     @Value("${app.notifications.from:no-reply@example.com}")
     private String centerEmail;
@@ -174,6 +171,38 @@ public class PartUsageService implements PartUsageServiceI{
                 .limit(5)
                 .toList();
     }
+
+    @Override
+    @Transactional
+    public List<PartUsage> returnUsedParts(Integer appointmentId) {
+        ServiceAppointment appointment = serviceAppointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Service Appointment not found"));
+
+        List<PartUsage> partUsages = partUsageRepository.findByRecord_AppointmentId(appointmentId);
+
+        Integer centerId = appointment.getServiceCenter().getId();
+
+        for (PartUsage usage : partUsages) {
+
+            Integer partId = usage.getPart().getId();
+            int qty = usage.getQuantityUsed();
+
+            Inventory inventory = inventoryRepository
+                    .findByCenterIdAndPart_Id(centerId, partId);
+
+            if (inventory == null) {
+                throw new RuntimeException("Inventory not found for part " + partId);
+            }
+
+            inventory.setQuantity(inventory.getQuantity() + qty);
+            inventoryRepository.save(inventory);
+
+            partUsageRepository.delete(usage);
+        }
+
+        return partUsages;
+    }
+
 
 
     public void sendStockNotification(Part part, Inventory inventory) {

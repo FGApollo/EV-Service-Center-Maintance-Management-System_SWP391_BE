@@ -13,5 +13,6 @@ import java.util.Map;
 public interface PartUsageServiceI {
     public void usePart(Integer partId, Integer quantityUsed, Integer centerId, Integer RecordId);
     public List<Map.Entry<String, Long>> getTop5PartsUsedInLastMonth();
+    List<PartUsage> returnUsedParts(Integer appointmentId);
 
 }
