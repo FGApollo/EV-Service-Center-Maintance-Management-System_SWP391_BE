@@ -227,10 +227,22 @@ public class ServiceAppointmentService {
             throw new BadRequestException("Lịch hẹn này đã ở trạng thái đang thực hiện!");
         }
 
+        Set<Invoice> invoices = appointment.getInvoices();
+        boolean isPayFull = true;
+        for (Invoice invoice : invoices) {
+            if(invoice.getStatus().equals("unpaid")){
+                isPayFull = false;
+                break;
+            }
+        }
+        if(isPayFull){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Khong the tro ve khi da tra het tien");
+        }
         boolean validStatus = checkStatusChange(appointment.getStatus(),"in_progress");
         if(!validStatus){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
         }
+
         ServiceAppointment updatedAppointment = updateAppointment(id, "in_progress");
 
         String sId = staffIdList.stream()
