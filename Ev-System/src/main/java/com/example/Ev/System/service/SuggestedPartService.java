@@ -93,7 +93,8 @@ public class SuggestedPartService {
         dto.setPart_description(part.getPart().getDescription());
         dto.setTechnician_note(part.getTechnicianNote());
         dto.setStatus(part.getStatus());
-
+        dto.setPart_Id(part.getPart().getId());
+        dto.setAppointmentId(part.getAppointment().getId());
         return dto;
     }
 

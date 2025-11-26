@@ -18,4 +18,5 @@ public class SuggestPartDto {
     private String part_name;
     private Double unit_price;
     private String part_description;
+    private Integer part_Id;
 }

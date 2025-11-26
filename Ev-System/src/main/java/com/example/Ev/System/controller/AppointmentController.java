@@ -90,35 +90,35 @@ public class AppointmentController {
     @PutMapping("/{id}/accept")
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
     @Transactional
-    public ResponseEntity<AppointmentResponse> acceptAppointment(
+    public ResponseEntity<Void> acceptAppointment(
             @PathVariable Integer id ,Authentication authentication) {
         serviceAppointmentService.validateAndGetAppointmentForCenter(authentication,id);
         ServiceAppointment updatedAppointment = serviceAppointmentService.acceptAppointment(id);
-        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
+        return ResponseEntity.noContent().build();
     }
 
 
     @PutMapping("/{id}/cancel")
     @Transactional
     @PreAuthorize("hasAnyAuthority('staff', 'manager')")
-    public ResponseEntity<AppointmentResponse> cancelAppointment(
+    public ResponseEntity<Void> cancelAppointment(
             @PathVariable Integer id,Authentication authentication) //bo text vao body , chu k phai json , json la 1 class
     {
         serviceAppointmentService.validateAndGetAppointmentForCenter(authentication,id);
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"cancelled");
-        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
+        return ResponseEntity.noContent().build();
 
     }
 
     @PutMapping("/{id}/waiting")
     @Transactional
     @PreAuthorize("hasAnyAuthority('staff', 'manager','technician')")
-    public ResponseEntity<AppointmentResponse> waitingAppointment(
+    public ResponseEntity<Void> waitingAppointment(
             @PathVariable Integer id,Authentication authentication)
     {
         serviceAppointmentService.validateAndGetAppointmentForCenter(authentication,id);
         ServiceAppointment updatedAppointment = serviceAppointmentService.updateAppointment(id,"awaiting_pickup");
-        return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
+        return ResponseEntity.noContent().build();
         //chua test
         //da xong
     }
@@ -126,25 +126,25 @@ public class AppointmentController {
     @PutMapping("/{id}/inProgress")
     @PreAuthorize("hasAnyAuthority('staff', 'manager', 'technician')")
     @Transactional
-    public ResponseEntity<AppointmentResponse> inProgressAppointment(
+    public ResponseEntity<Void> inProgressAppointment(
             @PathVariable Integer id,
             Authentication authentication) {
         AppointmentResponse response =
                 serviceAppointmentService.markAppointmentInProgress(id, authentication);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.noContent().build();
     }
 
 
     @PutMapping("/{id}/done")
     @PreAuthorize("hasAnyAuthority('technician')")
     @Transactional
-    public ResponseEntity<AppointmentResponse> doneAppointment(
+    public ResponseEntity<Void> doneAppointment(
             @PathVariable Integer id,
             @RequestBody MaintainanceRecordDto maintainanceRecordDto,
             Authentication authentication) {
         AppointmentResponse response =
                 serviceAppointmentService.markAppointmentAsDone(id, maintainanceRecordDto, authentication);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/appointments/status/{status}")
