@@ -242,7 +242,16 @@ public class ServiceAppointmentService {
         if(!validStatus){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "status is invalid");
         }
-
+        Set<Invoice> invoiceSet = appointment.getInvoices();
+        if(!invoiceSet.isEmpty()) {
+            for (Invoice invoice : invoices) {
+                String name = invoice.getServiceName();
+                if ((name == null || name.isBlank())
+                        && "PAID".equalsIgnoreCase(invoice.getStatus())) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Khong the tra ve khi da thanh toan tien vat lieu");
+                }
+            }
+        }
         ServiceAppointment updatedAppointment = updateAppointment(id, "in_progress");
 
         String sId = staffIdList.stream()
@@ -359,13 +368,6 @@ public class ServiceAppointmentService {
 
     public boolean checkInvoiceValid(ServiceAppointment appointment) {
         Set<Invoice> invoices = appointment.getInvoices();
-        for (Invoice invoice : invoices) {
-            String name = invoice.getServiceName();
-            if ((name == null || name.isBlank())
-                    && "PAID".equalsIgnoreCase(invoice.getStatus())) {
-                return false;
-            }
-        }
         if(invoices.size() >= 2) {
             return false;
         }
