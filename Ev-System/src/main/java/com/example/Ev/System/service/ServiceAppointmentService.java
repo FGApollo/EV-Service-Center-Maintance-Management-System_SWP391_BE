@@ -442,7 +442,7 @@ public class ServiceAppointmentService {
         List<Invoice> invoices = invoiceRepository.findAllByAppointment_Id(appointmentId);
 
         boolean hasUnpaid = invoices.stream()
-                .anyMatch(inv -> !"PAID".equalsIgnoreCase(inv.getStatus()));
+                .anyMatch(inv -> "unpaid".equalsIgnoreCase(inv.getStatus()));
 
         if (hasUnpaid) {
             throw new BadRequestException("Vẫn còn hóa đơn chưa thanh toán. Không thể bàn giao xe.");
