@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    private final String SECRET_KEY_STRING = "yourSecretKeyNeedsToBeLongEnoughForHS256Algorithm"; // Nên chuyển sang application.properties
+    private final String SECRET_KEY_STRING = "yourSecretKeyNeedsToBeLongEnoughForHS256Algorithm";
     private final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes(StandardCharsets.UTF_8));
     private final long EXPIRATION_TIME = 1000 * 60 * 60;
 

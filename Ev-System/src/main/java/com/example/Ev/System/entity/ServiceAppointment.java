@@ -71,4 +71,9 @@ public class ServiceAppointment {
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SuggestedPart> suggestedParts = new ArrayList<>();
+
+    @Column(name = "handover")
+    @ColumnDefault("false")
+    private Boolean handover = false;
+
 }

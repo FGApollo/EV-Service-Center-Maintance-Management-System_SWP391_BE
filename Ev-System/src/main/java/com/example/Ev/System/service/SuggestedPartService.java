@@ -19,18 +19,13 @@ import java.util.Optional;
 @Service
 public class SuggestedPartService {
     private final SuggestedPartRepository suggestedPartRepository;
-    private final UserRepository userRepository;
-    private final AppointmentRepository appointmentRepository;
     private final SuggestPartMapper suggestPartMapper;
     private final ServiceAppointmentService serviceAppointmentService;
     private final PartService partService;
     private final PartRepository partRepository;
 
-    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, UserRepository userRepository, AppointmentRepository appointmentRepository, SuggestPartMapper suggestPartMapper, ServiceAppointmentService serviceAppointmentService, PartService partService, PartRepository partRepository){
+    public SuggestedPartService(SuggestedPartRepository suggestedPartRepository, SuggestPartMapper suggestPartMapper, ServiceAppointmentService serviceAppointmentService, PartService partService, PartRepository partRepository){
         this.suggestedPartRepository = suggestedPartRepository;
-        this.userRepository = userRepository;
-
-        this.appointmentRepository = appointmentRepository;
         this.suggestPartMapper = suggestPartMapper;
         this.serviceAppointmentService = serviceAppointmentService;
         this.partService = partService;
@@ -108,7 +103,7 @@ public class SuggestedPartService {
         if(serviceAppointment == null){
             throw new NotFoundException("Appointment khong ton tai");
         }
-        Part part = partRepository.findById(dto.getPartId()).orElseThrow(null);
+        Part part = partRepository.findById(dto.getPartId()).orElseThrow(() -> new NotFoundException("Part khong ton tai"));;
         if(part == null){
             throw new NotFoundException("Part khong ton tai");
         }
@@ -122,6 +117,14 @@ public class SuggestedPartService {
 
     @Transactional
     public List<RequestSuggestPart> createSuggestParts(List<RequestSuggestPart> requestSuggestParts) {
+        RequestSuggestPart requestSuggestPart = requestSuggestParts.get(0);
+        if(requestSuggestPart == null){
+            throw new NotFoundException("Suggest part khong ton tai");
+        }
+        List<SuggestedPart> suggestedParts = suggestedPartRepository.findAllByAppointment_Id(requestSuggestPart.getAppointmentId());
+        if(!suggestedParts.isEmpty()){
+            suggestedPartRepository.deleteAll(suggestedParts);
+        }
         List<RequestSuggestPart> created = new ArrayList<>();
         for (RequestSuggestPart dto : requestSuggestParts) {
             created.add(createSuggestPart(dto));

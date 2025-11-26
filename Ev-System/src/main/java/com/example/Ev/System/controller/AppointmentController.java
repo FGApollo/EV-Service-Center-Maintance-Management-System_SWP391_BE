@@ -183,4 +183,14 @@ public class AppointmentController {
     public List<AppointmentAllFieldsDto> getAllAppointmentWithSpecificDetails(){
         return serviceAppointmentService.getAllAppointmentWithSpecificDetails();
     }
+
+    @PutMapping("/{id}/handover")
+    @PreAuthorize("hasAuthority('staff')")
+    public ResponseEntity<AppointmentResponse> handoverVehicleOfAppointment(
+            @PathVariable Integer id, Authentication authentication) {
+
+        AppointmentResponse response = serviceAppointmentService.handoverVehicleOfAppointment(id, authentication);
+        return ResponseEntity.ok(response);
+    }
+
 }
