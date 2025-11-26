@@ -1,5 +1,6 @@
 package com.example.Ev.System.service;
 
+import com.example.Ev.System.dto.PartDto;
 import com.example.Ev.System.entity.Inventory;
 import com.example.Ev.System.entity.Part;
 import com.example.Ev.System.repository.InventoryRepository;
@@ -23,8 +24,19 @@ public class PartService implements PartServiceI{
     private ServiceCenterRepository serviceCenterRepository;
 
     @Override
-    public List<Part> getAll() {
-        return partRepository.findAll();
+    @Transactional
+    public List<PartDto> getAll() {
+        List<Part> part = partRepository.findAll();
+        return part.stream().map(p -> new PartDto(
+                p.getId(),
+                p.getName(),
+                p.getUnitPrice(),
+                p.getImportPrice(),
+                p.getDescription(),
+                p.getMinStockLevel(),
+                p.getCreatedAt(),
+                p.getInventories().stream().map(Inventory::getQuantity).reduce(0,  Integer::sum)
+        )).toList();
     }
 
     @Override
